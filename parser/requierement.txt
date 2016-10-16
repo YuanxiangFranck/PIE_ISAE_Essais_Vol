@@ -1,0 +1,6 @@
+# Dev packages
+ipdb==0.10.1
+ipython==5.1.0
+# Project packages
+numpy==1.11.2
+pandas==0.19.0
