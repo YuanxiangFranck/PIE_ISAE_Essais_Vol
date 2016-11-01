@@ -39,7 +39,7 @@ Read file_name and parse the data
         signals_to_monitor = [get_name(s).strip() for s in signals_to_monitor]
     # Fist 7 lines are description of the flight
     # Line 9 is the name of each column in french but it's not usable because
-    # some have spaces like «FLIGHT DECK AMBIENT TEMPERATURE 1»
+    # some have spaces like "FLIGHT DECK AMBIENT TEMPERATURE 1"
     # Line 10 contains the units of each line
     # Line 11 gives aquisition time TO_CHECK!!!!
     df = pd.read_csv(file_name, header=7, skiprows=[9, 10, 11], delim_whitespace=True)
