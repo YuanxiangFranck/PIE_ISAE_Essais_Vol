@@ -8,7 +8,6 @@ Titre du PIE : détection d'anomalies dans des données d’essai de systèmes d
 
 * détection automatique d'anomalies dans des données d'essai
 * recherche et analyse des causes/corrélations des comportements anormaux
-* 
 
 
 ### Parties prenantes
@@ -58,6 +57,10 @@ Le projet représente le début d'une expertise en machine learning/data science
 
 ## WBS/PBS
 
+### WBS 
+
+![WBS](./wbs.png)
+
 ### Jalons
 
 * Début du projet : octobre 2016
@@ -67,6 +70,7 @@ Le projet représente le début d'une expertise en machine learning/data science
 * 06.12 Revue
 * 31.01 Revue
 * **Présentation école** (semaine 13.03 - 17.03)
+
 
 
 ## Définition du projet détaillé
