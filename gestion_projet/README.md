@@ -17,10 +17,12 @@ Le projet répond à un besoin de Liebherr Aerospace.
 ### Hypothèses, contraintes et exigences connues
 
 Hypothèses :
+
 * premier PIE de Liebherr à supaero
 * pas encore d'expertise dans le domaine du machine learning
 
 Contraintes et exigences :
+
 * confidentialité des données du client
 * solution déployable chez le client
 * date de fin de projet
@@ -71,7 +73,7 @@ Le projet représente le début d'une expertise en machine learning/data science
 * 31.01 Revue
 * **Présentation école** (semaine 13.03 - 17.03)
 
-
+![Jalons](./network_diagram.png)
 
 ## Définition du projet détaillé
 
