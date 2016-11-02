@@ -92,13 +92,13 @@ Doc technique (généré automatiquement à partir du code)
 
 Regroupe les tâches de développement du livrable.
 
-* * Data processing et visualisation
+    * Data processing et visualisation
 
 Extraire les données des signaux bruts issus des essais en vol/simulations
 Visualisation des signaux pour mettre en évidence les anomalies
 Visualisation des résultats
 
-* * Algorithmes de détection d'anomalies
+    * Algorithmes de détection d'anomalies
 
 Développement d'algorithmes automatisant la détection des anomalies.
 à suivre...
@@ -106,9 +106,10 @@ Développement d'algorithmes automatisant la détection des anomalies.
 * Documentation
 
 Rédiger une documentation détaillant :
-* * les logiciels pré-requis à mettre en place chez le client
-* * manuel d'utilsation du livrable.
-* * état d'avancement et de validation du livrable
+
+    * les logiciels pré-requis à mettre en place chez le client
+    * manuel d'utilsation du livrable.
+    * état d'avancement et de validation du livrable
 
 * Bibliographie
 
@@ -123,6 +124,7 @@ Fiches de lecture. Recherche sur l'état de l'art de la détection d'anomalies e
 ## Risques opportunités
 
 Risques :
+
 * Sujet et critères pas entièrement définis, nécessité de définir un cadre (car nouveau projet, et pas d’expertise côté donneurs d’ordre)
 * Passer trop de temps sur la bibliographie
 * Ne pas trouver de solution adaptée au problème lors de nos recherches
@@ -131,6 +133,7 @@ Risques :
 * Confidentialité des données
 
 Opportunités :
+
 * améliorer la détection des anomalies
 
 ## Suivi
