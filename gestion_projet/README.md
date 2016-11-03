@@ -77,37 +77,39 @@ Le projet représente le début d'une expertise en machine learning/data science
 
 ## Définition du projet détaillé
 
-* Gestion de projet 
-Communication au sein de l'équipe, et entre l'équipe et les donneurs d'ordre
-Compte-rendus de réunions
-Respect du planning
-Rapports
+* Gestion de projet
+
+    * Communication au sein de l'équipe, et entre l'équipe et les donneurs d'ordre
+    * Compte-rendus de réunions
+    * Respect du planning
+    * Rapports
 
 * Gestion du code
-Gestionnaire de version git + Github
-Suivi des tâches (tableau de bord agile Github)
-Qualité du code
-S'assurer de la compatibilité chez le client
-Doc technique (généré automatiquement à partir du code)
+
+    * Gestionnaire de version git + Github
+    * Suivi des tâches (tableau de bord agile Github)
+    * Qualité du code
+    * S'assurer de la compatibilité chez le client
+    * Doc technique (généré automatiquement à partir du code)
 
 * Développement
 
-Regroupe les tâches de développement du livrable.
+    Regroupe les tâches de développement du livrable.
 
     * Data processing et visualisation
 
-Extraire les données des signaux bruts issus des essais en vol/simulations
-Visualisation des signaux pour mettre en évidence les anomalies
-Visualisation des résultats
+        * Extraire les données des signaux bruts issus des essais en vol/simulations
+        * Visualisation des signaux pour mettre en évidence les anomalies
+        * Visualisation des résultats
 
     * Algorithmes de détection d'anomalies
 
-Développement d'algorithmes automatisant la détection des anomalies.
-à suivre...
+        Développement d'algorithmes automatisant la détection des anomalies.
+        à suivre...
 
 * Documentation
 
-Rédiger une documentation détaillant :
+    Rédiger une documentation détaillant :
 
     * les logiciels pré-requis à mettre en place chez le client
     * manuel d'utilsation du livrable.
@@ -115,7 +117,7 @@ Rédiger une documentation détaillant :
 
 * Bibliographie
 
-Fiches de lecture. Recherche sur l'état de l'art de la détection d'anomalies et sur les méthodes applicables à notre problème.
+    Fiches de lecture. Recherche sur l'état de l'art de la détection d'anomalies et sur les méthodes applicables à notre problème.
 
 ## Livrables
 
