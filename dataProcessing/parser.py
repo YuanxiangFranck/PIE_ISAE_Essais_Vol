@@ -40,8 +40,9 @@ Read file_name and parse the data
     tmp_df = pd.read_csv(file_name, header=[6, 7, 8], skiprows=[10],
                          sep="	")
     remove_at = lambda tup: (tup[0].split("@")[-1],)+tup[1:3]
-    new_columns = {col: remove_at(col) for col in tmp_df.columns}
-    return tmp_df.rename(new_columns)
+    new_columns = [remove_at(col) for col in tmp_df.columns]
+    tmp_df.columns = new_columns # tmp_df.rename dosn't work here because columns name are tuple...
+    return tmp_df
 
 
 if __name__ == "__main__":
