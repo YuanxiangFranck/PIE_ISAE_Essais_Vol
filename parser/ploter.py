@@ -1,9 +1,10 @@
 """
 Script to parse the data file
 """
-import matplotlib.pyplot as plt
-import pandas as pd
 import logging
+
+import pandas as pd
+import matplotlib.pyplot as plt
 
 from parser import txt_parser
 
@@ -47,22 +48,27 @@ class Ploter:
             self.data = txt_parser(input_file)
         self.nb_plots = 0
 
-    def _plot_over_time(self, name):
-        'add a figure to plt with the given options applied'
-        if name not in self.data.columns:
-            print(name+"  not in data")
+
+    def _plot_data(self, signal1, signal2='Time'):
+        "Plot one data over a second data in a scatter cloud"
+        # Check if each signal are in data
+        if signal1 not in self.data.columns:
+            print(signal1+"  not in data")
             return
+        if signal2 not in self.data.columns:
+            print(signal2+"  not in data")
+            return
+        # Increment figure number
         self.nb_plots += 1
-        plt.figure(self.nb_plots)
-        out_message = 'PLOT '+name+' in figure '+str(self.nb_plots)
-        x_data = self.data.Time
-        y_data = self.data[name]
-        label = name
-        logging.info(out_message)
-        plt.plot(x_data, y_data, label=label)
-        plt.ylabel(name)
+        plt.plot(self.data[signal1], self.data[signal2],
+                 label=signal1+" / "+signal2)
+        plt.ylabel(signal1)
+        plt.ylabel(signal2)
         plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                    ncol=2, mode="expand", borderaxespad=0.)
+
+
+
 
 
     def set_data(self, data):
@@ -71,7 +77,7 @@ class Ploter:
 
     def plot(self, signals):
         for name in signals:
-            self._plot_over_time(name)
+            self._plot_data(name)
         plt.show()
 
 

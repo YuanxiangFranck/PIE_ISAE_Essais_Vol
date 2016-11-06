@@ -37,7 +37,11 @@ Read file_name and parse the data
     # some have spaces like "FLIGHT DECK AMBIENT TEMPERATURE 1"
     # Line 10 contains the units of each line
     # Line 11 gives aquisition time TO_CHECK!!!!
-    return pd.read_csv(file_name, header=7, skiprows=[9, 10, 11], delim_whitespace=True)
+    tmp_df = pd.read_csv(file_name, header=[6, 7, 8], skiprows=[10],
+                         sep="	")
+    remove_at = lambda tup: (tup[0].split("@")[-1],)+tup[1:3]
+    new_columns = {col: remove_at(col) for col in tmp_df.columns}
+    return tmp_df.rename(new_columns)
 
 
 if __name__ == "__main__":
