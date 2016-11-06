@@ -32,17 +32,12 @@ def txt_parser(file_name):
     """
 Read file_name and parse the data
 """
-    # Fist 7 lines are description of the flight
-    # Line 9 is the name of each column in french but it's not usable because
-    # some have spaces like "FLIGHT DECK AMBIENT TEMPERATURE 1"
-    # Line 10 contains the units of each line
-    # Line 11 gives aquisition time TO_CHECK!!!!
-    tmp_df = pd.read_csv(file_name, header=[6, 7, 8], skiprows=[10],
-                         sep="	")
-    remove_at = lambda tup: (tup[0].split("@")[-1],)+tup[1:3]
-    new_columns = [remove_at(col) for col in tmp_df.columns]
-    tmp_df.columns = new_columns # tmp_df.rename dosn't work here because columns name are tuple...
-    return tmp_df
+    # Fist 5 lines are description of the flight
+    # Line 6 represent the aquisition channel ????
+    # Line 7 are the signals name
+    # Line 8 contains the units of each line
+    # Line 10 gives aquisition time TO_CHECK!!!!
+    return pd.read_csv(file_name, header=[7, 8], skiprows=[10], sep="	")
 
 
 if __name__ == "__main__":
