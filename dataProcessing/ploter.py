@@ -6,7 +6,7 @@ import logging
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from parser import txt_parser
+from dataPrcossing.parser import txt_parser
 
 
 def arguments_parser():
