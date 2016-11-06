@@ -6,7 +6,7 @@ import logging
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from dataPrcossing.parser import txt_parser
+from dataProcessing.parser import txt_parser
 
 
 def arguments_parser():
@@ -43,7 +43,7 @@ class Ploter:
     """
     def __init__(self, input_file=None):
         if input_file is None:
-            self.data = pd.empty()
+            self.data = pd.DataFrame()
         else:
             self.data = txt_parser(input_file)
         self.nb_plots = 0
@@ -58,6 +58,8 @@ class Ploter:
         if signal2 not in self.data.columns:
             print(signal2+"  not in data")
             return
+        if signal2 == "Time":
+            signal2, signal1 = signal1, signal2
         # Increment figure number
         self.nb_plots += 1
         plt.plot(self.data[signal1], self.data[signal2],
