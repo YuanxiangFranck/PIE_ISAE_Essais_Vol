@@ -37,7 +37,7 @@ def arguments_parser():
     return arguments
 
 
-class Ploter:
+class Plotter:
     """
     Class to plot data from a txt file
     """
@@ -49,7 +49,7 @@ class Ploter:
         self.nb_plots = 0
 
 
-    def _plot_data(self, signal1, signal2='Time'):
+    def plot_data(self, signal1, signal2='Time'):
         "Plot one data over a second data in a scatter cloud"
         # Check if each signal are in data
         if signal1 not in self.data.columns:
@@ -89,5 +89,5 @@ if __name__ == "__main__":
     # Parse the data
     logging.info("Read: "+ args.txt_file+"\n")
 
-    ploter = Ploter(args.txt_file)
+    ploter = Plotter(args.txt_file)
     ploter.plot(args.signals)
