@@ -79,7 +79,7 @@ class Plotter:
 
     def plot(self, signals):
         for name in signals:
-            self._plot_data(name)
+            self.plot_data(name)
         plt.show()
 
 
