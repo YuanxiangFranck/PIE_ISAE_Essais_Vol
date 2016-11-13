@@ -12,10 +12,7 @@ dans votre console ipython, et
 %matplotlib inline
 en mode intégré.
 """
-
-#%%
-
-import sys,os
+import sys, os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.plotter import Plotter
 
@@ -32,7 +29,6 @@ Vol XXXXX
 ## 1. Chargement du fichier de données et création du Plotter
 
 # Chemin relatif vers le fichier txt de données
-data_path = ' '
 data_path = '../../E190-E2_20001_0085_29472_53398-20161004T185141Z/E190-E2_20001_0085_29472_53398/20001_0085_29472_53398_request.txt'
 # pour le vol FT53398
 
@@ -43,9 +39,10 @@ monPlotter = Plotter(data_path)
 
 
 # noms des signaux à plotter (un seul ou plusieurs signaux dans la liste)
-signal_names = ['BLEED_OUT_TEMP_AMSC1_CHA','BLEED_OUT_TEMP_AMSC1_CHB']
+signal_names = ['BLEED_OUT_TEMP_AMSC1_CHA', 'BLEED_OUT_TEMP_AMSC1_CHB']
 
 # Plotter les signaux de la liste par rapport au temps :
 monPlotter.plot(signal_names)
 # Plotter SIG1 par rapport à SIG2 :
-monPlotter.plot_data
+monPlotter.plot_data(signal_names[0], signal_names[1])
+# seulement si len(signal_names) == 2
