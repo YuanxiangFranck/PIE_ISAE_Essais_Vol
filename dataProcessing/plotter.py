@@ -64,8 +64,8 @@ class Plotter:
         self.nb_plots += 1
         plt.plot(self.data[signal1], self.data[signal2],
                  label=signal1+" / "+signal2)
-        plt.ylabel(signal1)
-        plt.ylabel(signal2)
+        plt.xlabel("{} [{}]".format(signal1, self.data[signal1].columns[0]))
+        plt.ylabel("{} [{}]".format(signal2, self.data[signal2].columns[0]))
         plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                    ncol=2, mode="expand", borderaxespad=0.)
 

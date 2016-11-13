@@ -37,7 +37,8 @@ Read file_name and parse the data
     # Line 7 are the signals name
     # Line 8 contains the units of each line
     # Line 10 gives aquisition time TO_CHECK!!!!
-    return pd.read_csv(file_name, header=[7, 8], skiprows=[10], sep="	")
+    df = pd.read_csv(file_name, header=[7, 8], skiprows=[10], sep="	")
+    return df.iloc[:-1] # Remove last line
 
 
 if __name__ == "__main__":
