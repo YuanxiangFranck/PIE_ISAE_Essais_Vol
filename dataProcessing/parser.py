@@ -50,7 +50,7 @@ def txt_parser(file_name):
     df["rTime"] = pd.DataFrame({"sec": rtime})
 
     # If -999999 is in the last row remove it
-    if -999999.0 in data.iloc[-1, :].data:
+    if -999999.0 in df.iloc[-1, :].data:
         return df.iloc[:-1]
     return df
 
