@@ -1,5 +1,5 @@
 """
-Script to parse the data file
+Script to plot data
 """
 import logging
 
@@ -49,7 +49,7 @@ class Plotter:
         self.nb_plots = 0
 
 
-    def plot_data(self, signal1, signal2='Time'):
+    def plot_data(self, signal1, signal2='rTime'):
         "Plot one data over a second data in a scatter cloud"
         # Check if each signal are in data
         if signal1 not in self.data.columns:
@@ -58,7 +58,7 @@ class Plotter:
         if signal2 not in self.data.columns:
             print(signal2+"  not in data")
             return
-        if signal2 == "Time":
+        if signal2 == "rTime":
             signal2, signal1 = signal1, signal2
         # Increment figure number
         self.nb_plots += 1
@@ -89,5 +89,5 @@ if __name__ == "__main__":
     # Parse the data
     logging.info("Read: "+ args.txt_file+"\n")
 
-    ploter = Plotter(args.txt_file)
-    ploter.plot(args.signals)
+    plotter = Plotter(args.txt_file)
+    plotter.plot(args.signals)
