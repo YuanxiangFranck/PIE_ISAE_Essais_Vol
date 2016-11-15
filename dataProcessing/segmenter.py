@@ -12,7 +12,6 @@ Outil pour segmenter les vols
 import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
-from dataProcessing.plotter import Plotter
 
 
 #%%
