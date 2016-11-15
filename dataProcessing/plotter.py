@@ -49,7 +49,7 @@ class Plotter:
         self.nb_plots = 0
 
 
-    def plot_data(self, signal1, signal2='rTime'):
+    def plot_data(self, signal1, signal2='Time'):
         "Plot one data over a second data in a scatter cloud"
         # Check if each signal are in data
         if signal1 not in self.data.columns:
@@ -58,7 +58,7 @@ class Plotter:
         if signal2 not in self.data.columns:
             print(signal2+"  not in data")
             return
-        if signal2 == "rTime":
+        if signal2 == "Time":
             signal2, signal1 = signal1, signal2
         # Increment figure number
         self.nb_plots += 1
