@@ -12,6 +12,8 @@ Outil pour segmenter les vols
 import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
+from dataProcessing.plotter import Plotter
+
 
 #%%
 
@@ -85,7 +87,7 @@ def segment(data, otg=True, take_off=True, climb=True, hold=True, cruise=True, d
     altitude_signal = data[altitude].iloc[:,0]
     cas_signal = data[calib_air_speed].iloc[:,0]
     alt_rate_signal = data[altitude_rate].iloc[:,0]
-    on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)i
+    on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
     intervals = dict()
     if otg:
         times = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)].Time.values.flatten().tolist()
