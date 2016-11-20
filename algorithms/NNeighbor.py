@@ -11,15 +11,20 @@ def NearestNeighbor (x,k,l,binary=False):
 	
 	inf = 1e20;
 	n = len(x)
-	res = range(0,l) 
+	res = False 
 	stockDist = [inf]*n
-	for i in range(0,n): 
-		distance = [inf]*n
-		for j in range(0,n):
-			if i != j and !binary :
-				distance[j] = np.linalg.norm(x[i]-x[j])
-		low = distance.sort()[0:k-1]
-		stockDist[i] = np.mean(low)
+	if k>n or l>n :
+		Print("It is not possible to find the l biggest with the neighbors method with x smaller than l")
+	else : 
+		for i in range(0,n): 
+			distance = [inf]*n
+			for j in range(0,n):
+				if i != j and !binary :
+					distance[j] = np.linalg.norm(x[i]-x[j])
+			low = distance.sort()[0:k-1]
+			stockDist[i] = np.mean(low)
+		res = lBigger(stockDist)
+	return res
 	
 def lBigger(x,l):
 	"""
