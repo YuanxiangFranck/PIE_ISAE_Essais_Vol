@@ -12,7 +12,7 @@ def NearestNeighbor (x,k,l,binary=False):
 	inf = 1e20;
 	n = len(x)
 	res = range(0,l) 
-	stockDist = []*n
+	stockDist = [inf]*n
 	for i in range(0,n): 
 		distance = [inf]*n
 		for j in range(0,n):
@@ -21,3 +21,27 @@ def NearestNeighbor (x,k,l,binary=False):
 		low = distance.sort()[0:k-1]
 		stockDist[i] = np.mean(low)
 	
+def lBigger(x,l):
+	"""
+	Return the indice of the l higher values in x
+	"""
+	res = False
+	if l > len(x):
+		print("It is not possible to find the l biggest values in a list of less than l values")
+	else : 
+		valRes = x[0:l]
+		res = range(0,l)
+		for i in range(l,len(x)):
+			low = lower(valRes)
+			if x(i) > valRes[low]:
+				res[low]=i
+				valRes[low]=x[i]
+	return res
+	
+def lower(x):
+	"""
+	Return the indice of the lower value in x
+	"""
+	mini = min(x)
+	ind = x.find(mini)
+	return ind
