@@ -33,14 +33,23 @@ def KLower (k,x) :
 	taille = len(x)
 	
 	if k > taille :
-		print("You cannot take the K lower values in X if K is higher than the number of values in X")
+		print("You cannot take the k lower values in x if k is higher than the number of values in x")
 	else :
-		sort = sorted(x)
-		res = [0]*k
-		for i in range(0,k):
-			res[i]=sort[i]
-			
-	return res
+		indRes = range(0,k)
+		valRes = x[0:k-1]
+		for i in range(k,taille):
+		big = bigger(valRes)
+			ind = indRes[big]
+			if x(i) < x(ind]):
+				indRes[big]=i
+				valRes[ind]=x(i)
+	return indRes
 	
-	
+def bigger (x):
+	"""
+	The list of values whereyou want to find the bigger value
+	"""
+	maxi = max(x)
+	ind = x.find(maxi)
+	return ind
 	
