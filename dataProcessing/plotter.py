@@ -7,7 +7,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from dataProcessing.parser import txt_parser
-
+from dataProcessing.segmenter import segment
 
 def arguments_parser():
     import argparse
@@ -47,6 +47,10 @@ class Plotter:
         else:
             self.data = txt_parser(input_file)
         self.nb_plots = 0
+        self.segments_color = {'climb': "r", 'cruise': "b",
+                               'descent': 'g', 'hold': "c",
+                               'otg': 'y', 'take_off': 'k'}
+
 
 
     def plot_data(self, signal1, signal2='Time'):
@@ -66,11 +70,18 @@ class Plotter:
                  label=signal1+" / "+signal2)
         plt.xlabel("{} [{}]".format(signal1, self.data[signal1].columns[0]))
         plt.ylabel("{} [{}]".format(signal2, self.data[signal2].columns[0]))
+        # Add vertical bars to show different phases
+        phases = segment(self.data)
+        for segment_name, segments in phases.items():
+            # If not segments skip this phase
+            if len(segments) == 0:
+                continue
+            segment_color = self.segments_color[segment_name]
+            for start, end in segments:
+                plt.axvline(x=start, color=segment_color)
+                plt.axvline(x=end, color=segment_color)
         plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                    ncol=2, mode="expand", borderaxespad=0.)
-
-
-
 
 
     def set_data(self, data):
