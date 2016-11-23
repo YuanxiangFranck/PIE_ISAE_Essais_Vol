@@ -72,7 +72,7 @@ def segment(data, otg=True, take_off=True, climb=True, hold=True, cruise=True, d
     wow_signal = data[wow].iloc[:,0]
     altitude_signal = data[altitude].iloc[:,0]
     cas_signal = data[calib_air_speed].iloc[:,0]
-    alt_rate_signal = data[altitude_rate].iloc[:,0].rolling(center = False, window = 90).mean()
+    alt_rate_signal = data[altitude_rate].iloc[:,0].rolling(center = False, window = 120).mean()
     on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
     intervals = dict()
     if otg:
@@ -100,14 +100,16 @@ def get_weights(segments_dict, data):
         Compute the duration of each segment divided by the duration of the flight
     """
     weights = dict()
-    total_duration = data.Time.iloc[0,-1] - data.Time.iloc[0,0]
+    total_duration = data.Time.iloc[-1,0] - data.Time.iloc[0,0]
     for segment in segments_dict.keys():
         weights[segment] = 0
         for time_values in segments_dict[segment]:
             weights[segment] += time_values[1] - time_values[0]
-            total_duration += weights[segment]
     return {k: v / total_duration for k, v in weights.items()}
 
+def check(segments_dict, data):
+    weights = get_weights(segments_dict, data)
+    return sum(weights.values())
 
 if __name__ == "__main__":
     
@@ -119,9 +121,10 @@ if __name__ == "__main__":
     
     seg = segment(data)
     weights= get_weights(seg,data)
+    check = check(seg,data)
     for key in seg.keys():
-        print(key)
+        print('Poids du segment {} : {}'.format(key,weights[key]))
+        print('Segment {}'.format(key))
         print(seg[key])
-        print('--------')
-        print(weights[key])
         print('#########')
+    print('Somme des poids {}'.format(check))
