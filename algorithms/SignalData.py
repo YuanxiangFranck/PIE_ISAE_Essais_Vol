@@ -78,6 +78,8 @@ class SignalData:
                 tmp = self.get_amplitude()
             elif f == 'covariance':
                 tmp = self.get_covariance()
+            elif f == 'binary_transitions':
+                tmp = self.get_nb_transitions()
             
             if self.X == None:
                 self.X = tmp
@@ -128,3 +130,24 @@ class SignalData:
         Matrice de covariance des signaux
         """
         return np.cov(self.data)
+        
+    def get_nb_transitions(self):
+        """
+        Nombres de transitions du signal binaire
+        """
+        result = np.array([-1]*len(self.data))
+        for i,signal in enumerate(self.data):
+            assert(self.is_binary(signal))
+            res = 0
+            val = signal[0]
+            for s in signal :
+                if s != val:
+                    val = s
+                    res += 1
+            
+            result[i] = res
+            
+        return result.reshape((-1,1))
+        
+    def is_binary(self,signal) : 
+        return ((signal==0) | (signal==1)).all()
