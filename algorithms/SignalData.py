@@ -27,7 +27,17 @@ class SignalData:
         
     def load(self, signals):
         self.__init__(signals)
+        
+    def clearFeatures(self):
+        self.X = None
+        
+    def clearAll(self):
+        self.data = None
+        self.X = None
     
+    """
+    Signal manipulation
+    """
     def setSlidingWindow(self, w):
         """
         Transformation du signal avec une sliding window.
@@ -54,7 +64,18 @@ class SignalData:
             m = len(signal)//w # number of samples
             self.data = np.array([signal[i*w:(i+1)*w] for i in range(m)])
             
-        
+    """
+    Feature extraction
+    """
+    def useWholeTimeseries(self):
+        """
+        Utilisation des valeurs brutes des signaux à chaque pas de temps
+        en tant que features.
+        Attention : si le signal est long, cela génère trop de features
+        pour certains algorithmes !
+        """
+        self.X = self.data.copy()
+    
     def extractFeatures(self,feature_names,n_fft=10):
         """
         Extrait les features de la liste donnée en argument
@@ -136,7 +157,10 @@ class SignalData:
         """
         Matrice de covariance des signaux
         """
-        return np.cov(self.data)
+        if self.data.shape[0] == 1:
+            return np.cov(self.data).reshape((-1,1))
+        else:
+            return np.cov(self.data)
         
     def get_nb_transitions(self):
         """
