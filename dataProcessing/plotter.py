@@ -55,7 +55,14 @@ class Plotter:
 
 
     def plot_data(self, signal1, signal2='Time'):
-        "Plot one data over a second data in a scatter cloud"
+        """
+        Plot one data over a second data in a scatter cloud
+
+        :param signal1: str
+            name of the signal to plot
+        :param [signal2='Time']: str
+            if given it plot signal1 over signal2
+        """
         # Check if each signal are in data
         if signal1 not in self.data.columns:
             print(signal1+"  not in data")
@@ -88,11 +95,18 @@ class Plotter:
 
 
     def set_data(self, data):
+        "Set data of the plotter"
         self.data = data
         self.phases = segment(data)
 
 
     def plot(self, signals):
+        """
+        Plot a list of signals
+
+        :param signals: list
+            List of signal name
+        """
         for name in signals:
             self.plot_data(name)
         plt.show()
