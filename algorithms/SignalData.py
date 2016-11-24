@@ -55,13 +55,16 @@ class SignalData:
             self.data = np.array([signal[i*w:(i+1)*w] for i in range(m)])
             
         
-    def extractFeatures(self,feature_names):
+    def extractFeatures(self,feature_names,n_fft=10):
         """
         Extrait les features de la liste donnée en argument
         et les ajoute à la matrice X
         feature_names : list of strings
+        n_fft (optional) : number of Fourier coefficients
+        
         available features :
-        mean, var, std, min, max, amplitude, covariance
+        mean, var, std, min, max, amplitude, covariance,
+        binary_transitions, fft
         """
         for f in feature_names:
             if f == 'mean':
@@ -80,6 +83,10 @@ class SignalData:
                 tmp = self.get_covariance()
             elif f == 'binary_transitions':
                 tmp = self.get_nb_transitions()
+            elif f == 'fft':
+                tmp = self.get_fft(n_fft)
+            else:
+                tmp = None
             
             if self.X == None:
                 self.X = tmp
@@ -151,3 +158,14 @@ class SignalData:
         
     def is_binary(self,signal) : 
         return ((signal==0) | (signal==1)).all()
+        
+    def get_fft(self,n_fft):
+        """
+        Renvoie les n_fft plus grands coefficients de Fourier
+        """
+        # Compute FFT coefficients (complex)
+        coeffs = np.fft.rfft(self.data)
+        # Sort according to absolute value        
+        coeffs_sorted = coeffs[:,np.argsort(-np.abs(coeffs)).reshape(-1)]
+        # Return n_fft largest coefficients   
+        return coeffs_sorted[:,:n_fft]
