@@ -40,6 +40,20 @@ class SignalData:
             signal = self.data[0]
             m = len(signal)-w+1 # number of samples
             self.data = np.array([signal[i:i+w] for i in range(m)])
+    
+    def setSegmentation(self, w):
+        """
+        Segmentation du signal.
+        w : window size
+        """
+        if len(self.data) > 1:
+            print('Segmentation is only available for 1 signal!')
+            return
+        else:
+            signal = self.data[0]
+            m = len(signal)//w # number of samples
+            self.data = np.array([signal[i*w:(i+1)*w] for i in range(m)])
+            
         
     def extractFeatures(self,feature_names):
         """
