@@ -38,22 +38,23 @@ class SignalData:
     """
     Signal manipulation
     """
-    def setSlidingWindow(self, w):
+    def setSlidingWindow(self, w, step):
         """
-        Transformation du signal avec une sliding window.
+        Segmentation du signal avec sliding window.
         w : window size
+        step : step size
         """
         if len(self.data) > 1:
-            print('Slinding window transformation is only available for 1 signal!')
+            print('Sliding window transformation is only available for 1 signal!')
             return
         else:
             signal = self.data[0]
-            m = len(signal)-w+1 # number of samples
-            self.data = np.array([signal[i:i+w] for i in range(m)])
+            m = (len(signal)-w)//step+1 # number of samples
+            self.data = np.array([signal[i*step:i*step+w] for i in range(m)])
     
     def setSegmentation(self, w):
         """
-        Segmentation du signal.
+        Segmentation du signal avec fenêtre de taille fixe.
         w : window size
         """
         if len(self.data) > 1:
