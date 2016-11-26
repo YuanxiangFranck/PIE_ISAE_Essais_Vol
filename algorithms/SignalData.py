@@ -12,6 +12,7 @@ X    : features matrix
 """
 
 import numpy as np
+from sklearn.preprocessing import normalize
 
 class SignalData:
     
@@ -115,6 +116,9 @@ class SignalData:
             else:
                 self.X = np.append(self.X,tmp,axis=1)
             
+    def normalizeFeatures(self):
+        self.X = normalize(self.X,axis=0,norm='l1')
+        
     """
     Méthodes de calcul de features
     """
