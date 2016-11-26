@@ -186,12 +186,15 @@ class SignalData:
         
     def get_fft(self,n_fft):
         """
-        Renvoie les n_fft plus grands coefficients de Fourier
+        Renvoie les parties réelles et imaginaires des
+        n_fft plus grands coefficients de Fourier
         """
         # Compute FFT coefficients (complex)
         coeffs = np.fft.rfft(self.data)
         # Sort according to absolute value        
         coeffs_sorted = coeffs.ravel()[np.argsort(-np.abs(coeffs)).ravel()] \
         .reshape(coeffs.shape)
-        # Return n_fft largest coefficients   
-        return coeffs_sorted[:,:n_fft]
+        # n_fft largest coefficients
+        n_coeffs = coeffs_sorted[:,:n_fft]
+        # Return real and imaginary parts
+        return np.append(np.real(n_coeffs),np.imag(n_coeffs),axis=1)
