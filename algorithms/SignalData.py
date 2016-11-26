@@ -191,6 +191,7 @@ class SignalData:
         # Compute FFT coefficients (complex)
         coeffs = np.fft.rfft(self.data)
         # Sort according to absolute value        
-        coeffs_sorted = coeffs[:,np.argsort(-np.abs(coeffs)).reshape(-1)]
+        coeffs_sorted = coeffs.ravel()[np.argsort(-np.abs(coeffs)).ravel()] \
+        .reshape(coeffs.shape)
         # Return n_fft largest coefficients   
         return coeffs_sorted[:,:n_fft]
