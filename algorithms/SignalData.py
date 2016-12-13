@@ -12,6 +12,7 @@ X    : features matrix
 """
 
 import numpy as np
+from scipy.fftpack import dct
 from sklearn.preprocessing import normalize
 
 class SignalData:
@@ -87,7 +88,7 @@ class SignalData:
 
         available features :
         mean, var, std, min, max, amplitude, covariance,
-        binary_transitions, fft
+        binary_transitions, fft, dtc (discrete cosine transform)
         """
         for f in feature_names:
             if f == 'mean':
@@ -108,6 +109,8 @@ class SignalData:
                 tmp = self.get_nb_transitions()
             elif f == 'fft':
                 tmp = self.get_fft(n_fft)
+            elif f == 'dtc':
+                tmp = self.get_dtc(n_dtc)
             else:
                 tmp = None
 
@@ -202,3 +205,18 @@ class SignalData:
         n_coeffs = coeffs_sorted[:,:n_fft]
         # Return real and imaginary parts
         return np.append(np.real(n_coeffs),np.imag(n_coeffs),axis=1)
+
+    def get_dtc(self,n_dtc):
+        """
+        Renvoie les parties réelles et imaginaires des
+        n_fft plus grands coefficients de Fourier
+        """
+        # Compute FFT coefficients (complex)
+        coeffs = dct(self.data)
+        # Sort according to absolute value
+        coeffs_sorted = coeffs.ravel()[np.argsort(-np.abs(coeffs)).ravel()] \
+        .reshape(coeffs.shape)
+        # n_fft largest coefficients
+        n_coeffs = coeffs_sorted[:,:n_dtc]
+        # Return the coefficients
+        return n_coeffs
