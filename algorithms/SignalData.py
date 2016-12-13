@@ -110,7 +110,7 @@ class SignalData:
             elif f == 'fft':
                 tmp = self.get_fft(n_fft)
             elif f == 'dtc':
-                tmp = self.get_dtc(n_dtc)
+                tmp = self.get_dct(n_dct)
             else:
                 tmp = None
 
@@ -206,10 +206,10 @@ class SignalData:
         # Return real and imaginary parts
         return np.append(np.real(n_coeffs),np.imag(n_coeffs),axis=1)
 
-    def get_dtc(self,n_dtc):
+    def get_dct(self,n_dct):
         """
-        Renvoie les parties réelles et imaginaires des
-        n_fft plus grands coefficients de Fourier
+        Renvoie les n_dct plus grands coefficients de la transformée en 
+        cosinus discrète 
         """
         # Compute FFT coefficients (complex)
         coeffs = dct(self.data)
@@ -217,6 +217,6 @@ class SignalData:
         coeffs_sorted = coeffs.ravel()[np.argsort(-np.abs(coeffs)).ravel()] \
         .reshape(coeffs.shape)
         # n_fft largest coefficients
-        n_coeffs = coeffs_sorted[:,:n_dtc]
+        n_coeffs = coeffs_sorted[:,:n_dct]
         # Return the coefficients
         return n_coeffs
