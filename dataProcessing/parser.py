@@ -28,30 +28,45 @@ def arguments_parser():
 
 
 
-def txt_parser(file_name):
+def txt_parser(file_name, get_units=False):
     """
     Read file_name and parse the data
 
     :param file_name: string
         path to the file to parse
+    :param get_units=False: bool
+        if true, it returns an additional dictionary with the units of each
+        column
 
-    :out: pd.DataFrame
+    :out data: pd.DataFrame
         data in the text file
+    :out [units]: dict
+        units of each column
     """
+
+    sep = "	"
+    # Compute a dictionary with the units
+    with open(file_name) as ff:
+        for _ in range(8):
+            ff.readline()
+        names = ff.readline().split(sep)
+        units = ff.readline().split(sep)
+
     # Fist 5 lines are description of the flight
-    # Line 6 represent the aquisition channel ????
-    # Line 7 are the signals name
-    # Line 8 contains the units of each line
+    # Line 7 represent the aquisition channel ????
+    # Line 8 are the signals name
+    # Line 9 contains the units of each line
     # Line 10 gives aquisition time TO_CHECK!!!!
-    df = pd.read_csv(file_name, header=[7, 8], skiprows=[10], sep="	")
+    df = pd.read_csv(file_name, skiprows=11, names=names, sep=sep, engine="c")
 
-    # Sampling rate = 1, so to avoid computation get relative time using index
-    rtime = df.index # df["Time"].iloc[:, 0] - df["Time"].iloc[0, 0]
-    df["rTime"] = pd.DataFrame({"sec": rtime})
+    df = df[:-1]
+    # Compute relative time
+    df["rTime"] = df["Time"] - df["Time"][0]
 
-    # If -999999 is in the last row remove it
-    if -999999.0 in df.iloc[-1, :].data:
-        return df.iloc[:-1]
+    if get_units:
+        unit_dict = {name: units[pos] for pos, name in enumerate(names) }
+        return df, unit_dict
+    # Remove last line
     return df
 
 
@@ -65,4 +80,4 @@ Script to parse the data file
     args = arguments_parser()
     # Parse the data
     logging.info("Read: "+ args.txt_file+"\n")
-    data = txt_parser(args.txt_file)
+    data, units = txt_parser(args.txt_file, get_units=True)
