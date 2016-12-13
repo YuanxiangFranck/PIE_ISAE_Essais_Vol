@@ -73,11 +73,11 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     calib_air_speed = 'ADSP1 Calibrated Airspeed (knots)'
 
     # Extraction of relevant signals
-    wow_signal = data[wow].iloc[:,0]
-    altitude_signal = data[altitude].iloc[:,0]
-    cas_signal = data[calib_air_speed].iloc[:,0]
-    delta_cas_signal = data[calib_air_speed].iloc[:,0].rolling(center = False, window = 120).mean() -  data[calib_air_speed].iloc[:,0].rolling(center = False, window = 120).mean().shift(1)  
-    alt_rate_signal = data[altitude_rate].iloc[:,0].rolling(center = False, window = 120).mean()
+    wow_signal = data[wow]
+    altitude_signal = data[altitude]
+    cas_signal = data[calib_air_speed]
+    delta_cas_signal = data[calib_air_speed].rolling(center = False, window = 120).mean() -  data[calib_air_speed].rolling(center = False, window = 120).mean().shift(1)
+    alt_rate_signal = data[altitude_rate].rolling(center = False, window = 120).mean()
     on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
     intervals = dict()
     if otg:
