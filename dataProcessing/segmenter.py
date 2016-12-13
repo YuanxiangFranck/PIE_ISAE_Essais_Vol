@@ -76,7 +76,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     wow_signal = data[wow].iloc[:,0]
     altitude_signal = data[altitude].iloc[:,0]
     cas_signal = data[calib_air_speed].iloc[:,0]
-    delta_cas_signal = data[calib_air_speed].iloc[:,0].rolling(center = False, window = 30).mean() - data[calib_air_speed].iloc[:,0].rolling(center = False, window = 30).mean().shift(periods=5)
+    delta_cas_signal = data[calib_air_speed].iloc[:,0].rolling(center = False, window = 120).mean() -  data[calib_air_speed].iloc[:,0].rolling(center = False, window = 120).mean().shift(1)  
     alt_rate_signal = data[altitude_rate].iloc[:,0].rolling(center = False, window = 120).mean()
     on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
     intervals = dict()
@@ -84,10 +84,10 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         times = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)].Time.values.flatten().tolist()
         intervals['otg'] = cut(times)
     if take_off: # Ajouter CAS croissante
-        times = data.loc[(~on_the_ground) & (cas_signal > 80) & (delta_cas_signal > 0) & (altitude_signal < 6000)].Time.values.flatten().tolist()
+        times = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000)].Time.values.flatten().tolist()
         intervals['take_off'] = cut(times)
     if landing:
-        times = data.loc[(~on_the_ground) & (cas_signal < 150) & (delta_cas_signal < 0) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0)].Time.values.flatten().tolist()
+        times = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0)].Time.values.flatten().tolist()
         intervals['landing'] = cut(times)
     if climb:
         times = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500)].Time.values.flatten().tolist()
