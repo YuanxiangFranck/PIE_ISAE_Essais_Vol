@@ -50,6 +50,7 @@ class Plotter:
         self.nb_plots = 0
         self.segments_color = {'climb': "r", 'cruise': "b",
                                'descent': 'g', 'hold': "c",
+                               'landing': 'm',
                                'otg': 'y', 'take_off': 'k'}
 
 
@@ -84,7 +85,7 @@ class Plotter:
             # If not segments skip this phase
             if len(segments) == 0:
                 continue
-            segment_color = self.segments_color[segment_name]
+            segment_color = self.segments_color.get(segment_name, 'k')
             for start, end in segments:
                 plt.axvline(x=start, color=segment_color, linestyle="dashed")
                 plt.text(start, ymax, segment_name, verticalalignment="top",
