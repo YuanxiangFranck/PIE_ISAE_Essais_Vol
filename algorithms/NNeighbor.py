@@ -14,7 +14,7 @@ def NearestNeighbor(x, k, l, binary=False):
     res = False
     stockDist = np.asarray([inf]*n)
     if k>n or l>n:
-        Print("It is not possible to find the l biggest with the neighbors method with x smaller than l")
+        print("It is not possible to find the l biggest with the neighbors method with x smaller than l")
     else :
         for i in range(n):
             distance = [inf]*n
