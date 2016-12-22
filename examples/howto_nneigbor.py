@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Nov  9 15:34:24 2016
+Created on Wed Nov  23 2016
 
-@author: Florent
+@author: Remy
 
-Template pour charger un signal
+Template pour trier le signal
 """
 
 #%%
@@ -12,6 +12,7 @@ Template pour charger un signal
 import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
+import algorithms.NNeighbor as NN 
 
 
 #%%
@@ -44,9 +45,12 @@ signal = data[signal_name].iloc[:,0] # on prend toutes les lignes de la 1e colon
 unit = data[signal_name].columns[0]
 #ex : 'DGC' pour des degrés Celsius
 
+#res = NN.NearestNeighbor(signal,20,10)
+
 print (signal)
 """
 Have fun!
 Vous pouvez maintenant appliquer tous les algos que vous voulez
 sur la série temporelle 'signal' !
 """
+                                                                                                                                                                                                                                                                                               
