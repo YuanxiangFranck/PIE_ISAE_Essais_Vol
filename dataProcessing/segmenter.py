@@ -4,25 +4,15 @@ Created on Sat Nov  12 13:25:24 2016
 
 @author: Quentin
 
-Outil pour segmenter les vols
+Tool to create flight segmentation
+
+TODO : regarder les recouvrements
 """
-#TO DO : poids associé à chaque segment, regarder la couverture, filtre sur la Vza (1 minute), regarder aussi si on est sur HP/IHP
-#%%
+
 
 import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
-
-
-#%%
-
-# Chemin relatif vers le fichier txt de données
-data_path = ''
-# ex : '../../E190-E2_20001_0085_29472_53398-20161004T185141Z/E190-E2_20001_0085_29472_53398/20001_0085_29472_53398_request.txt'
-# pour le vol FT53398
-
-# data contient un DataFrame pandas
-data = txt_parser(data_path)
 
 def cut(time_list):
     """
@@ -45,55 +35,62 @@ def cut(time_list):
     dates.append((jumps[-1][1],time_list[-1])) # Last segment
     return dates
 
-def segment(data, otg=True, take_off=True, climb=True, hold=True, cruise=True, descent=True):
+def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, cruise=True, descent=True):
     """
     Extract flight segments from a dataframe
 
     :param data: pd.DataFrame
         flight data
-    
+
     :param otg: boolean
         True to get otg segments
-    
+
     :param take_off: boolean
         True to get take_off segments
-    
+
+    :param landing: boolean
+        True to get landing segments
+
     :param climb: boolean
         True to get climb segments
-        
+
     :param hold: boolean
         True to get hold segments
-    
+
     :param cruise: boolean
         True to get cruise segments
-        
+
     :param descent: boolean
         True to get descent segments
-        
+
     :out: dict
-        keys represent names of segments and values are lists of tuples(time start,time end)
+        keys represent names of segments and values are lists of tuples (time start,time end)
     """
     # Relevant signal names
     wow = 'WOW_FBK_AMSC1_CHA'
     altitude = 'ADSP1 Pressure Altitude (feet)'
     altitude_rate = 'ADSP1 Altitude Rate (ft/min)'
     calib_air_speed = 'ADSP1 Calibrated Airspeed (knots)'
-    
+
     # Extraction of relevant signals
-    wow_signal = data[wow].iloc[:,0]
-    altitude_signal = data[altitude].iloc[:,0]
-    cas_signal = data[calib_air_speed].iloc[:,0]
-    alt_rate_signal = data[altitude_rate].iloc[:,0].rolling(center = False, window = 60).mean()
+    wow_signal = data[wow]
+    altitude_signal = data[altitude]
+    cas_signal = data[calib_air_speed]
+    delta_cas_signal = data[calib_air_speed].rolling(center = False, window = 120).mean() -  data[calib_air_speed].rolling(center = False, window = 120).mean().shift(1)
+    alt_rate_signal = data[altitude_rate].rolling(center = False, window = 120).mean()
     on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
     intervals = dict()
     if otg:
         times = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)].Time.values.flatten().tolist()
         intervals['otg'] = cut(times)
-    if take_off:
-        times = data.loc[(~on_the_ground) & (altitude_signal < 6000)].Time.values.flatten().tolist()
+    if take_off: # Ajouter CAS croissante
+        times = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000)].Time.values.flatten().tolist()
         intervals['take_off'] = cut(times)
+    if landing:
+        times = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0)].Time.values.flatten().tolist()
+        intervals['landing'] = cut(times)
     if climb:
-        times = data.loc[(~on_the_ground) & (altitude_signal >6000) & (alt_rate_signal > 500)].Time.values.flatten().tolist()
+        times = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500)].Time.values.flatten().tolist()
         intervals['climb'] = cut(times)
     if hold:
         times = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
@@ -105,3 +102,40 @@ def segment(data, otg=True, take_off=True, climb=True, hold=True, cruise=True, d
         times = data.loc[(~on_the_ground) & (alt_rate_signal < -500)].Time.values.flatten().tolist()
         intervals['descent'] = cut(times)
     return intervals
+
+def get_weights(segments_dict, data):
+    """
+    Compute the duration of each segment divided by the duration of the flight
+
+    :param segments_dict: dict
+        Dictionnary containing flight segments, keys represent names of segments, values are lists of tuples (time start,time end)
+
+    :param data: pd.DataFrame
+        flight data
+
+    :out: dict
+        keys represent names of segments, values are float representing the time spent in this segment divided by the total duration of the flight
+    """
+    weights = dict()
+    total_duration = data.Time.iloc[-1,0] - data.Time.iloc[0,0]
+    for segment in segments_dict.keys():
+        weights[segment] = 0
+        for time_values in segments_dict[segment]:
+            weights[segment] += time_values[1] - time_values[0]
+    return {k: v / total_duration for k, v in weights.items()}
+
+if __name__ == "__main__":
+
+    # Chemin relatif vers le fichier txt de données
+    data_path = '../../Desktop/Articles Liebherr/pie_data/data2.txt'
+
+    # data contient un DataFrame pandas
+    data = txt_parser(data_path)
+
+    seg = segment(data)
+    weights= get_weights(seg,data)
+    for key in seg.keys():
+        print('Poids du segment {} : {}'.format(key,weights[key]))
+        print('Segment {}'.format(key))
+        print(seg[key])
+        print('#########')
