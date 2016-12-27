@@ -1,4 +1,4 @@
 __pycache__/
 *.pyc
-documentation/build/
-documentation/_modules/
+docs/build/
+docs/_modules/
