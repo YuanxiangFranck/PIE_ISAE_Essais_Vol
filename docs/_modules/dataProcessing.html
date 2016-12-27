@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dataProcessing package &#8212; pie sxs 2 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="examples package" href="examples.html" />
+    <link rel="prev" title="algorithms package" href="algorithms.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="dataprocessing-package">
+<h1>dataProcessing package<a class="headerlink" href="#dataprocessing-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-dataProcessing.parser">
+<span id="dataprocessing-parser-module"></span><h2>dataProcessing.parser module<a class="headerlink" href="#module-dataProcessing.parser" title="Permalink to this headline">¶</a></h2>
+<p>Script to parse the data file</p>
+<dl class="function">
+<dt id="dataProcessing.parser.arguments_parser">
+<code class="descclassname">dataProcessing.parser.</code><code class="descname">arguments_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#arguments_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.arguments_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the arguments</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dataProcessing.parser.txt_parser">
+<code class="descclassname">dataProcessing.parser.</code><code class="descname">txt_parser</code><span class="sig-paren">(</span><em>file_name</em>, <em>get_units=False</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#txt_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.txt_parser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read file_name and parse the data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>file_name</strong> &#8211; string
+path to the file to parse</li>
+<li><strong>get_units=False</strong> &#8211; bool
+if true, it returns an additional dictionary with the units of each
+column</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Out data:</th><td class="field-body"><p class="first">pd.DataFrame
+data in the text file</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Out [units]:</th><td class="field-body"><p class="first last">dict
+units of each column</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dataProcessing.plotter">
+<span id="dataprocessing-plotter-module"></span><h2>dataProcessing.plotter module<a class="headerlink" href="#module-dataProcessing.plotter" title="Permalink to this headline">¶</a></h2>
+<p>Script to plot data</p>
+<dl class="class">
+<dt id="dataProcessing.plotter.Plotter">
+<em class="property">class </em><code class="descclassname">dataProcessing.plotter.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>input_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Class to plot data from a txt file</p>
+<dl class="method">
+<dt id="dataProcessing.plotter.Plotter.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a list of signals</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>signals</strong> &#8211; list
+List of signal name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dataProcessing.plotter.Plotter.plot_data">
+<code class="descname">plot_data</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2='Time'</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot one data over a second data in a scatter cloud</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>signal1</strong> &#8211; str
+name of the signal to plot</li>
+<li><strong></strong><strong>[</strong><strong>signal2='Time'</strong><strong>]</strong><strong></strong> &#8211; str
+if given it plot signal1 over signal2</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dataProcessing.plotter.Plotter.set_data">
+<code class="descname">set_data</code><span class="sig-paren">(</span><em>data</em>, <em>units=False</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set data of the plotter</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="dataProcessing.plotter.arguments_parser">
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">arguments_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#arguments_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.arguments_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-dataProcessing.segmenter">
+<span id="dataprocessing-segmenter-module"></span><h2>dataProcessing.segmenter module<a class="headerlink" href="#module-dataProcessing.segmenter" title="Permalink to this headline">¶</a></h2>
+<p>Created on Sat Nov  12 13:25:24 2016</p>
+<p>&#64;author: Quentin</p>
+<p>Tool to create flight segmentation</p>
+<p>TODO : regarder les recouvrements</p>
+<dl class="function">
+<dt id="dataProcessing.segmenter.cut">
+<code class="descclassname">dataProcessing.segmenter.</code><code class="descname">cut</code><span class="sig-paren">(</span><em>time_list</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/segmenter.html#cut"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.segmenter.cut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of tuples (time start,time end) from a list of discontinuous time values</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dataProcessing.segmenter.get_weights">
+<code class="descclassname">dataProcessing.segmenter.</code><code class="descname">get_weights</code><span class="sig-paren">(</span><em>segments_dict</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/segmenter.html#get_weights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.segmenter.get_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the duration of each segment divided by the duration of the flight</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>segments_dict</strong> &#8211; dict
+Dictionnary containing flight segments, keys represent names of segments, values are lists of tuples (time start,time end)</li>
+<li><strong>data</strong> &#8211; pd.DataFrame
+flight data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Out:</th><td class="field-body"><p class="first last">dict
+keys represent names of segments, values are float representing the time spent in this segment divided by the total duration of the flight</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dataProcessing.segmenter.segment">
+<code class="descclassname">dataProcessing.segmenter.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>data</em>, <em>otg=True</em>, <em>take_off=True</em>, <em>landing=True</em>, <em>climb=True</em>, <em>hold=True</em>, <em>cruise=True</em>, <em>descent=True</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/segmenter.html#segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.segmenter.segment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract flight segments from a dataframe</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> &#8211; pd.DataFrame
+flight data</li>
+<li><strong>otg</strong> &#8211; boolean
+True to get otg segments</li>
+<li><strong>take_off</strong> &#8211; boolean
+True to get take_off segments</li>
+<li><strong>landing</strong> &#8211; boolean
+True to get landing segments</li>
+<li><strong>climb</strong> &#8211; boolean
+True to get climb segments</li>
+<li><strong>hold</strong> &#8211; boolean
+True to get hold segments</li>
+<li><strong>cruise</strong> &#8211; boolean
+True to get cruise segments</li>
+<li><strong>descent</strong> &#8211; boolean
+True to get descent segments</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Out:</th><td class="field-body"><p class="first last">dict
+keys represent names of segments and values are lists of tuples (time start,time end)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-dataProcessing">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-dataProcessing" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">dataProcessing package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-dataProcessing.parser">dataProcessing.parser module</a></li>
+<li><a class="reference internal" href="#module-dataProcessing.plotter">dataProcessing.plotter module</a></li>
+<li><a class="reference internal" href="#module-dataProcessing.segmenter">dataProcessing.segmenter module</a></li>
+<li><a class="reference internal" href="#module-dataProcessing">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">code</a><ul>
+      <li>Previous: <a href="algorithms.html" title="previous chapter">algorithms package</a></li>
+      <li>Next: <a href="examples.html" title="next chapter">examples package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/_modules/dataProcessing.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, franck wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/_modules/dataProcessing.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

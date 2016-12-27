@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>algorithms package &#8212; pie sxs 2 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="dataProcessing package" href="dataProcessing.html" />
+    <link rel="prev" title="code" href="modules.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="algorithms-package">
+<h1>algorithms package<a class="headerlink" href="#algorithms-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-algorithms.NNeighbor">
+<span id="algorithms-nneighbor-module"></span><h2>algorithms.NNeighbor module<a class="headerlink" href="#module-algorithms.NNeighbor" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="algorithms.NNeighbor.NearestNeighbor">
+<code class="descclassname">algorithms.NNeighbor.</code><code class="descname">NearestNeighbor</code><span class="sig-paren">(</span><em>x</em>, <em>k</em>, <em>l</em>, <em>binary=False</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/NNeighbor.html#NearestNeighbor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.NNeighbor.NearestNeighbor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the l worst point of x considering the mean of the distances between the k nearest neighbors.
+l : int
+x : list of points
+k : int
+binary : boolean</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.NNeighbor.lBigger">
+<code class="descclassname">algorithms.NNeighbor.</code><code class="descname">lBigger</code><span class="sig-paren">(</span><em>x</em>, <em>l</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/NNeighbor.html#lBigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.NNeighbor.lBigger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indice of the l higher values in x</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.NNeighbor.lower">
+<code class="descclassname">algorithms.NNeighbor.</code><code class="descname">lower</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/NNeighbor.html#lower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.NNeighbor.lower" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the indice of the lower value in x</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-algorithms.SignalData">
+<span id="algorithms-signaldata-module"></span><h2>algorithms.SignalData module<a class="headerlink" href="#module-algorithms.SignalData" title="Permalink to this headline">¶</a></h2>
+<p>Created on Sat Nov 12 18:59:48 2016</p>
+<p>&#64;author: Florent</p>
+<p>Main class for manipulating signal data and extracting features</p>
+<p>data : whole signals or signal subsequences (only with 1 signal)
+X    : features matrix</p>
+<dl class="class">
+<dt id="algorithms.SignalData.SignalData">
+<em class="property">class </em><code class="descclassname">algorithms.SignalData.</code><code class="descname">SignalData</code><span class="sig-paren">(</span><em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.clearAll">
+<code class="descname">clearAll</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.clearAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.clearAll" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.clearFeatures">
+<code class="descname">clearFeatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.clearFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.clearFeatures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.extractFeatures">
+<code class="descname">extractFeatures</code><span class="sig-paren">(</span><em>feature_names</em>, <em>n_fft=10</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.extractFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.extractFeatures" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extrait les features de la liste donnée en argument
+et les ajoute à la matrice X
+feature_names : list of strings
+n_fft (optional) : number of Fourier coefficients</p>
+<p>available features :
+mean, var, std, min, max, amplitude, covariance,
+binary_transitions, fft, dtc (discrete cosine transform)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_amplitude">
+<code class="descname">get_amplitude</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_amplitude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_amplitude" title="Permalink to this definition">¶</a></dt>
+<dd><p>Amplitude du signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_covariance">
+<code class="descname">get_covariance</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_covariance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_covariance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Matrice de covariance des signaux</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_dct">
+<code class="descname">get_dct</code><span class="sig-paren">(</span><em>n_dct</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_dct"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_dct" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renvoie les n_dct plus grands coefficients de la transformée en 
+cosinus discrète</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_fft">
+<code class="descname">get_fft</code><span class="sig-paren">(</span><em>n_fft</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_fft"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_fft" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renvoie les parties réelles et imaginaires des
+n_fft plus grands coefficients de Fourier</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_max">
+<code class="descname">get_max</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_max"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum du signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_mean">
+<code class="descname">get_mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_mean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moyenne du signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_min">
+<code class="descname">get_min</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_min"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum du signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_nb_transitions">
+<code class="descname">get_nb_transitions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_nb_transitions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_nb_transitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nombres de transitions du signal binaire</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_std">
+<code class="descname">get_std</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_std"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_std" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ecart-type du signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.get_var">
+<code class="descname">get_var</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.get_var"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.get_var" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variance du signal</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.is_binary">
+<code class="descname">is_binary</code><span class="sig-paren">(</span><em>signal</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.is_binary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.is_binary" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.load">
+<code class="descname">load</code><span class="sig-paren">(</span><em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.load" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.normalizeFeatures">
+<code class="descname">normalizeFeatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.normalizeFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.normalizeFeatures" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.setSegmentation">
+<code class="descname">setSegmentation</code><span class="sig-paren">(</span><em>w</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.setSegmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.setSegmentation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segmentation du signal avec fenêtre de taille fixe.
+w : window size</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.setSlidingWindow">
+<code class="descname">setSlidingWindow</code><span class="sig-paren">(</span><em>w</em>, <em>step</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.setSlidingWindow"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.setSlidingWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Segmentation du signal avec sliding window.
+w : window size
+step : step size</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.useWholeTimeseries">
+<code class="descname">useWholeTimeseries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.useWholeTimeseries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.useWholeTimeseries" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utilisation des valeurs brutes des signaux à chaque pas de temps
+en tant que features.
+Attention : si le signal est long, cela génère trop de features
+pour certains algorithmes !</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-algorithms.Symmetry">
+<span id="algorithms-symmetry-module"></span><h2>algorithms.Symmetry module<a class="headerlink" href="#module-algorithms.Symmetry" title="Permalink to this headline">¶</a></h2>
+<p>Created on Tue Dec 20 15:51:39 2016</p>
+<p>&#64;author: Matthieu</p>
+<dl class="function">
+<dt id="algorithms.Symmetry.SymmetryTest">
+<code class="descclassname">algorithms.Symmetry.</code><code class="descname">SymmetryTest</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2</em>, <em>error</em>, <em>comment='ok'</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#SymmetryTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.SymmetryTest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs :</p>
+<ul class="simple">
+<li>signal1, signal2 : two signals of the class SignalData to compare</li>
+</ul>
+<p>(generally signal1 -&gt; &#8221;...CHA&#8221;, and signal2 -&gt; &#8221;...CHB&#8221;  )</p>
+<ul class="simple">
+<li>error : the result will be False if there is at least one value which is</li>
+</ul>
+<p>out of the relative error box</p>
+<ul class="simple">
+<li>[comment] : otpional, a string, if equals &#8216;none&#8217; then don&#8217;t print any result,</li>
+</ul>
+<p>prints the result if nothing is specified</p>
+<p>Output :</p>
+<ul class="simple">
+<li>Result : an array, wich first value is boolean, indicates if the two imput</li>
+</ul>
+<p>signals are the same (according to the accepted error)
+the next values are the index of the signal.data where the differences where found</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.Symmetry.Symmetry_One_Flight">
+<code class="descclassname">algorithms.Symmetry.</code><code class="descname">Symmetry_One_Flight</code><span class="sig-paren">(</span><em>flight</em>, <em>error</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#Symmetry_One_Flight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.Symmetry_One_Flight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the symmetry problems in a flight by comparing both channels A 
+and B for each measure of a flight.</p>
+<p>Inputs :</p>
+<ul class="simple">
+<li>flight : must have been parsed by txt_parser. Contains all the signals</li>
+</ul>
+<p>of one flight</p>
+<ul class="simple">
+<li>error : relative error accepted for the detection of anomalies between</li>
+</ul>
+<p>two signals which should have been equal</p>
+<p>Output :</p>
+<ul class="simple">
+<li>result_anomaly : Contains the names of the supposed equal signals wich are</li>
+</ul>
+<p>actually different. Contains as well the indexes where the differences were 
+found
+The names are in result_anomaly[2*i] and the indexes in result_anomaly[2*i+1]
+with i &lt;= 0</p>
+</dd></dl>
+
+</div>
+<div class="section" id="algorithms-n-flights-module">
+<h2>algorithms.n_flights module<a class="headerlink" href="#algorithms-n-flights-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-algorithms">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-algorithms" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">algorithms package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-algorithms.NNeighbor">algorithms.NNeighbor module</a></li>
+<li><a class="reference internal" href="#module-algorithms.SignalData">algorithms.SignalData module</a></li>
+<li><a class="reference internal" href="#module-algorithms.Symmetry">algorithms.Symmetry module</a></li>
+<li><a class="reference internal" href="#algorithms-n-flights-module">algorithms.n_flights module</a></li>
+<li><a class="reference internal" href="#module-algorithms">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="modules.html">code</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">code</a></li>
+      <li>Next: <a href="dataProcessing.html" title="next chapter">dataProcessing package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/_modules/algorithms.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, franck wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/_modules/algorithms.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

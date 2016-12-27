@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dataProcessing.segmenter &#8212; pie sxs 2 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for dataProcessing.segmenter</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Sat Nov  12 13:25:24 2016</span>
+
+<span class="sd">@author: Quentin</span>
+
+<span class="sd">Tool to create flight segmentation</span>
+
+<span class="sd">TODO : regarder les recouvrements</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
+<span class="kn">from</span> <span class="nn">dataProcessing.parser</span> <span class="k">import</span> <span class="n">txt_parser</span>
+
+<div class="viewcode-block" id="cut"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.segmenter.cut">[docs]</a><span class="k">def</span> <span class="nf">cut</span><span class="p">(</span><span class="n">time_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a list of tuples (time start,time end) from a list of discontinuous time values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">time_list</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[]</span>
+    <span class="n">jumps</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">time_list</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">time_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">jumps</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">time_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">time_list</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">jumps</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">time_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">time_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span> <span class="c1"># if time values are continuous, start time = first time, end time = last time</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">jumps</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="n">time_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">jumps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]),(</span><span class="n">jumps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">time_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span> <span class="c1"># If there is one single jump, one segment before the jump, one                                                                        segment after</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">time_list</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">jumps</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span> <span class="c1"># First segment</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">jumps</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">jumps</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">jumps</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span> <span class="c1"># Intermediate segments</span>
+    <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">jumps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">time_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span> <span class="c1"># Last segment</span>
+    <span class="k">return</span> <span class="n">dates</span></div>
+
+<div class="viewcode-block" id="segment"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.segmenter.segment">[docs]</a><span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">otg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">take_off</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">landing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">climb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cruise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">descent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract flight segments from a dataframe</span>
+
+<span class="sd">    :param data: pd.DataFrame</span>
+<span class="sd">        flight data</span>
+
+<span class="sd">    :param otg: boolean</span>
+<span class="sd">        True to get otg segments</span>
+
+<span class="sd">    :param take_off: boolean</span>
+<span class="sd">        True to get take_off segments</span>
+
+<span class="sd">    :param landing: boolean</span>
+<span class="sd">        True to get landing segments</span>
+
+<span class="sd">    :param climb: boolean</span>
+<span class="sd">        True to get climb segments</span>
+
+<span class="sd">    :param hold: boolean</span>
+<span class="sd">        True to get hold segments</span>
+
+<span class="sd">    :param cruise: boolean</span>
+<span class="sd">        True to get cruise segments</span>
+
+<span class="sd">    :param descent: boolean</span>
+<span class="sd">        True to get descent segments</span>
+
+<span class="sd">    :out: dict</span>
+<span class="sd">        keys represent names of segments and values are lists of tuples (time start,time end)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Relevant signal names</span>
+    <span class="n">wow</span> <span class="o">=</span> <span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span>
+    <span class="n">altitude</span> <span class="o">=</span> <span class="s1">&#39;ADSP1 Pressure Altitude (feet)&#39;</span>
+    <span class="n">altitude_rate</span> <span class="o">=</span> <span class="s1">&#39;ADSP1 Altitude Rate (ft/min)&#39;</span>
+    <span class="n">calib_air_speed</span> <span class="o">=</span> <span class="s1">&#39;ADSP1 Calibrated Airspeed (knots)&#39;</span>
+
+    <span class="c1"># Extraction of relevant signals</span>
+    <span class="n">wow_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">wow</span><span class="p">]</span>
+    <span class="n">altitude_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">altitude</span><span class="p">]</span>
+    <span class="n">cas_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">calib_air_speed</span><span class="p">]</span>
+    <span class="n">delta_cas_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">calib_air_speed</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">center</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">window</span> <span class="o">=</span> <span class="mi">120</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">-</span>  <span class="n">data</span><span class="p">[</span><span class="n">calib_air_speed</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">center</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">window</span> <span class="o">=</span> <span class="mi">120</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">shift</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">alt_rate_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">altitude_rate</span><span class="p">]</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">center</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">window</span> <span class="o">=</span> <span class="mi">120</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">on_the_ground</span> <span class="o">=</span> <span class="p">(</span><span class="n">wow_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">cas_signal</span> <span class="o">&lt;</span> <span class="mi">80</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&lt;</span> <span class="mi">15000</span><span class="p">)</span>
+    <span class="n">intervals</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">otg</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">wow_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">cas_signal</span> <span class="o">&lt;</span> <span class="mi">80</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&lt;</span> <span class="mi">15000</span><span class="p">)]</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;otg&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cut</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">take_off</span><span class="p">:</span> <span class="c1"># Ajouter CAS croissante</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">cas_signal</span> <span class="o">&gt;</span> <span class="mi">80</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">delta_cas_signal</span> <span class="o">&gt;</span> <span class="mf">0.3</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&lt;</span> <span class="mi">6000</span><span class="p">)]</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;take_off&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cut</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">landing</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">cas_signal</span> <span class="o">&lt;</span> <span class="mi">150</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">delta_cas_signal</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mf">0.3</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&lt;</span> <span class="mi">6000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">500</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)]</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;landing&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cut</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">climb</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="o">~</span><span class="n">on_the_ground</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&gt;</span> <span class="mi">6000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&gt;</span> <span class="mi">500</span><span class="p">)]</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;climb&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cut</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">hold</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="o">~</span><span class="n">on_the_ground</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&gt;</span> <span class="mi">6000</span><span class="p">)</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&lt;</span> <span class="mi">25000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">500</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&lt;</span> <span class="mi">500</span><span class="p">)]</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;hold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cut</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cruise</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="o">~</span><span class="n">on_the_ground</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">altitude_signal</span> <span class="o">&gt;</span> <span class="mi">25000</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">500</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&lt;</span> <span class="mi">500</span><span class="p">)]</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;cruise&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cut</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">descent</span><span class="p">:</span>
+        <span class="n">times</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="o">~</span><span class="n">on_the_ground</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">alt_rate_signal</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">500</span><span class="p">)]</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;descent&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cut</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">intervals</span></div>
+
+<div class="viewcode-block" id="get_weights"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.segmenter.get_weights">[docs]</a><span class="k">def</span> <span class="nf">get_weights</span><span class="p">(</span><span class="n">segments_dict</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the duration of each segment divided by the duration of the flight</span>
+
+<span class="sd">    :param segments_dict: dict</span>
+<span class="sd">        Dictionnary containing flight segments, keys represent names of segments, values are lists of tuples (time start,time end)</span>
+
+<span class="sd">    :param data: pd.DataFrame</span>
+<span class="sd">        flight data</span>
+
+<span class="sd">    :out: dict</span>
+<span class="sd">        keys represent names of segments, values are float representing the time spent in this segment divided by the total duration of the flight</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">total_duration</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segments_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">weights</span><span class="p">[</span><span class="n">segment</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">time_values</span> <span class="ow">in</span> <span class="n">segments_dict</span><span class="p">[</span><span class="n">segment</span><span class="p">]:</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">segment</span><span class="p">]</span> <span class="o">+=</span> <span class="n">time_values</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">time_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="o">/</span> <span class="n">total_duration</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">weights</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+
+    <span class="c1"># Chemin relatif vers le fichier txt de données</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;../../Desktop/Articles Liebherr/pie_data/data2.txt&#39;</span>
+
+    <span class="c1"># data contient un DataFrame pandas</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">txt_parser</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
+    <span class="n">seg</span> <span class="o">=</span> <span class="n">segment</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">weights</span><span class="o">=</span> <span class="n">get_weights</span><span class="p">(</span><span class="n">seg</span><span class="p">,</span><span class="n">data</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">seg</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Poids du segment </span><span class="si">{}</span><span class="s1"> : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">weights</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Segment </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">seg</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;#########&#39;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, franck wang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
