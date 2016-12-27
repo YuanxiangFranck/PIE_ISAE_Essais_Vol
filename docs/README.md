@@ -14,10 +14,12 @@ make html
 
 make html only run the following lines:
 ```shell
-sphinx-apidoc -f -o _modules/ .. #1
-sphinx-build -b html -d build/doctrees   . build/html #2
-
+sphinx-apidoc -f -o _modules/ ..
+sphinx-build -b html -d build/doctrees   . build/html
+cp -r build/html/*.html build/html/_static
 ```
-The first line (#1) is going to create the skeleton of the doc withing some .rst files (in _models)
+The first line is going to create the skeleton of the doc withing some .rst files (in _models)
 
-The second line (#1) is going to read the code and build the html
+The second line is going to read the code and build the html
+
+The last line is to copy the html / css / js files to the /docs folder in order to let github gh-pages find it
