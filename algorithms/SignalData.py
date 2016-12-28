@@ -13,7 +13,9 @@ X    : features matrix
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize
-import signal_data_features
+
+from algorithms import signal_data_features
+from dataProcessing.segmenter import segment as flight_segmenter
 
 class SignalData:
 
@@ -25,19 +27,32 @@ class SignalData:
         """
         # Chargement des données et conversion en array numpy
         self.data  = signals.copy()
+        self._raw_data = signals.copy()
         self.X = None
         self.sl_window = sl_window
+        self.flight_segemnts = None
 
     def load(self, signals):
         self.__init__(signals)
 
+    def reset_data(self):
+        """
+        Clear computed data and recover
+        flight segments are kept
+        """
+        self.data = self._raw_data.copy()
+        self.clearFeatures()
+
     def clearFeatures(self):
         self.X = None
+        self.sl_window = None
 
     def clearAll(self):
+        "Clear all attributes"
+        self.clearFeatures()
         self.data = None
-        self.X = None
-        self.sl_window = None
+        self._raw_data = None
+        self.flight_segemnts = None
 
     """
     Signal manipulation
@@ -49,6 +64,29 @@ class SignalData:
         """
         self.sl_window = w
 
+    def compute_flight_segmentation(self):
+        "Compute flight segmentation and set current data to "
+        self.flight_segemnts = flight_segmenter(self.data)
+        # filtering is adding new columns
+        self._raw_data = self.data.copy()
+
+    def apply_flight_segmentation(self, segment):
+        "Restrict data to a segmet of the flight segment"
+        # Compute flight segmentation if it's not done
+        if self.flight_segemnts is None:
+            self.compute_flight_segmentation()
+        # Check if the given segment is valid
+        if segment not in self.flight_segemnts:
+            raise Exception('Segement name not valide {} in {}'
+                            .format(segment, self.flight_segemnts))
+        # don't do anything if no segments
+        if not len(self.flight_segemnts[segment]):
+            print("Warning No segment found ")
+        # Get all index in which the time is within a segment
+        idx = np.zeros(self.data.index.size).astype(bool)
+        for start, end in self.flight_segemnts[segment]:
+            idx = idx | ((start < self.data.Time)&(self.data.Time < end))
+        self.data = self.data[idx]
     """
     Feature extraction
     """
