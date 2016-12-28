@@ -56,6 +56,7 @@
  | <a href="#L"><strong>L</strong></a>
  | <a href="#N"><strong>N</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
@@ -66,13 +67,19 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_modules/algorithms.html#module-algorithms">algorithms (module)</a>
 </li>
+      <li><a href="_modules/algorithms.html#module-algorithms.n_flights_2">algorithms.n_flights_2 (module)</a>
+</li>
       <li><a href="_modules/algorithms.html#module-algorithms.NNeighbor">algorithms.NNeighbor (module)</a>
 </li>
-      <li><a href="_modules/algorithms.html#module-algorithms.SignalData">algorithms.SignalData (module)</a>
+      <li><a href="_modules/algorithms.html#module-algorithms.signal_data_features">algorithms.signal_data_features (module)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_modules/algorithms.html#module-algorithms.SignalData">algorithms.SignalData (module)</a>
+</li>
       <li><a href="_modules/algorithms.html#module-algorithms.Symmetry">algorithms.Symmetry (module)</a>
+</li>
+      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.apply_flight_segmentation">apply_flight_segmentation() (algorithms.SignalData.SignalData method)</a>
 </li>
       <li><a href="_modules/dataProcessing.html#dataProcessing.parser.arguments_parser">arguments_parser() (in module dataProcessing.parser)</a>
 
@@ -88,9 +95,13 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.clearAll">clearAll() (algorithms.SignalData.SignalData method)</a>
 </li>
+      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.clearFeatures">clearFeatures() (algorithms.SignalData.SignalData method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.clearFeatures">clearFeatures() (algorithms.SignalData.SignalData method)</a>
+      <li><a href="_modules/algorithms.html#algorithms.n_flights_2.compute_data">compute_data() (in module algorithms.n_flights_2)</a>
+</li>
+      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.compute_flight_segmentation">compute_flight_segmentation() (algorithms.SignalData.SignalData method)</a>
 </li>
       <li><a href="_modules/dataProcessing.html#dataProcessing.segmenter.cut">cut() (in module dataProcessing.segmenter)</a>
 </li>
@@ -130,27 +141,15 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_amplitude">get_amplitude() (algorithms.SignalData.SignalData method)</a>
+      <li><a href="_modules/algorithms.html#algorithms.signal_data_features.get_amplitude">get_amplitude() (in module algorithms.signal_data_features)</a>
 </li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_covariance">get_covariance() (algorithms.SignalData.SignalData method)</a>
-</li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_dct">get_dct() (algorithms.SignalData.SignalData method)</a>
-</li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_fft">get_fft() (algorithms.SignalData.SignalData method)</a>
-</li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_max">get_max() (algorithms.SignalData.SignalData method)</a>
+      <li><a href="_modules/algorithms.html#algorithms.signal_data_features.get_dct">get_dct() (in module algorithms.signal_data_features)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_mean">get_mean() (algorithms.SignalData.SignalData method)</a>
+      <li><a href="_modules/algorithms.html#algorithms.signal_data_features.get_fft">get_fft() (in module algorithms.signal_data_features)</a>
 </li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_min">get_min() (algorithms.SignalData.SignalData method)</a>
-</li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_nb_transitions">get_nb_transitions() (algorithms.SignalData.SignalData method)</a>
-</li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_std">get_std() (algorithms.SignalData.SignalData method)</a>
-</li>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.get_var">get_var() (algorithms.SignalData.SignalData method)</a>
+      <li><a href="_modules/algorithms.html#algorithms.signal_data_features.get_nb_transitions">get_nb_transitions() (in module algorithms.signal_data_features)</a>
 </li>
       <li><a href="_modules/dataProcessing.html#dataProcessing.segmenter.get_weights">get_weights() (in module dataProcessing.segmenter)</a>
 </li>
@@ -160,7 +159,7 @@
 <h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.is_binary">is_binary() (algorithms.SignalData.SignalData method)</a>
+      <li><a href="_modules/algorithms.html#algorithms.n_flights_2.init_data">init_data() (in module algorithms.n_flights_2)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -195,12 +194,24 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_modules/dataProcessing.html#dataProcessing.plotter.Plotter.plot">plot() (dataProcessing.plotter.Plotter method)</a>
+
+      <ul>
+        <li><a href="_modules/algorithms.html#algorithms.n_flights_2.plot">(in module algorithms.n_flights_2)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="_modules/dataProcessing.html#dataProcessing.plotter.Plotter.plot_data">plot_data() (dataProcessing.plotter.Plotter method)</a>
 </li>
       <li><a href="_modules/dataProcessing.html#dataProcessing.plotter.Plotter">Plotter (class in dataProcessing.plotter)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.reset_data">reset_data() (algorithms.SignalData.SignalData method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -216,8 +227,6 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData.setSlidingWindow">setSlidingWindow() (algorithms.SignalData.SignalData method)</a>
-</li>
       <li><a href="_modules/algorithms.html#algorithms.SignalData.SignalData">SignalData (class in algorithms.SignalData)</a>
 </li>
       <li><a href="_modules/algorithms.html#algorithms.Symmetry.Symmetry_One_Flight">Symmetry_One_Flight() (in module algorithms.Symmetry)</a>

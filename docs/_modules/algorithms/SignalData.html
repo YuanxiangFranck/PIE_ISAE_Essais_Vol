@@ -49,69 +49,110 @@
 
 <span class="sd">@author: Florent</span>
 
-<span class="sd">Main class for manipulating signal data and extracting features</span>
-
-<span class="sd">data : whole signals or signal subsequences (only with 1 signal)</span>
-<span class="sd">X    : features matrix</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.fftpack</span> <span class="k">import</span> <span class="n">dct</span>
 <span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">normalize</span>
 
-<div class="viewcode-block" id="SignalData"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData">[docs]</a><span class="k">class</span> <span class="nc">SignalData</span><span class="p">:</span>
+<span class="kn">from</span> <span class="nn">algorithms</span> <span class="k">import</span> <span class="n">signal_data_features</span>
+<span class="kn">from</span> <span class="nn">dataProcessing.segmenter</span> <span class="k">import</span> <span class="n">segment</span> <span class="k">as</span> <span class="n">flight_segmenter</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalData"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData">[docs]</a><span class="k">class</span> <span class="nc">SignalData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Main class for manipulating signal data and extracting features</span>
+
+<span class="sd">    Usefull to do:</span>
+
+<span class="sd">    * flight segmentation</span>
+<span class="sd">    * features extraction</span>
+<span class="sd">    * data noramalization</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">    * data : whole signals or signal subsequences (only with 1 signal)</span>
+<span class="sd">    * X    : features matrix</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="p">,</span> <span class="n">sl_window</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Stocke une liste de signaux donnés sous forme de Series pandas</span>
 <span class="sd">        et les convertit en array numpy pour la suite du traitement.</span>
 <span class="sd">        signals : list of pandas series</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Chargement des données et conversion en array numpy</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">s</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">signals</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span>  <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="n">sl_window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SignalData.load"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="p">):</span>
+        <span class="s2">&quot;Reload a signal see init&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">signals</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="SignalData.reset_data"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.reset_data">[docs]</a>    <span class="k">def</span> <span class="nf">reset_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear computed data and recover</span>
+<span class="sd">        flight segments are kept</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clearFeatures</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="SignalData.clearFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.clearFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">clearFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Clear computed features</span>
+<span class="sd">        keep:</span>
+
+<span class="sd">        * data / raw data</span>
+<span class="sd">        * flight segments</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SignalData.clearAll"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.clearAll">[docs]</a>    <span class="k">def</span> <span class="nf">clearAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Clear all attributes&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clearFeatures</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Signal manipulation</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="SignalData.setSlidingWindow"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.setSlidingWindow">[docs]</a>    <span class="k">def</span> <span class="nf">setSlidingWindow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Segmentation du signal avec sliding window.</span>
-<span class="sd">        w : window size</span>
-<span class="sd">        step : step size</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Sliding window transformation is only available for 1 signal!&#39;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="o">-</span><span class="n">w</span><span class="p">)</span><span class="o">//</span><span class="n">step</span><span class="o">+</span><span class="mi">1</span> <span class="c1"># number of samples</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">step</span><span class="p">:</span><span class="n">i</span><span class="o">*</span><span class="n">step</span><span class="o">+</span><span class="n">w</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)])</span></div>
-
 <div class="viewcode-block" id="SignalData.setSegmentation"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.setSegmentation">[docs]</a>    <span class="k">def</span> <span class="nf">setSegmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">w</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Segmentation du signal avec fenêtre de taille fixe.</span>
 <span class="sd">        w : window size</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Segmentation is only available for 1 signal!&#39;</span><span class="p">)</span>
-            <span class="k">return</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">signal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">m</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span><span class="o">//</span><span class="n">w</span> <span class="c1"># number of samples</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">signal</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">w</span><span class="p">:(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">w</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)])</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="n">w</span></div>
 
+<div class="viewcode-block" id="SignalData.compute_flight_segmentation"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.compute_flight_segmentation">[docs]</a>    <span class="k">def</span> <span class="nf">compute_flight_segmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Compute flight segmentation and set current data to &quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="o">=</span> <span class="n">flight_segmenter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="c1"># filtering is adding new columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SignalData.apply_flight_segmentation"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.apply_flight_segmentation">[docs]</a>    <span class="k">def</span> <span class="nf">apply_flight_segmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">):</span>
+        <span class="s2">&quot;Restrict data to a segmet of the flight segment&quot;</span>
+        <span class="c1"># Compute flight segmentation if it&#39;s not done</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_flight_segmentation</span><span class="p">()</span>
+        <span class="c1"># Check if the given segment is valid</span>
+        <span class="k">if</span> <span class="n">segment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Segement name not valide </span><span class="si">{}</span><span class="s1"> in </span><span class="si">{}</span><span class="s1">&#39;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">))</span>
+        <span class="c1"># don&#39;t do anything if no segments</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">[</span><span class="n">segment</span><span class="p">]):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning No segment found &quot;</span><span class="p">)</span>
+        <span class="c1"># Get all index in which the time is within a segment</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">[</span><span class="n">segment</span><span class="p">]:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">|</span> <span class="p">((</span><span class="n">start</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span></div>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Feature extraction</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -124,7 +165,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SignalData.extractFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.extractFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">extractFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">feature_names</span><span class="p">,</span><span class="n">n_fft</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalData.extractFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.extractFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">extractFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_dtc</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extrait les features de la liste donnée en argument</span>
 <span class="sd">        et les ajoute à la matrice X</span>
@@ -135,136 +176,34 @@
 <span class="sd">        mean, var, std, min, max, amplitude, covariance,</span>
 <span class="sd">        binary_transitions, fft, dtc (discrete cosine transform)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">agg</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># Get function names</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_mean</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;var&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_var</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;std&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_std</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;min&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_min</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_max</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;amplitude&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_amplitude</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;covariance&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_covariance</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;binary_transitions&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_nb_transitions</span><span class="p">()</span>
-            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;fft&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_fft</span><span class="p">(</span><span class="n">n_fft</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;fft&#39;</span><span class="p">:</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_fft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_fft</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;dtc&#39;</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dct</span><span class="p">(</span><span class="n">n_dct</span><span class="p">)</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_dct</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_dtc</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">signal_data_features</span><span class="p">,</span> <span class="s2">&quot;get_&quot;</span><span class="o">+</span><span class="n">f</span><span class="p">)</span>
+            <span class="n">agg</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">fun</span>
+        <span class="c1"># If raw data (no sliding window)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">computed_features</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                                 <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">agg</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">computed_features</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">computed_features</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># return a multi indexed dataframe</span>
+            <span class="n">multi_indexed_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">multi_indexed_res</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
+                <span class="n">tmp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                <span class="n">computed_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">computed_features</span><span class="p">)</span></div>
 
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">tmp</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span><span class="n">tmp</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SignalData.normalizeFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.normalizeFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">normalizeFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l1&#39;</span><span class="p">)</span></div>
-
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Méthodes de calcul de features</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-<div class="viewcode-block" id="SignalData.get_mean"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_mean">[docs]</a>    <span class="k">def</span> <span class="nf">get_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Moyenne du signal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="SignalData.get_var"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_var">[docs]</a>    <span class="k">def</span> <span class="nf">get_var</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Variance du signal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">var</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="SignalData.get_std"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_std">[docs]</a>    <span class="k">def</span> <span class="nf">get_std</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Ecart-type du signal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="SignalData.get_min"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_min">[docs]</a>    <span class="k">def</span> <span class="nf">get_min</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Minimum du signal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="SignalData.get_max"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_max">[docs]</a>    <span class="k">def</span> <span class="nf">get_max</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Maximum du signal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="SignalData.get_amplitude"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_amplitude">[docs]</a>    <span class="k">def</span> <span class="nf">get_amplitude</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Amplitude du signal</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="SignalData.get_covariance"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_covariance">[docs]</a>    <span class="k">def</span> <span class="nf">get_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Matrice de covariance des signaux</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cov</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SignalData.get_nb_transitions"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_nb_transitions">[docs]</a>    <span class="k">def</span> <span class="nf">get_nb_transitions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Nombres de transitions du signal binaire</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">signal</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">):</span>
-            <span class="k">assert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">is_binary</span><span class="p">(</span><span class="n">signal</span><span class="p">))</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="n">signal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">signal</span> <span class="p">:</span>
-                <span class="k">if</span> <span class="n">s</span> <span class="o">!=</span> <span class="n">val</span><span class="p">:</span>
-                    <span class="n">val</span> <span class="o">=</span> <span class="n">s</span>
-                    <span class="n">res</span> <span class="o">+=</span> <span class="mi">1</span>
-
-            <span class="n">result</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
-
-        <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="SignalData.is_binary"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.is_binary">[docs]</a>    <span class="k">def</span> <span class="nf">is_binary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">signal</span><span class="p">)</span> <span class="p">:</span>
-        <span class="k">return</span> <span class="p">((</span><span class="n">signal</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">signal</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">all</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="SignalData.get_fft"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_fft">[docs]</a>    <span class="k">def</span> <span class="nf">get_fft</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n_fft</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Renvoie les parties réelles et imaginaires des</span>
-<span class="sd">        n_fft plus grands coefficients de Fourier</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Compute FFT coefficients (complex)</span>
-        <span class="n">coeffs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="c1"># Sort according to absolute value</span>
-        <span class="n">coeffs_sorted</span> <span class="o">=</span> <span class="n">coeffs</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coeffs</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span> \
-        <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coeffs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="c1"># n_fft largest coefficients</span>
-        <span class="n">n_coeffs</span> <span class="o">=</span> <span class="n">coeffs_sorted</span><span class="p">[:,:</span><span class="n">n_fft</span><span class="p">]</span>
-        <span class="c1"># Return real and imaginary parts</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">n_coeffs</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">n_coeffs</span><span class="p">),</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="SignalData.get_dct"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.get_dct">[docs]</a>    <span class="k">def</span> <span class="nf">get_dct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">n_dct</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Renvoie les n_dct plus grands coefficients de la transformée en </span>
-<span class="sd">        cosinus discrète </span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Compute FFT coefficients (complex)</span>
-        <span class="n">coeffs</span> <span class="o">=</span> <span class="n">dct</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="c1"># Sort according to absolute value</span>
-        <span class="n">coeffs_sorted</span> <span class="o">=</span> <span class="n">coeffs</span><span class="o">.</span><span class="n">ravel</span><span class="p">()[</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">coeffs</span><span class="p">))</span><span class="o">.</span><span class="n">ravel</span><span class="p">()]</span> \
-        <span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">coeffs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="c1"># n_fft largest coefficients</span>
-        <span class="n">n_coeffs</span> <span class="o">=</span> <span class="n">coeffs_sorted</span><span class="p">[:,:</span><span class="n">n_dct</span><span class="p">]</span>
-        <span class="c1"># Return the coefficients</span>
-        <span class="k">return</span> <span class="n">n_coeffs</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l1&#39;</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
