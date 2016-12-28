@@ -90,15 +90,16 @@ if __name__ == "__main__":
     usefeature = False
     # Matrix containing each flight's features in a row
     features = ['mean', 'min', 'max']
-    cols = ['WOW_FBK_AMSC1_CHA', 'ADSP1 Pressure Altitude (feet)',
-            'ADSP1 Altitude Rate (ft/min)',
-            'ADSP1 Calibrated Airspeed (knots)']
+    cols = ['WOW_FBK_AMSC1_CHA',
+            'ADSP1 Pressure Altitude (feet)',
+            'alt_rate_signal', # 'ADSP1 Altitude Rate (ft/min)',
+            'delta_cas_signal'] # 'ADSP1 Calibrated Airspeed (knots)'
 
     all_computed_data = {}
     signals_data = []
     dir_path = "../data/"
     file_names = os.listdir(dir_path)
-    paths = [dir_path+ f for f in file_names]
+    paths = [dir_path + f for f in file_names]
     segments = ['climb', 'cruise', 'landing', 'descent', 'hold',
                 'landing', 'otg', 'take_off']
     for i, segment in enumerate(segments):

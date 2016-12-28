@@ -79,8 +79,8 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     delta_cas_signal = data[calib_air_speed].rolling(center = False, window = 120).mean() -  data[calib_air_speed].rolling(center = False, window = 120).mean().shift(1)
     alt_rate_signal = data[altitude_rate].rolling(center = False, window = 120).mean()
     # Add filtered values to data
-    data["delta_cas_signal"] = delta_cas_signal
-    data["alt_rate_signal"] = alt_rate_signal
+    data["delta_cas_signal"] = delta_cas_signal.fillna(method="bfill")
+    data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
     # Compute intervals
     on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
     intervals = dict()
