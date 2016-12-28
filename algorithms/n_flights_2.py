@@ -2,22 +2,15 @@
 """
 Détection de vols anormaux
 """
-
-#%%
-import sys,os
-from time import time as tt;
+import os
+from math import inf
+from time import time as tt
 from sklearn.decomposition import PCA
 
 from dataProcessing.parser import txt_parser
 from algorithms.SignalData import SignalData
 import matplotlib.pyplot as plt
 
-
-#%%
-def init_data():
-    """
-    Load all flights and extract features
-    """
 
 def compute_data(flight_names, flights_data, segment_to_study,
                  needed_columns=None, needed_features=None, use_features=False):
@@ -39,7 +32,7 @@ def compute_data(flight_names, flights_data, segment_to_study,
             flights_data.append(sigData)
         else:
             # Otherwise reset data is SignalData obj
-            print("\n",name, ' already parsed')
+            print("\n", name, ' already parsed')
             sigData = flights_data[nb_flight]
             sigData.reset_data()
         # Get data when flight is on selected segment
@@ -72,14 +65,18 @@ def plot(flights, flight_names, segment_to_study, use_features,
     ax = fig.add_subplot(111)
     colors = ["b", "r", "y", "g", "m", 'c']
     # All all available scatter plot
-    for i, f in enumerate(flights):
-        if f is None: continue;
-        ax.scatter(f[:, 0], f[:, 1], c=colors[i], label=flight_names[i])
-    # Plot all scatter point
+    maxy, miny = -inf, inf
+    for nf, fl in enumerate(flights):
+        if fl is None: continue;
+        ax.scatter(fl[:, 0], fl[:, 1], c=colors[nf], label=flight_names[nf])
+        maxy = max(maxy, fl[:, 1].max())
+        miny = min(miny, fl[:, 1].min())
+    # rescale
+    plt.ylim((miny, maxy))
+    # Adjust the legend
     title = "segment_{}_features_{}".format(segment_to_study, use_features)
     plt.legend(title=title, bbox_to_anchor=(0., 1.02, 1., 0.102),
                loc=3, borderaxespad=0)
-    # Adjust the legend
     plt.tight_layout()
     fig.subplots_adjust(top=0.7)
     # Show or save the figure
