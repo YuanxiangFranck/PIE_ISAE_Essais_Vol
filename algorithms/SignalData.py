@@ -4,10 +4,6 @@ Created on Sat Nov 12 18:59:48 2016
 
 @author: Florent
 
-Main class for manipulating signal data and extracting features
-
-data : whole signals or signal subsequences (only with 1 signal)
-X    : features matrix
 
 """
 import pandas as pd
@@ -18,6 +14,22 @@ from algorithms import signal_data_features
 from dataProcessing.segmenter import segment as flight_segmenter
 
 class SignalData:
+    """
+
+    Main class for manipulating signal data and extracting features
+
+    Usefull to do:
+
+    * flight segmentation
+    * features extraction
+    * data noramalization
+
+    Attributes:
+
+    * data : whole signals or signal subsequences (only with 1 signal)
+    * X    : features matrix
+
+    """
 
     def __init__(self, signals, sl_window=None):
         """
@@ -33,6 +45,7 @@ class SignalData:
         self.flight_segemnts = None
 
     def load(self, signals):
+        "Reload a signal see init"
         self.__init__(signals)
 
     def reset_data(self):
@@ -44,6 +57,14 @@ class SignalData:
         self.clearFeatures()
 
     def clearFeatures(self):
+        """
+        Clear computed features
+        keep:
+
+        * data / raw data
+        * flight segments
+
+        """
         self.X = None
         self.sl_window = None
 
