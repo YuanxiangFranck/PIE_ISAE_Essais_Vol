@@ -46,9 +46,11 @@ def compute_data(flight_names, flights_data, segment_to_study,
             # Restrict columns to the interesting one
             sigData.data = sigData.data.loc[:, needed_columns]
         if needed_features is not None and use_features:
-            sigData.extractFeatures(needed_features)
+            sigData.extractFeatures(needed_features, ravel_features=False)
         else:
             sigData.useWholeTimeseries()
+        # Remove nan
+        sigData.X.dropna(inplace=True)
         # Normalize features
         sigData.normalizeFeatures()
         reduced_data = PCA(n_components=2).fit_transform(sigData.X)
@@ -66,12 +68,16 @@ def plot(flights, flight_names, segment_to_study, use_features,
     colors = ["b", "r", "y", "g", "m", 'c']
     # All all available scatter plot
     maxy, miny = -inf, inf
+    maxx, minx = -inf, inf
     for nf, fl in enumerate(flights):
         if fl is None: continue;
         ax.scatter(fl[:, 0], fl[:, 1], c=colors[nf], label=flight_names[nf])
+        maxx = max(maxx, fl[:, 0].max())
+        minx = min(minx, fl[:, 0].min())
         maxy = max(maxy, fl[:, 1].max())
         miny = min(miny, fl[:, 1].min())
     # rescale
+    plt.xlim((minx, maxx))
     plt.ylim((miny, maxy))
     # Adjust the legend
     title = "segment_{}_features_{}".format(segment_to_study, use_features)
@@ -102,7 +108,7 @@ if __name__ == "__main__":
     paths = [dir_path + f for f in file_names]
     segments = ['climb', 'cruise', 'landing', 'descent', 'hold',
                 'landing', 'otg', 'take_off']
-    for i, segment in enumerate(segments):
+    for segment in segments:
         print("\n"*2, "="*10, "\n")
         print("Segment to study: ", segment)
         print("="*10, "\n")
@@ -112,8 +118,9 @@ if __name__ == "__main__":
                                      needed_features=features,
                                      use_features=usefeature)
         # computed scatter points plots and save it
+        fig_name = "segment_"+segment+"_features_"+("_".join(features))
         plot(computed_data, file_names, segment, usefeature,
-             figure=i+1, plot_fig=False)
+             figure=fig_name, plot_fig=False)
         all_computed_data[segment] = computed_data[:]
     # Display all plots
     plt.show()
