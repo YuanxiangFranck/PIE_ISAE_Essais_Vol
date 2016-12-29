@@ -93,9 +93,9 @@ def plot(flights, flight_names, segment_to_study, use_features,
 
 
 if __name__ == "__main__":
-    usefeature = False
+    usefeature = True
     # Matrix containing each flight's features in a row
-    features = ['mean', 'min', 'max']
+    features = ['mean', 'min', 'max', "covariance"]
     cols = ['WOW_FBK_AMSC1_CHA',
             'ADSP1 Pressure Altitude (feet)',
             'alt_rate_signal', # 'ADSP1 Altitude Rate (ft/min)',
