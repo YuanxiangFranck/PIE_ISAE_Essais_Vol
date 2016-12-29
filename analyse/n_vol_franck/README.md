@@ -80,4 +80,4 @@ On applique la PCA sur les 4 signaux * les features
 Chaque point représente donc les signaux + features sur chaque fenêtre de temps.
 
 
-Image dans dans [/basic_raw](https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/blob/master/analyse/n_vol_franck/pca_donne_features/)
+Image dans dans [/basic_raw](https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/blob/master/analyse/n_vol_franck/pca_donnee_features/)
