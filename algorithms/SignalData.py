@@ -63,10 +63,10 @@ class SignalData:
 
         * data / raw data
         * flight segments
+        * window size
 
         """
         self.X = None
-        self.sl_window = None
 
     def clearAll(self):
         "Clear all attributes"
@@ -74,6 +74,7 @@ class SignalData:
         self.data = None
         self._raw_data = None
         self.flight_segemnts = None
+        self.sl_window = None
 
     """
     Signal manipulation
@@ -120,7 +121,7 @@ class SignalData:
         """
         self.X = self.data.copy()
 
-    def extractFeatures(self, feature_names, n_fft=10, n_dtc=10):
+    def extractFeatures(self, feature_names, n_fft=10, n_dtc=10, ravel_features=True):
         """
         Extrait les features de la liste donnée en argument
         et les ajoute à la matrice X
@@ -149,12 +150,15 @@ class SignalData:
         else:
             computed_features = []
             # return a multi indexed dataframe
-            multi_indexed_res = self.data.rolling(self.sl_window).agg(agg)
-            for f in feature_names:
-                tmp = multi_indexed_res[f]
-                tmp.index = [f]*len(tmp.index)
-                computed_features.append(tmp)
-            self.X = pd.concat(computed_features)
+            multi_indexed_res = self.data.rolling(window=self.sl_window, min_periods=1).agg(agg)
+            if ravel_features:
+                for f in feature_names:
+                    tmp = multi_indexed_res[f]
+                    tmp.index = [f]*len(tmp.index)
+                    computed_features.append(tmp)
+                self.X = pd.concat(computed_features)
+            else:
+                self.X = multi_indexed_res
 
 
     def normalizeFeatures(self):
