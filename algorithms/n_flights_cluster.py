@@ -80,13 +80,10 @@ for flight in flight_names:
     print("Processing flight {}...".format(flight))
     flight_data = txt_parser(path+flight)
     # Extract signals
-    #signal_names = flight_data.columns.values
-    
-    signals = [flight_data[sig] for sig in signal_names]
 
     # Extract features for each flight
-    sigData_l.append(SignalData(signals))
-    
+    sigData_l.append(SignalData(flight_data.loc[:, signal_names]))
+
 #%%
 """
 Extract features
