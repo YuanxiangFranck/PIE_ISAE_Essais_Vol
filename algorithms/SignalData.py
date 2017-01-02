@@ -146,7 +146,7 @@ class SignalData:
         if self.sl_window is None:
             computed_features = {f: self.data.apply(fun, axis=0)
                                  for f, fun in agg.items()}
-            self.X = pd.DataFrame(computed_features).transpose()
+            self.X = pd.DataFrame(computed_features)# .transpose()
         else:
             computed_features = []
             # return a multi indexed dataframe
@@ -156,10 +156,17 @@ class SignalData:
                     tmp = multi_indexed_res[f]
                     tmp.index = [f]*len(tmp.index)
                     computed_features.append(tmp)
-                self.X = pd.concat(computed_features)
+                self.X = pd.concat(computed_features).transpose()
             else:
-                self.X = multi_indexed_res
+                self.X = multi_indexed_res.transpose()
 
 
-    def normalizeFeatures(self):
-        self.X = normalize(self.X,axis=0,norm='l1')
+    def normalizeFeatures(self, keep_dataFrame=False):
+        
+        data = normalize(self.X, axis=0, norm='l1')
+        if keep_dataFrame:
+            idx = self.X .index
+            cols = self.X.columns
+            self.X = pd.DataFrame(data=data, columns=cols, index=idx)
+        else:
+            self.X = data
