@@ -146,7 +146,7 @@ class SignalData:
         if self.sl_window is None:
             computed_features = {f: self.data.apply(fun, axis=0)
                                  for f, fun in agg.items()}
-            self.X = pd.DataFrame(computed_features)# .transpose()
+            self.X = pd.DataFrame(computed_features).loc[:, feature_names]
         else:
             computed_features = []
             # return a multi indexed dataframe
