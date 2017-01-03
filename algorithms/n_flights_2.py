@@ -93,15 +93,49 @@ def plot(flights, flight_names, segment_to_study, use_features,
         plt.savefig(title)
 
 
-if __name__ == "__main__":
-    usefeature = True
-    # Matrix containing each flight's features in a row
-    features = ['mean', 'min', 'max', "covariance"]
-    cols = ['WOW_FBK_AMSC1_CHA',
-            'ADSP1 Pressure Altitude (feet)',
-            'alt_rate_signal', # 'ADSP1 Altitude Rate (ft/min)',
-            'delta_cas_signal'] # 'ADSP1 Calibrated Airspeed (knots)'
+def init(cas):
+    "Initialize different senario"
+    if cas == 1:
+        ## Cas 1: sans features, donnée brut
+        usefeature = False
+        features = ['mean', 'min', 'max', "covariance"]
+        cols = ['WOW_FBK_AMSC1_CHA',
+                'ADSP1 Pressure Altitude (feet)',
+                'ADSP1 Altitude Rate (ft/min)',
+                'ADSP1 Calibrated Airspeed (knots)']
+        ravelfeatures = True
+    elif cas == 2:
+    ## Cas 2: sans features, donnée filtrée
+        usefeature = False
+        features = ['mean', 'min', 'max', "covariance"]
+        cols = ['WOW_FBK_AMSC1_CHA',
+                'ADSP1 Pressure Altitude (feet)',
+                'alt_rate_signal',
+                'delta_cas_signal']
+        ravelfeatures = True
+    elif cas == 3:
+        ## Cas 3: avec features, donnée filtrée
+        usefeature = True
+        features = ['mean', 'min', 'max', "covariance"]
+        cols = ['WOW_FBK_AMSC1_CHA',
+                'ADSP1 Pressure Altitude (feet)',
+                'alt_rate_signal',
+                'delta_cas_signal']
+        ravelfeatures = True
+    elif cas == 4:
+        ## avec features, donnée filtrée, unravel features
+        usefeature = True
+        features = ['mean', 'min', 'max', "covariance"]
+        cols = ['WOW_FBK_AMSC1_CHA',
+                'ADSP1 Pressure Altitude (feet)',
+                'alt_rate_signal',
+                'delta_cas_signal']
+        ravelfeatures = True
+    return usefeature, features, cols, ravelfeatures
 
+
+if __name__ == "__main__":
+    usefeature, features, cols, ravelfeatures = init(1)
     all_computed_data = {}
     signals_data = []
     dir_path = "../data/"
