@@ -136,3 +136,52 @@ plt.scatter(x,y)
 for i in range(m):
     plt.text(x[i]+0.01,y[i],i)
 plt.title('PCA - features : {})'.format(features))
+
+#%%
+"""
+Clustering
+"""
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+
+n_clusters = 2
+
+pca = PCA(n_components=2).fit(feature_matrix)
+reduced_data = pca.transform(feature_matrix)
+kmeans = KMeans(n_clusters=n_clusters).fit(reduced_data)
+
+# Step size of the mesh. Decrease to increase the quality of the VQ.
+h = 0.001     # point in the mesh [x_min, x_max]x[y_min, y_max].
+
+# Plot the decision boundary. For that, we will assign a color to each
+x_min, x_max = reduced_data[:, 0].min() - 0.01, reduced_data[:, 0].max() + 0.01
+y_min, y_max = reduced_data[:, 1].min() - 0.01, reduced_data[:, 1].max() + 0.01
+xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
+
+# Obtain labels for each point in mesh. Use last trained model.
+Z = kmeans.predict(np.c_[xx.ravel(), yy.ravel()])
+
+# Put the result into a color plot
+Z = Z.reshape(xx.shape)
+plt.figure(1)
+plt.clf()
+plt.imshow(Z, interpolation='nearest',
+           extent=(xx.min(), xx.max(), yy.min(), yy.max()),
+           cmap=plt.cm.Paired,
+           aspect='auto', origin='lower')
+
+x,y = reduced_data[:,0],reduced_data[:,1]
+plt.scatter(x,y)
+for i in range(m):
+    plt.text(x[i]+0.005,y[i],i)
+# Plot the centroids as a white X
+centroids = kmeans.cluster_centers_
+plt.scatter(centroids[:, 0], centroids[:, 1],
+            marker='o', linewidths=1,
+            color='r')
+plt.title('K-means clustering on flights (PCA-reduced data)\n \
+signals : regul / features : {}'.format(features))
+plt.xlim(x_min, x_max)
+plt.ylim(y_min, y_max)
+plt.show()
