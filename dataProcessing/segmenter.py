@@ -21,13 +21,13 @@ def cut(time_list):
     if not time_list:
         return []
     jumps = []
-    for i in range(len(time_list)-1):
+    for i in range(len(time_list)-2):
         if time_list[i + 1] != time_list[i] + 1:
             jumps.append((time_list[i],time_list[i+1]))
     if not jumps:
         return [(time_list[0],time_list[-1])] # if time values are continuous, start time = first time, end time = last time
     elif len(jumps)==1:
-        return [(time_list[0],jumps[0][0]),(jumps[0][1],time_list[-1])] # If there is one single jump, one segment before the jump, one                                                                        segment after
+        return [(time_list[0],jumps[0][0]),(jumps[0][1],time_list[-1])] # If there is one single jump, one segment before the jump, one segment after
     dates = []
     dates.append((time_list[0],jumps[0][0])) # First segment
     for i in range(len(jumps)-1):
@@ -131,7 +131,7 @@ def get_weights(segments_dict, data):
 if __name__ == "__main__":
 
     # Chemin relatif vers le fichier txt de données
-    data_path = '../../Desktop/Articles Liebherr/pie_data/data2.txt'
+    data_path = '../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt'
 
     # data contient un DataFrame pandas
     data = txt_parser(data_path)
