@@ -42,7 +42,7 @@ class SignalData:
         self._raw_data = signals.copy()
         self.X = None
         self.sl_window = sl_window
-        self.flight_segemnts = None
+        self.flight_segments = None
 
     def load(self, signals):
         "Reload a signal see init"
@@ -73,7 +73,7 @@ class SignalData:
         self.clearFeatures()
         self.data = None
         self._raw_data = None
-        self.flight_segemnts = None
+        self.flight_segments = None
         self.sl_window = None
 
     """
@@ -88,25 +88,25 @@ class SignalData:
 
     def compute_flight_segmentation(self):
         "Compute flight segmentation and set current data to "
-        self.flight_segemnts = flight_segmenter(self.data)
+        self.flight_segments = flight_segmenter(self.data)
         # filtering is adding new columns
         self._raw_data = self.data.copy()
 
     def apply_flight_segmentation(self, segment):
-        "Restrict data to a segmet of the flight segment"
+        "Restrict data to a segment of the flight segment"
         # Compute flight segmentation if it's not done
-        if self.flight_segemnts is None:
+        if self.flight_segments is None:
             self.compute_flight_segmentation()
         # Check if the given segment is valid
-        if segment not in self.flight_segemnts:
-            raise Exception('Segement name not valide {} in {}'
-                            .format(segment, self.flight_segemnts))
+        if segment not in self.flight_segments:
+            raise Exception('Segment name not valid {} in {}'
+                            .format(segment, self.flight_segments))
         # don't do anything if no segments
-        if not len(self.flight_segemnts[segment]):
+        if not len(self.flight_segments[segment]):
             print("Warning No segment found ")
-        # Get all index in which the time is within a segment
+        # Get all indices in which the time is within a segment
         idx = np.zeros(self.data.index.size).astype(bool)
-        for start, end in self.flight_segemnts[segment]:
+        for start, end in self.flight_segments[segment]:
             idx = idx | ((start < self.data.Time)&(self.data.Time < end))
         self.data = self.data[idx]
     """
@@ -165,7 +165,7 @@ class SignalData:
         
         data = normalize(self.X, axis=0, norm='l1')
         if keep_dataFrame:
-            idx = self.X .index
+            idx = self.X.index
             cols = self.X.columns
             self.X = pd.DataFrame(data=data, columns=cols, index=idx)
         else:
