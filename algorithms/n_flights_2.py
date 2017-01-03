@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 
 
 def compute_data(flight_names, flights_data, segment_to_study,
-                 needed_columns=None, needed_features=None, use_features=False):
+                 needed_columns=None, needed_features=None, use_features=False,
+                 ravel_features=True):
     """
     loop over file and compute data
     :path: string
@@ -46,7 +47,7 @@ def compute_data(flight_names, flights_data, segment_to_study,
             # Restrict columns to the interesting one
             sigData.data = sigData.data.loc[:, needed_columns]
         if needed_features is not None and use_features:
-            sigData.extractFeatures(needed_features, ravel_features=False)
+            sigData.extractFeatures(needed_features, ravel_features=ravel_features)
         else:
             sigData.useWholeTimeseries()
         # Remove nan
@@ -65,7 +66,7 @@ def plot(flights, flight_names, segment_to_study, use_features,
     "plot computed data"
     fig = plt.figure(figure)
     ax = fig.add_subplot(111)
-    colors = ["b", "r", "y", "g", "m", 'c']
+    colors = ["b", "r", "y", "g", "m", 'c', "k"]
     # All all available scatter plot
     maxy, miny = -inf, inf
     maxx, minx = -inf, inf
@@ -116,7 +117,8 @@ if __name__ == "__main__":
         computed_data = compute_data(paths, signals_data, segment,
                                      needed_columns=cols,
                                      needed_features=features,
-                                     use_features=usefeature)
+                                     use_features=usefeature,
+                                     ravel_features=ravelfeatures)
         # computed scatter points plots and save it
         fig_name = "segment_"+segment+"_features_"+("_".join(features))
         plot(computed_data, file_names, segment, usefeature,
