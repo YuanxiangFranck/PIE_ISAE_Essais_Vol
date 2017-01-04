@@ -14,6 +14,13 @@ get_amplitude = lambda x: np.max(x) - np.min(x)
 get_covariance = np.cov
 # Count number of transition in binary signal
 get_nb_transitions = lambda x: np.sum(x[1:] != x[:-1])
+# Detect if value is greater than specified threshold
+def get_time_over_threshold(x, val):
+    """
+    Renvoie le nombre de pas de temps durant lesquels
+    abs(x) est supérieur à un certain seuil val
+    """
+    return np.sum(np.abs(x) > val)
 
 def get_fft(x, n_fft):
     """

@@ -121,7 +121,7 @@ class SignalData:
         """
         self.X = self.data.copy()
 
-    def extractFeatures(self, feature_names, n_fft=10, n_dtc=10, ravel_features=True):
+    def extractFeatures(self, feature_names, n_fft=10, n_dtc=10, threshold=1.0, ravel_features=True):
         """
         Extrait les features de la liste donnée en argument
         et les ajoute à la matrice X
@@ -139,6 +139,8 @@ class SignalData:
                 fun = lambda x: signal_data_features.get_fft(x, n_fft)
             elif f == 'dtc':
                 fun = lambda x: signal_data_features.get_dct(x, n_dtc)
+            elif f == 'time_over_threshold':
+                fun = lambda x: signal_data_features.get_time_over_threshold(x, threshold)
             else:
                 fun = getattr(signal_data_features, "get_"+f)
             agg[f] = fun
