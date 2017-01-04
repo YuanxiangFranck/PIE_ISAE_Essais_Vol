@@ -21,7 +21,20 @@ def get_time_over_threshold(x, val):
     abs(x) est supérieur à un certain seuil val
     """
     return np.sum(np.abs(x) > val)
-
+    
+def get_mean_crossings(x):
+    """
+    Renvoie le nombre de passages de la moyenne de x
+    """
+    mu = np.mean(x)
+    prec = x.iloc[0] < mu
+    count = 0
+    for xi in x.iloc[1:]:
+        if (xi < mu) != prec:
+            count += 1
+            prec = not(prec)
+    return count
+    
 def get_fft(x, n_fft):
     """
     Renvoie les parties réelles et imaginaires des
