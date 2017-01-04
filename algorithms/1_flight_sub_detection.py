@@ -22,8 +22,7 @@ flight_name = 'E190-E2_20001_0085_29472_53398_request.txt'
 path = '../../data/'
 
 # selecting signals
-# 1. regulation (continuous)
-signal_names = \
+signal_names_regul = \
 ['CPCS_CABIN_PRESS_AMSC1_CHA',
 'CPCS_CABIN_PRESS_AMSC1_CHB',
 'CPCS_CABIN_PRESS_AMSC2_CHA',
@@ -79,8 +78,7 @@ signal_names_for_segmentation = \
 ['WOW_FBK_AMSC1_CHA',
 'ADSP1 Pressure Altitude (feet)',
 'ADSP1 Altitude Rate (ft/min)',
-'ADSP1 Calibrated Airspeed (knots)',
-'Time']
+'ADSP1 Calibrated Airspeed (knots)']
 
 
 print("Processing flight {}...".format(flight_name))
@@ -91,10 +89,12 @@ flight_data = txt_parser(path+flight_name)
 Extract and segment signals
 """
 
+signal_names = signal_names_regul+signal_names_for_segmentation
+
 # sliding window width
 sl_w = 60
 # sliding window stride
-sl_s = 60
+sl_s = 30
 # number of samples
 m = (len(flight_data)-sl_w)//sl_s+1 
 
@@ -117,13 +117,13 @@ feature_matrix = np.zeros((m,f_length*len(signal_names)))
 for i,sigData in enumerate(samples):
     print(i)
     sigData.extractFeatures(features,n_fft)
-    # Normalize features
-    sigData.normalizeFeatures()
     # Store featurs as a row in feature matrix
-    feature_matrix[i,:] = sigData.X.ravel()
+    feature_matrix[i,:] = sigData.X.as_matrix().ravel()
     # Clear
     sigData.clearFeatures()
 
+# Normalize features
+feature_matrix = normalize(feature_matrix,axis=0,norm='l1')
 
 #%%
 from sklearn.decomposition import PCA
@@ -180,8 +180,10 @@ centroids = kmeans.cluster_centers_
 plt.scatter(centroids[:, 0], centroids[:, 1],
             marker='o', linewidths=1,
             color='r')
-plt.title('K-means clustering on flights (PCA-reduced data)\n \
-signals : regul / features : {}'.format(features))
+plt.title('K-means clustering on flight subsequences (PCA-reduced data)\n \
+sliding window : 60/30 \n \
+flight : {} \n \
+signals : regul / features : {}'.format(flight_name,features))
 plt.xlim(x_min, x_max)
 plt.ylim(y_min, y_max)
 plt.show()
