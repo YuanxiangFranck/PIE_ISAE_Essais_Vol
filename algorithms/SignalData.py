@@ -92,6 +92,10 @@ class SignalData:
         # filtering is adding new columns
         self._raw_data = self.data.copy()
 
+    def set_flight_segments(self, phases):
+        "Set flight_segments attribute"
+        self.flight_segments = phases
+        
     def apply_flight_segmentation(self, segment):
         "Restrict data to a segment of the flight segment"
         # Compute flight segmentation if it's not done
