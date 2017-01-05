@@ -152,12 +152,23 @@ class SignalData:
             agg[f] = fun
         # If raw data (no sliding window)
         if self.sl_window is None:
-            computed_features = {f: self.data.apply(fun, axis=0)
-                                 for f, fun in agg.items()}
-            self.X = pd.DataFrame(computed_features).loc[:, feature_names]
+            new_features_name = []
+            computed_features = {}
+            for f, fun in agg.items():
+                if f == 'fft':
+                    data = fun(self.data)
+                    for i in range(data.shape[1]):
+                        new_features_name.append(f + str(i))
+                        computed_features[f + str(i)] = data[:, i]
+
+                else:
+                    new_features_name.append(f)
+                    computed_features[f] = data
+            self.X = pd.DataFrame(computed_features).loc[:, new_features_name]
         else:
             computed_features = []
             # return a multi indexed dataframe
+            # [TODO] A TESTER !!!
             multi_indexed_res = self.data.rolling(window=self.sl_window, min_periods=1).agg(agg)
             if ravel_features:
                 for f in feature_names:
