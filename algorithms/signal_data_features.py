@@ -21,6 +21,12 @@ def get_time_over_threshold(x, val):
     abs(x) est supérieur à un certain seuil val
     """
     return np.sum(np.abs(x) > val)
+def get_percent_time_over_threshold(x, val):
+    """
+    Renvoie la proportion de pas de temps durant lesquels
+    abs(x) est supérieur à un certain seuil val
+    """
+    return np.mean(np.abs(x) > val)
     
 def get_mean_crossings(x):
     """
