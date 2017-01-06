@@ -57,7 +57,7 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s):
         dic[signals1[i]+'_DELTA'] = relative_delta(dat1.iloc[:,i],dat2.iloc[:,i])
     delta = pd.DataFrame(dic)
 
-    delta_samples = [SignalData(delta.loc[i*sl_s:i*sl_s+sl_w, :]) for i in range(m)]
+    delta_samples = [SignalData(delta.iloc[i*sl_s:i*sl_s+sl_w, :]) for i in range(m)]
     return delta_samples
     
 def get_feature_matrix(samples, features, normalized=True, \
@@ -74,7 +74,6 @@ def get_feature_matrix(samples, features, normalized=True, \
     feature_matrix = np.zeros((len(samples),n_features*n_signals))
     
     for i,sigData in enumerate(samples):
-        print(i)
         sigData.extractFeatures(features, n_fft=n_fft, \
                                 n_dtc=n_dtc, threshold=threshold)
         # Store featurs as a row in feature matrix
