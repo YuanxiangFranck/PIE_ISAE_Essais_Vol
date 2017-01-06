@@ -36,8 +36,12 @@ def extract_sl_window(data, signals, sl_w, sl_s):
 def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s):
     assert(len(signals1) == len(signals2))
     
-    def relative_delta(a,b):
-        return (a-b)/b
+    def relative_delta(a_series,b_series):
+        res = []
+        for a,b in zip(a_series,b_series):
+            if a == b == 0.: res.append(0)
+            else: res.append( 2.*(a-b)/(np.abs(a)+np.abs(b)) )
+        return res
     
     # sliding window width
     sl_w = sl_w
