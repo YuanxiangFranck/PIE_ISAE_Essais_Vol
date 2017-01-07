@@ -35,26 +35,47 @@ Sélection et chargement du vol
 
 """
 Example
-
-flight_name = 'E190-E2_20001_0085_29472_53398_request.txt'
+"""
+flight_name = 'E190-E2_20001_0083_29106_52495_request.txt'
 path = '../../data/'
 
-flight_data = load_flight(path+flight_name)
-"""
+whole_flight = load_flight(path+flight_name)
 
+flight_data = SignalData(whole_flight)
 
 #%%
 """
-Extraction des signaux par sliding window
+Segmentation et sélection de la phase de vol
+* all : garder toutes les phases
+* climb/cruise/descent/hold/landing/otg/take_off
 """
 
 """
 Example
+"""
+phase = 'all'
 
-samples = extract_sl_window_delta(flight_data, signal_names_regul, \
-                                  target_names_regul, 60, 30)
+flight_data.reset_data()
+if phase != 'all':
+    flight_data.apply_flight_segmentation(phase)
+
+#%%
+"""
+Extraction des signaux par sliding window
+* n_samples : nombre de segments à découper par sliding window
+* vous pouvez aussi fixer manuellement sl_w et sl_s
 """
 
+"""
+Example
+"""
+n_samples = 20
+
+sl_w = len(flight_data.data)//n_samples
+sl_s = sl_w
+
+samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
+                                  target_names_regul, sl_w, sl_s)
 
 #%%
 """
@@ -65,16 +86,15 @@ Calcul des features
 
 """
 Example
-
-features = ['time_over_threshold','mean_crossings']
-threshold = 0.1
-feature_matrix = get_feature_matrix(samples, features, normalized=True, \
-                                    threshold=threshold)
 """
+features = ['percent_time_over_threshold']
+threshold = 0.1
 
+feature_matrix = get_feature_matrix(samples, features, normalized=False, \
+                                    threshold=threshold)
 
 #%%
 """
 Algorithmes, visualisations
-* TO DO
+* METTRE ICI CE QUE VOUS VOULEZ
 """
