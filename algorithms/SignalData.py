@@ -155,8 +155,8 @@ class SignalData:
             new_features_name = []
             computed_features = {}
             for f, fun in agg.items():
+                data = fun(self.data)
                 if f == 'fft':
-                    data = fun(self.data)
                     for i in range(data.shape[1]):
                         new_features_name.append(f + str(i))
                         computed_features[f + str(i)] = data[:, i]
