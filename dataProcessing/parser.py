@@ -28,15 +28,12 @@ def arguments_parser():
 
 
 
-def txt_parser(file_name, get_units=False):
+def txt_parser(file_name):
     """
     Read file_name and parse the data
 
     :param file_name: string
         path to the file to parse
-    :param get_units=False: bool
-        if true, it returns an additional dictionary with the units of each
-        column
 
     :out data: pd.DataFrame
         data in the text file
@@ -49,8 +46,7 @@ def txt_parser(file_name, get_units=False):
     with open(file_name) as ff:
         for _ in range(8):
             ff.readline()
-        names = ff.readline().split(sep)
-        units = ff.readline().split(sep)
+        names = ff.readline().strip().split(sep)
 
     # Fist 5 lines are description of the flight
     # Line 7 represent the aquisition channel ????
@@ -59,14 +55,10 @@ def txt_parser(file_name, get_units=False):
     # Line 10 gives aquisition time TO_CHECK!!!!
     df = pd.read_csv(file_name, skiprows=11, names=names, sep=sep, engine="c")
 
+    # Remove last line (often -9999999)
     df = df[:-1]
     # Compute relative time
     df["rTime"] = df["Time"] - df["Time"][0]
-
-    if get_units:
-        unit_dict = {name: units[pos] for pos, name in enumerate(names) }
-        return df, unit_dict
-    # Remove last line
     return df
 
 
