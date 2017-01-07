@@ -12,8 +12,8 @@ get_max = lambda x: np.max(x, axis=0)
 get_min = lambda x: np.min(x, axis=0)
 get_amplitude = lambda x: np.max(x, axis=0) - np.min(x, axis=0)
 get_covariance = lambda x: np.cov(x, axis=0)
-# Count number of transition in binary signal  NEED TEST!!!!
-get_nb_transitions = lambda x: np.sum(x[:, 1:] != x[:, :-1], axis=0)
+# Count number of transition in binary signal
+get_nb_transitions = lambda x: np.sum(x[1:, :] != x[:-1, :], axis=0)
 
 # Detect if value is greater than specified threshold
 def get_time_over_threshold(x, val):
@@ -64,7 +64,7 @@ def get_dct(x, n_dct):
     cosinus discrète 
     """
     # Compute FFT coefficients (complex)
-    coeffs = dct(x)
+    coeffs = dct(x.transpose())
     # Sort according to absolute value
     coeffs_sorted = coeffs.ravel()[np.argsort(-np.abs(coeffs)).ravel()] \
     .reshape(coeffs.shape)
