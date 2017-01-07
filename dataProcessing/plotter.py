@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
+from data_info.units import units
 
 def arguments_parser():
     import argparse
@@ -44,9 +45,8 @@ class Plotter:
     def __init__(self, input_file=None):
         if input_file is None:
             self.data = pd.DataFrame()
-            self.units = {}
         else:
-            self.data, self.units = txt_parser(input_file, get_units=True)
+            self.data = txt_parser(input_file)
             self.phases = segment(self.data)
         self.segments_color = {'climb': "r", 'cruise': "b",
                                'landing': 'm',
@@ -77,8 +77,8 @@ class Plotter:
 
         plt.plot(self.data[signal1], self.data[signal2],
                  label=signal1+" / "+signal2)
-        plt.xlabel("{} [{}]".format(signal1, self.units.get(signal1, "")))
-        plt.ylabel("{} [{}]".format(signal2, self.units.get(signal2, "")))
+        plt.xlabel("{} [{}]".format(signal1, units.get(signal1, "")))
+        plt.ylabel("{} [{}]".format(signal2, units.get(signal2, "")))
         # Add vertical bars to show different phases
         _, ymax = plt.ylim()
         for segment_name, segments in self.phases.items():
@@ -95,12 +95,10 @@ class Plotter:
                    ncol=2, mode="expand", borderaxespad=0.)
 
 
-    def set_data(self, data, units=False):
+    def set_data(self, data):
         "Set data of the plotter"
         self.data = data
         self.phases = segment(data)
-        if units:
-            self.units = units
 
 
     def plot(self, signals):
