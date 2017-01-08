@@ -1,8 +1,12 @@
 """
 Script to plot data
+
+TODO WARRNIG!!!!
+This de not handle overlap in phases plot!
 """
 import logging
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -43,20 +47,30 @@ class Plotter:
     Class to plot data from a txt file
     """
     def __init__(self, input_file=None):
+        self.phases = None
         if input_file is None:
             self.data = pd.DataFrame()
         else:
             self.data = txt_parser(input_file)
-            self.phases = segment(self.data)
+            self.compute_phases()
         self.segments_color = {'climb': "r", 'cruise': "b",
                                'landing': 'm',
                                'descent': 'g', 'hold': "c",
-                               'landing': 'm',
                                'otg': 'y', 'take_off': 'k'}
 
 
+    def compute_phases(self):
+        "compute segmetation and convert intervall into index instead of time range"
+        phases = segment(self.data)
+        time = self.data.Time
+        self.phases = {name: np.zeros(time.size).astype(bool) for name in phases}
+        for name, segments in phases.items():
+            idx = self.phases[name]
+            for start, end in segments:
+                idx = idx | ( (start < time) & (time < end ) )
+            self.phases[name] = idx # Was converted to pd.Series because of time
 
-    def plot_data(self, signal1, signal2='Time'):
+    def plot_data(self, signal1, signal2='Time', plot_phases=True):
         """
         Plot one data over a second data in a scatter cloud
 
@@ -74,23 +88,24 @@ class Plotter:
             return
         if signal2 == "Time":
             signal2, signal1 = signal1, signal2
-
         plt.plot(self.data[signal1], self.data[signal2],
                  label=signal1+" / "+signal2)
         plt.xlabel("{} [{}]".format(signal1, units.get(signal1, "")))
         plt.ylabel("{} [{}]".format(signal2, units.get(signal2, "")))
-        # Add vertical bars to show different phases
-        _, ymax = plt.ylim()
-        for segment_name, segments in self.phases.items():
-            # If not segments skip this phase
-            if len(segments) == 0:
-                continue
-            segment_color = self.segments_color.get(segment_name, 'k')
-            for start, end in segments:
-                plt.axvline(x=start, color=segment_color, linestyle="dashed")
-                plt.text(start, ymax, segment_name, verticalalignment="top",
-                         color=segment_color, rotation=90)
-                plt.axvline(x=end, color=segment_color, linestyle="dotted")
+        # Plot phases
+        if plot_phases:
+            if "Time" not in self.data.columns:
+                print("Time not in data cannot plot phase")
+            phases = np.zeros(self.data[signal1].size)
+            legend = {}
+            for nb_phase, (name, bool_idx) in enumerate(self.phases.items()):
+                # Compute index of the phase
+                idx = self.data.index[bool_idx]
+                phases[idx] = nb_phase+1
+                legend[name] = nb_phase+1
+            # Plot the phase
+            plt.plot(self.data[signal1], phases, label="phases", linestyle="dashed")
+        # Add legend to the plot
         plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                    ncol=2, mode="expand", borderaxespad=0.)
 
@@ -108,8 +123,10 @@ class Plotter:
         :param signals: list
             List of signal name
         """
+        plot_phases = True
         for name in signals:
-            self.plot_data(name)
+            self.plot_data(name, plot_phases=plot_phases)
+            plot_phases = False
         plt.show()
 
 
