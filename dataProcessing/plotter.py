@@ -70,7 +70,23 @@ class Plotter:
                 idx = idx | ( (start < time) & (time < end ) )
             self.phases[name] = idx # Was converted to pd.Series because of time
 
-    def plot_data(self, signal1, signal2='Time', plot_phases=True):
+    def plot_phases(self, fig):
+        "plot on a figure the flight phases"
+        if "Time" not in self.data.columns:
+            print("Time not in data cannot plot phase")
+            return
+        phases = np.zeros(self.data.Time.size)
+        legend = {}
+        for nb_phase, (name, bool_idx) in enumerate(self.phases.items()):
+            # Compute index of the phase
+            idx = self.data.index[bool_idx]
+            phases[idx] = nb_phase+1
+            legend[name] = nb_phase+1
+        # Plot the phase
+        fig.plot(self.data.Time, phases, label="phases", linestyle="dashed")
+        fig.set_ylim(0, 8)
+
+    def plot_data(self, signal1, signal2='Time', fig=plt):
         """
         Plot one data over a second data in a scatter cloud
 
@@ -88,25 +104,18 @@ class Plotter:
             return
         if signal2 == "Time":
             signal2, signal1 = signal1, signal2
-        plt.plot(self.data[signal1], self.data[signal2],
+        fig.plot(self.data[signal1], self.data[signal2],
                  label=signal1+" / "+signal2)
-        plt.xlabel("{} [{}]".format(signal1, units.get(signal1, "")))
-        plt.ylabel("{} [{}]".format(signal2, units.get(signal2, "")))
-        # Plot phases
-        if plot_phases:
-            if "Time" not in self.data.columns:
-                print("Time not in data cannot plot phase")
-            phases = np.zeros(self.data[signal1].size)
-            legend = {}
-            for nb_phase, (name, bool_idx) in enumerate(self.phases.items()):
-                # Compute index of the phase
-                idx = self.data.index[bool_idx]
-                phases[idx] = nb_phase+1
-                legend[name] = nb_phase+1
-            # Plot the phase
-            plt.plot(self.data[signal1], phases, label="phases", linestyle="dashed")
+        xlabel = "{} [{}]".format(signal1, units.get(signal1, ""))
+        ylabel = "{} [{}]".format(signal2, units.get(signal2, ""))
+        if fig == plt:
+            fig.xlabel(xlabel)
+            fig.ylabel(ylabel)
+        else:
+            fig.set_xlabel(xlabel)
+            fig.set_ylabel(ylabel)
         # Add legend to the plot
-        plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+        fig.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                    ncol=2, mode="expand", borderaxespad=0.)
 
 
@@ -123,10 +132,11 @@ class Plotter:
         :param signals: list
             List of signal name
         """
-        plot_phases = True
+        figure, host = plt.subplots()
+        par = host.twinx()
         for name in signals:
-            self.plot_data(name, plot_phases=plot_phases)
-            plot_phases = False
+            self.plot_data(name, fig=host)
+        self.plot_phases(par)
         plt.show()
 
 
