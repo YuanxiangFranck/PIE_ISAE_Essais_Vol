@@ -58,6 +58,10 @@ class Plotter:
                                'descent': 'g', 'hold': "c",
                                'otg': 'y', 'take_off': 'k'}
 
+    def set_data(self, data):
+        "Set data of the plotter"
+        self.data = data
+        self.phases = segment(data)
 
     def compute_phases(self):
         "compute segmetation and convert intervall into index instead of time range"
@@ -84,7 +88,9 @@ class Plotter:
             legend[name] = nb_phase+1
         # Plot the phase
         fig.plot(self.data.Time, phases, label="phases", linestyle="dashed")
-        fig.set_ylim(0, 8)
+        # Set limit above max value
+        fig.set_ylim(0, len(legend)+1)
+        fig.grid()
 
     def plot_data(self, signal1, signal2='Time', fig=plt):
         """
@@ -119,12 +125,6 @@ class Plotter:
                    ncol=2, mode="expand", borderaxespad=0.)
 
 
-    def set_data(self, data):
-        "Set data of the plotter"
-        self.data = data
-        self.phases = segment(data)
-
-
     def plot(self, signals):
         """
         Plot a list of signals
@@ -132,7 +132,7 @@ class Plotter:
         :param signals: list
             List of signal name
         """
-        figure, host = plt.subplots()
+        _, host = plt.subplots()
         par = host.twinx()
         for name in signals:
             self.plot_data(name, fig=host)
