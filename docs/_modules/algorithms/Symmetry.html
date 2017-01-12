@@ -52,7 +52,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
-<div class="viewcode-block" id="SymmetryTest"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.SymmetryTest">[docs]</a><span class="k">def</span> <span class="nf">SymmetryTest</span><span class="p">(</span><span class="n">signal1</span><span class="p">,</span> <span class="n">signal2</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="SymmetryTest"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.SymmetryTest">[docs]</a><span class="k">def</span> <span class="nf">SymmetryTest</span><span class="p">(</span><span class="n">signal1</span><span class="p">,</span> <span class="n">signal2</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">name_signal1</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    </span>
 <span class="sd">    </span>
@@ -63,6 +63,10 @@
 <span class="sd">    </span>
 <span class="sd">    - error : the result will be False if there is at least one value which is </span>
 <span class="sd">    out of the relative error box </span>
+<span class="sd">    </span>
+<span class="sd">    - [name_signal1] : optional, a string, the name of the first input. Allows</span>
+<span class="sd">    the algorithm to check if the inputs are boolean or not (from specifications)</span>
+<span class="sd">    By defaut, consider the signal as non boolean.</span>
 <span class="sd">    </span>
 <span class="sd">    - [comment] : otpional, a string, if equals &#39;none&#39; then don&#39;t print any result,</span>
 <span class="sd">    prints the result if nothing is specified</span>
@@ -80,16 +84,23 @@
     <span class="n">sig1</span> <span class="o">=</span> <span class="n">signal1</span><span class="o">.</span><span class="n">data</span>
     <span class="n">sig2</span> <span class="o">=</span> <span class="n">signal2</span><span class="o">.</span><span class="n">data</span>   
     
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sig1</span><span class="p">):</span>
-        <span class="n">sig2</span> <span class="o">=</span> <span class="n">signal2</span><span class="o">.</span><span class="n">data</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">abs</span><span class="p">((</span><span class="n">s</span><span class="o">-</span><span class="n">sig2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">error</span> <span class="p">:</span>
+    <span class="k">if</span> <span class="n">is_bool</span><span class="p">(</span><span class="n">name_signal1</span><span class="p">)</span> <span class="p">:</span>
+        <span class="c1">#The signals are categorized as boolean : we test if they are different</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sig1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">sig2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">s</span> <span class="p">:</span>
                 <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
                 <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sig2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">error</span> <span class="p">:</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
-                <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="c1">#The signals are &#39;reg&#39; </span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sig1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">s</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">((</span><span class="n">s</span><span class="o">-</span><span class="n">sig2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="n">s</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">error</span> <span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+                    <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">sig2</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">error</span> <span class="p">:</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span>
+                    <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
                 
     <span class="k">if</span> <span class="n">comment</span> <span class="o">!=</span> <span class="s2">&quot;none&quot;</span> <span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -105,9 +116,85 @@
     
     <span class="k">return</span> <span class="n">result</span></div>
     
+<span class="c1">#%%</span>
     
+<div class="viewcode-block" id="is_bool"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.is_bool">[docs]</a><span class="k">def</span> <span class="nf">is_bool</span><span class="p">(</span><span class="n">signal_name</span><span class="p">)</span> <span class="p">:</span>
+        
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Input : </span>
+<span class="sd">    </span>
+<span class="sd">    - signal_name : a string, the name of the signal to test. </span>
+<span class="sd">    </span>
+<span class="sd">    Output :</span>
+<span class="sd">    </span>
+<span class="sd">    - Result : a boolean, is True if the input signal is known as a boolean, </span>
+<span class="sd">    and returns False if the name is contained in the list of regulated signals (non boolean)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-<div class="viewcode-block" id="Symmetry_One_Flight"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.Symmetry_One_Flight">[docs]</a><span class="k">def</span> <span class="nf">Symmetry_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">True</span>
+    
+    <span class="c1"># list of the names of regulated signals (continuous)</span>
+    <span class="n">reg_signal_names</span> <span class="o">=</span> \
+    <span class="p">[</span><span class="s1">&#39;CPCS_CABIN_PRESS_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CPCS_CABIN_PRESS_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CPCS_CABIN_PRESS_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CPCS_CABIN_PRESS_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_PACK_INLET_MASS_FLOW_CALC_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_PACK_INLET_MASS_FLOW_CALC_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_PACK_INLET_MASS_FLOW_CALC_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_PACK_INLET_MASS_FLOW_CALC_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_MIX_TEMP_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_MIX_TEMP_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_MIX_TEMP_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_MIX_TEMP_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_DUCT_TEMP_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_DUCT_TEMP_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_DUCT_TEMP_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_DUCT_TEMP_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE2_DUCT_TEMP_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE2_DUCT_TEMP_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE2_DUCT_TEMP_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE2_DUCT_TEMP_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_TEMP_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_TEMP_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_TEMP_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE1_TEMP_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE2_TEMP_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ACS_ZONE2_TEMP_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_PRESS_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_PRESS_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_PRESS_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_PRESS_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_TEMP_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_TEMP_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_TEMP_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;BLEED_OUT_TEMP_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_PRESS_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_PRESS_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_PRESS_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_PRESS_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_TEMP_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_TEMP_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_TEMP_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;APS_OUT_TEMP_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_CONTROLLING_PRESS_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_CONTROLLING_PRESS_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_CONTROLLING_PRESS_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_CONTROLLING_PRESS_AMSC2_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_OPP_CONTROLLING_PRESS_AMSC1_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_OPP_CONTROLLING_PRESS_AMSC1_CHB&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_OPP_CONTROLLING_PRESS_AMSC2_CHA&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;WAI_OPP_CONTROLLING_PRESS_AMSC2_CHB&#39;</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">signal_name</span> <span class="ow">in</span> <span class="n">reg_signal_names</span> <span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="k">return</span> <span class="n">result</span></div>
+    
+    <span class="c1">#%%</span>
+    
+<div class="viewcode-block" id="Symmetry_Channels_One_Flight"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.Symmetry_Channels_One_Flight">[docs]</a><span class="k">def</span> <span class="nf">Symmetry_Channels_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
         
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the symmetry problems in a flight by comparing both channels A </span>
@@ -156,7 +243,7 @@
                 
                 
                 <span class="c1">#Test if anomaly between these two supposed equal signals</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="n">SymmetryTest</span><span class="p">(</span><span class="n">signal1</span><span class="p">,</span> <span class="n">signal2</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">)</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">SymmetryTest</span><span class="p">(</span><span class="n">signal1</span><span class="p">,</span> <span class="n">signal2</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">name_i</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">)</span>
 
                 
                 <span class="c1">#save the main result</span>
@@ -177,6 +264,67 @@
         
     <span class="k">return</span> <span class="n">result_anomaly</span></div>
 
+
+
+<span class="c1">#%%</span>
+    
+<div class="viewcode-block" id="Symmetry_Lateral_One_Flight"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.Symmetry_Lateral_One_Flight">[docs]</a><span class="k">def</span> <span class="nf">Symmetry_Lateral_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span> <span class="n">error</span><span class="p">):</span>
+        
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the symmetry problems in a flight by comparing the right and left side for each measure of a flight.        </span>
+<span class="sd">    </span>
+<span class="sd">    Inputs : </span>
+
+<span class="sd">    - flight : must have been parsed by txt_parser. Contains all the signals</span>
+<span class="sd">    of one flight</span>
+
+<span class="sd">    - error : relative error accepted for the detection of anomalies between</span>
+<span class="sd">    two signals which should have been equal</span>
+
+
+<span class="sd">    Output :</span>
+
+<span class="sd">    - result_anomaly : Contains the names of the supposed equal signals wich are </span>
+<span class="sd">    actually different. Contains as well the indexes where the differences were </span>
+<span class="sd">    found</span>
+<span class="sd">    The names are in result_anomaly[2*i] and the indexes in result_anomaly[2*i+1]</span>
+<span class="sd">    with i &lt;= 0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="c1">#flight = txt_parser(path+str_flight)  </span>
+
+    <span class="c1"># Extract names of signals and sort them        </span>
+    <span class="n">names</span> <span class="o">=</span> <span class="n">flight</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span> 
+    <span class="n">names</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">result_anomaly</span> <span class="o">=</span> <span class="p">[]</span>
+  
+    <span class="c1">#Get the signals which are from both sides and test if they are equal</span>
+    <span class="n">signals_with_AMSC1</span> <span class="o">=</span> <span class="p">[</span><span class="n">st</span> <span class="k">for</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="s1">&#39;AMSC1&#39;</span> <span class="ow">in</span> <span class="n">st</span><span class="p">]</span>
+    <span class="n">signals_with_AMSC2</span> <span class="o">=</span> <span class="p">[</span><span class="n">str2</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;AMSC1&quot;</span><span class="p">,</span><span class="s2">&quot;AMSC2&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">str2</span> <span class="ow">in</span> <span class="n">signals_with_AMSC1</span><span class="p">]</span> 
+   
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">name_AMSC1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">signals_with_AMSC1</span><span class="p">)</span> <span class="p">:</span>
+        <span class="n">signal1</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">name_AMSC1</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:]</span>
+        <span class="n">name_AMSC2</span> <span class="o">=</span> <span class="n">signals_with_AMSC2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">signal2</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">name_AMSC2</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:]</span>
+        
+        <span class="c1">#Test if there is an anomaly between these two supposed equal signals</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">SymmetryTest</span><span class="p">(</span><span class="n">signal1</span><span class="p">,</span> <span class="n">signal2</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">name_AMSC1</span><span class="p">,</span> <span class="s2">&quot;none&quot;</span><span class="p">)</span>
+        
+        <span class="c1">#save the main result</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">name_AMSC1</span><span class="p">,</span> <span class="n">name_AMSC2</span><span class="p">])</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        
+        <span class="k">if</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">:</span>
+            <span class="n">result_anomaly</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">name_AMSC1</span><span class="p">,</span> <span class="n">name_AMSC2</span><span class="p">])</span>
+            <span class="n">result_anomaly</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">][:])</span>
+                                
+        
+    <span class="k">return</span> <span class="n">result_anomaly</span></div>
+    
+<span class="c1">#%%</span>
+    
     
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
@@ -186,18 +334,60 @@
     <span class="n">flight</span> <span class="o">=</span> <span class="n">txt_parser</span><span class="p">(</span><span class="n">path</span><span class="o">+</span><span class="s2">&quot;data1.txt&quot;</span><span class="p">)</span>
         
     <span class="n">error</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="c1"># marge d&#39;erreur relative acceptee (0.01 correspond à 1% de marge)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">Symmetry_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span><span class="n">error</span><span class="p">)</span>
+    
+    <span class="c1">#----------------------------------------------</span>
+    <span class="c1">### How to use this result ? -&gt; example</span>
+    <span class="c1">#..............................................</span>
+    <span class="c1">## With Channels     </span>
+    <span class="n">result_channel</span> <span class="o">=</span> <span class="n">Symmetry_Channels_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span><span class="n">error</span><span class="p">)</span>
 
-    <span class="c1">##How to use this result ? -&gt; example </span>
+    
     <span class="c1">#names of the couples supposed equal by symmetry but actuelly different</span>
-    <span class="n">anomalies_couples_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il y a &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_couples_names</span><span class="p">))</span> <span class="o">+</span><span class="s2">&quot; anomalies detectees&quot;</span> <span class="p">)</span>
+    <span class="n">anomalies_couples_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">result_channel</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_channel</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il y a &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_couples_names</span><span class="p">))</span> <span class="o">+</span><span class="s2">&quot; anomalies detectees entre channels&quot;</span> <span class="p">)</span>
     
     <span class="c1">#Affichage de l&#39;avant derniere anomalie </span>
     <span class="n">s1</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
     <span class="n">s2</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
     <span class="n">s1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
     <span class="n">s2</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    
+    <span class="c1">#On peut voir si les anomalies sont des booleans ou des signaux regulés</span>
+    <span class="n">name_anomaly</span> <span class="o">=</span> <span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_couples_names</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">]</span>
+    <span class="n">is_bool_anomaly</span> <span class="o">=</span> <span class="p">[</span><span class="n">is_bool</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">name_anomaly</span><span class="p">]</span>
+    <span class="k">if</span> <span class="kc">False</span> <span class="ow">in</span> <span class="n">is_bool_anomaly</span><span class="p">:</span>
+        <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="n">is_bool_anomaly</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pour channels A/B : Les anomalies sont réparties entre booléans et signaux régulés&quot;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pour channels A/B : Il n&#39;y a que des anomalies sur des non booleans (signaux regulés)&quot;</span><span class="p">)</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pour channels A/B : Il n&#39;y a que des anomalies sur des booléans&quot;</span><span class="p">)</span>
+        
+     <span class="c1">#..............................................</span>
+     <span class="c1">## With lateral Symmetry </span>
+    
+    <span class="n">result_sym</span> <span class="o">=</span> <span class="n">Symmetry_Lateral_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span><span class="n">error</span><span class="p">)</span>
+    <span class="c1">#names of the couples supposed equal by symmetry but actuelly different</span>
+    <span class="n">anomalies_couples_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">result_sym</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_sym</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il y a &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_couples_names</span><span class="p">))</span> <span class="o">+</span><span class="s2">&quot; anomalies detectees sur la symetrie laterale&quot;</span> <span class="p">)</span>
+    
+    <span class="c1">#Affichage de l&#39;avant derniere anomalie </span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">s1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    <span class="n">s2</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+    
+    <span class="c1">#On peut voir si les anomalies sont des booleans ou des signaux regulés</span>
+    <span class="n">name_anomaly</span> <span class="o">=</span> <span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_couples_names</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">]</span>
+    <span class="n">is_bool_anomaly</span> <span class="o">=</span> <span class="p">[</span><span class="n">is_bool</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">name_anomaly</span><span class="p">]</span>
+    <span class="k">if</span> <span class="kc">False</span> <span class="ow">in</span> <span class="n">is_bool_anomaly</span><span class="p">:</span>
+        <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="n">is_bool_anomaly</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pour symetrie laterale : Les anomalies sont réparties entre booléans et signaux régulés&quot;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pour symetrie laterale : Il n&#39;y a que des anomalies sur des non booleans (signaux regulés)&quot;</span><span class="p">)</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pour symetrie laterale : Il n&#39;y a que des anomalies sur des booléans&quot;</span><span class="p">)</span>
+        
 </pre></div>
 
           </div>
