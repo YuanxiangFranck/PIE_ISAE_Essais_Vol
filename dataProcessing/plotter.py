@@ -79,17 +79,19 @@ class Plotter:
         if "Time" not in self.data.columns:
             print("Time not in data cannot plot phase")
             return
-        phases = np.zeros(self.data.Time.size)
-        legend = {}
+        prev_phases = np.zeros(self.data.Time.size)
         for nb_phase, (name, bool_idx) in enumerate(self.phases.items()):
+            phases = prev_phases.copy()
             # Compute index of the phase
             idx = self.data.index[bool_idx]
-            phases[idx] = nb_phase+1
-            legend[name] = nb_phase+1
-        # Plot the phase
-        fig.plot(self.data.Time, phases, label="phases", linestyle="dashed")
+            phases[idx] = nb_phase + 1
+            # Plot the phase
+            fig.fill_between(self.data.Time, prev_phases, phases,
+                             facecolor=self.segments_color[name], linewidth=0,
+                             label=name, alpha=0.2)
+            prev_phases = phases.copy()
         # Set limit above max value
-        fig.set_ylim(0, len(legend)+1)
+        fig.set_ylim(0, len(self.phases)+1)
         fig.grid()
 
     def plot_data(self, signal1, signal2='Time', fig=plt):
