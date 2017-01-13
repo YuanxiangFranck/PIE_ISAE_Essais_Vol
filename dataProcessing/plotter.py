@@ -45,6 +45,11 @@ def arguments_parser():
 class Plotter:
     """
     Class to plot data from a txt file
+
+    Attributes:
+    :attr phases: None | dict
+        dictionnary with np.array with the indexes of the dataframe of each phases
+
     """
     def __init__(self, input_file=None):
         self.phases = None
@@ -92,7 +97,8 @@ class Plotter:
         # Customize the y axis / labels for the phases
         fig.set_ylim(0, len(self.phases)+1)
         fig.grid()
-        fig.legend(bbox_to_anchor=(1.02, 0.7, 1.1, 0), loc=2, ncol=1, mode="expand", borderaxespad=0.)
+        yticks_label = [""] + [n for n in self.phases]
+        fig.set_yticklabels(yticks_label)
 
     def plot_data(self, signal1, signal2='Time', fig=plt):
         """
