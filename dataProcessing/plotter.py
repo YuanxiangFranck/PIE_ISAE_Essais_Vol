@@ -79,6 +79,7 @@ class Plotter:
                                'landing': 'm',
                                'descent': 'g', 'hold': "c",
                                'otg': 'y', 'take_off': 'k'}
+        self.segments_order = ["otg", "take_off", "landing", "climb", "descent", "hold", "cruise"]
 
     def set_data(self, data):
         """
@@ -112,7 +113,8 @@ class Plotter:
             print("Time not in data cannot plot phase")
             return
         prev_phases = np.zeros(self.data.Time.size)
-        for nb_phase, (name, idx) in enumerate(self.phases.items()):
+        for nb_phase, name in enumerate(self.segments_order):
+            idx = self.phases[name]
             phases = prev_phases.copy()
             # Compute index of the phase
             phases[idx] = nb_phase + 1
@@ -127,7 +129,7 @@ class Plotter:
         yticks_label = [""] + [n for n in self.phases]
         if fig == plt:
             fig.ylim((0, len(self.phases)+1))
-            fig.ylabel(yticks_label)
+            fig.yticks(np.arange(len(self.phases)+1), yticks_label)
             plt.show()
         else:
             fig.set_ylim(0, len(self.phases)+1)
