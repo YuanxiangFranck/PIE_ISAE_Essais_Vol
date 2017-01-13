@@ -85,3 +85,34 @@ def get_feature_matrix(samples, features, normalized=True, \
     if normalized:
         feature_matrix = normalize(feature_matrix,axis=0,norm='l1')
     return feature_matrix
+    
+def idx2date(dates, idx, sl_w, sl_s):
+    """
+    Get real time segments corresponding to the index of a sample
+    in a sliding window decomposition with parameters sl_w, sl_s
+    
+    Warning : this function takes into consideration the case when the time
+    window overlaps on two occurrences of the same flight phase. However, it
+    won't work if an occurence of the flight phase is shorter than the time
+    window sl_w itself !
+    """
+    i_start,i_stop = 0,0
+    remaining = 0
+    elapsed = 0
+    # find start index
+    for i in range(len(dates)):
+        if dates[i][0] + idx*sl_s - elapsed <= dates[i][1]:
+            i_start = i
+            remaining = dates[i_start][0] + idx*sl_s + sl_w \
+                        - elapsed - dates[i_start][1]
+            break
+        elapsed += dates[i][1] - dates[i][0]
+    # if overlap, set stop index to the next occurence
+    if remaining > 0:
+        i_stop = i_start+1
+        return (dates[i_start][0] + idx * sl_s - elapsed, dates[i_start][1],\
+                dates[i_stop][0], dates[i_stop][0] + remaining)
+    else:
+        return (dates[i_start][0] + idx * sl_s - elapsed, \
+                dates[i_start][0] + idx * sl_s + sl_w - elapsed)
+        
