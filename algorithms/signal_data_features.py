@@ -21,26 +21,27 @@ def get_time_over_threshold(x, val):
     Renvoie le nombre de pas de temps durant lesquels
     abs(x) est supérieur à un certain seuil val
     """
-    return np.sum(np.abs(x) > val)
+    return np.sum(np.abs(x) > val, axis=0)
 
 def get_percent_time_over_threshold(x, val):
     """
     Renvoie la proportion de pas de temps durant lesquels
     abs(x) est supérieur à un certain seuil val
     """
-    return np.mean(np.abs(x) > val)
+    return np.mean(np.abs(x) > val, axis=0)
 
 def get_mean_crossings(x):
     """
     Renvoie le nombre de passages de la moyenne de x
     """
-    mu = np.mean(x)
-    prec = x.iloc[0] < mu
-    count = 0
-    for xi in x.iloc[1:]:
-        if (xi < mu) != prec:
-            count += 1
-            prec = not(prec)
+    count = np.zeros(x.shape[1])
+    for j in range(x.shape[1]):
+        mu = np.mean(x.iloc[:,j])
+        prec = x.iloc[0,j] < mu
+        for i in range(1,x.shape[0]):
+            if (x.iloc[i,j] < mu) != prec:
+                count[j] += 1
+                prec = not(prec)
     return count
 
 def get_fft(x, n_fft):
