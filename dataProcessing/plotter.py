@@ -67,12 +67,12 @@ class Plotter:
         "compute segmetation and convert intervall into index instead of time range"
         phases = segment(self.data)
         time = self.data.Time
-        self.phases = {name: np.zeros(time.size).astype(bool) for name in phases}
+        self.phases = {}
         for name, segments in phases.items():
-            idx = self.phases[name]
+            idx = np.zeros(time.size).astype(bool)
             for start, end in segments:
                 idx = idx | ( (start < time) & (time < end ) )
-            self.phases[name] = idx # Was converted to pd.Series because of time
+            self.phases[name] = self.data.index[idx] # Was converted to pd.Series because of time
 
     def plot_phases(self, fig):
         "plot on a figure the flight phases"
@@ -80,18 +80,16 @@ class Plotter:
             print("Time not in data cannot plot phase")
             return
         prev_phases = np.zeros(self.data.Time.size)
-        for nb_phase, (name, bool_idx) in enumerate(self.phases.items()):
+        for nb_phase, (name, idx) in enumerate(self.phases.items()):
             phases = prev_phases.copy()
             # Compute index of the phase
-            idx = self.data.index[bool_idx]
             phases[idx] = nb_phase + 1
             # Plot the phase
             fig.fill_between(self.data.Time, prev_phases, phases,
                              facecolor=self.segments_color[name], linewidth=0,
                              label=name, alpha=0.2)
             prev_phases = phases.copy()
-        # Hide y axis
-        # Set limit above max value
+        # Customize the y axis / labels for the phases
         fig.set_ylim(0, len(self.phases)+1)
         fig.grid()
         fig.legend(bbox_to_anchor=(1.02, 0.7, 1.1, 0), loc=2, ncol=1, mode="expand", borderaxespad=0.)
