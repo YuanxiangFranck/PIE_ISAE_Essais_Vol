@@ -122,10 +122,17 @@ class Plotter:
                              label=name, alpha=0.2)
             prev_phases = phases.copy()
         # Customize the y axis / labels for the phases
-        fig.set_ylim(0, len(self.phases)+1)
+
         fig.grid()
         yticks_label = [""] + [n for n in self.phases]
-        fig.set_yticklabels(yticks_label)
+        if fig == plt:
+            fig.ylim((0, len(self.phases)+1))
+            fig.ylabel(yticks_label)
+            plt.show()
+        else:
+            fig.set_ylim(0, len(self.phases)+1)
+            fig.set_yticklabels(yticks_label)
+
 
     def plot_data(self, signal1, signal2='Time', fig=plt):
         """
