@@ -1,8 +1,7 @@
 """
 Script to plot data
 
-TODO WARRNIG!!!!
-This de not handle overlap in phases plot!
+
 """
 import logging
 
@@ -46,10 +45,28 @@ class Plotter:
     """
     Class to plot data from a txt file
 
-    Attributes:
-    :attr phases: None | dict
-        dictionnary with np.array with the indexes of the dataframe of each phases
+    See
+    * plot_data
+    * plot
 
+    Basic usage:
+
+    ..code-block:: python
+        pp = Plotter("<path_to_file>")
+        # Plot one signal
+        pp.plot_data('WOW_FBK_AMSC1_CHA')
+        # Plot multiple signals with phases
+        pp.plot(['WOW_FBK_AMSC1_CHA', 'ADSP1 Pressure Altitude (feet)'])
+
+    Attributes:
+
+    phases:
+        :type dict
+        dictionnary with np.array with the indexes of the dataframe of each phases
+    :attr data: DataFrame
+        pandas DataFrame containing the data
+    :attr segments_color: dict
+        colors for each phases
     """
     def __init__(self, input_file=None):
         self.phases = None
@@ -64,12 +81,16 @@ class Plotter:
                                'otg': 'y', 'take_off': 'k'}
 
     def set_data(self, data):
-        "Set data of the plotter"
+        """
+        Set data of the plotter, then compute the phase
+        """
         self.data = data
-        self.phases = segment(data)
+        self.compute_phases()
 
     def compute_phases(self):
-        "compute segmetation and convert intervall into index instead of time range"
+        """
+        Compute segmetation and convert intervals into index instead of time range
+        """
         phases = segment(self.data)
         time = self.data.Time
         self.phases = {}
@@ -79,8 +100,14 @@ class Plotter:
                 idx = idx | ( (start < time) & (time < end ) )
             self.phases[name] = self.data.index[idx] # Was converted to pd.Series because of time
 
-    def plot_phases(self, fig):
-        "plot on a figure the flight phases"
+    def plot_phases(self, fig=plt):
+        """
+        Plot on a figure the flight phases
+        see the attribut segments_color for color selection
+
+        :param fig: AxesSubplot
+            axes subplot (using twinx) to plot phases on another y axis
+        """
         if "Time" not in self.data.columns:
             print("Time not in data cannot plot phase")
             return
@@ -108,6 +135,9 @@ class Plotter:
             name of the signal to plot
         :param [signal2='Time']: str
             if given it plot signal1 over signal2
+        :param [fig = plt ] : pyplot | AxesSubplot
+            by default plot using pyplot
+            This attribute is used for muliple y axis plot
         """
         # Check if each signal are in data
         if signal1 not in self.data.columns:
@@ -123,9 +153,11 @@ class Plotter:
         xlabel = "{} [{}]".format(signal1, units.get(signal1, ""))
         ylabel = "{} [{}]".format(signal2, units.get(signal2, ""))
         if fig == plt:
+            # Case of basic plots without phase (using plt)
             fig.xlabel(xlabel)
             fig.ylabel(ylabel)
         else:
+            # Case of plot in AxesSubplot
             fig.set_xlabel(xlabel)
             fig.set_ylabel(ylabel)
         # Add legend to the plot
