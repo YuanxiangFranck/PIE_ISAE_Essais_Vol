@@ -90,9 +90,11 @@ class Plotter:
                              facecolor=self.segments_color[name], linewidth=0,
                              label=name, alpha=0.2)
             prev_phases = phases.copy()
+        # Hide y axis
         # Set limit above max value
         fig.set_ylim(0, len(self.phases)+1)
         fig.grid()
+        fig.legend(bbox_to_anchor=(1.02, 0.7, 1.1, 0), loc=2, ncol=1, mode="expand", borderaxespad=0.)
 
     def plot_data(self, signal1, signal2='Time', fig=plt):
         """
