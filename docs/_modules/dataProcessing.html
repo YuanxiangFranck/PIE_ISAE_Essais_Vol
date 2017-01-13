@@ -27,7 +27,7 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="examples package" href="examples.html" />
+    <link rel="next" title="data_info package" href="data_info.html" />
     <link rel="prev" title="algorithms package" href="algorithms.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -60,28 +60,20 @@
 
 <dl class="function">
 <dt id="dataProcessing.parser.txt_parser">
-<code class="descclassname">dataProcessing.parser.</code><code class="descname">txt_parser</code><span class="sig-paren">(</span><em>file_name</em>, <em>get_units=False</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#txt_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.txt_parser" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.parser.</code><code class="descname">txt_parser</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#txt_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.txt_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read file_name and parse the data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> &#8211; string
-path to the file to parse</li>
-<li><strong>get_units=False</strong> &#8211; bool
-if true, it returns an additional dictionary with the units of each
-column</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> &#8211; string
+path to the file to parse</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Out data:</th><td class="field-body"><p class="first">pd.DataFrame
-data in the text file</p>
-</td>
+<tr class="field-even field"><th class="field-name">Out data:</th><td class="field-body">pd.DataFrame
+data in the text file</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Out [units]:</th><td class="field-body"><p class="first last">dict
-units of each column</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Out [units]:</th><td class="field-body">dict
+units of each column</td>
 </tr>
 </tbody>
 </table>
@@ -91,11 +83,19 @@ units of each column</p>
 <div class="section" id="module-dataProcessing.plotter">
 <span id="dataprocessing-plotter-module"></span><h2>dataProcessing.plotter module<a class="headerlink" href="#module-dataProcessing.plotter" title="Permalink to this headline">¶</a></h2>
 <p>Script to plot data</p>
+<p>TODO WARRNIG!!!!
+This de not handle overlap in phases plot!</p>
 <dl class="class">
 <dt id="dataProcessing.plotter.Plotter">
 <em class="property">class </em><code class="descclassname">dataProcessing.plotter.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>input_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Class to plot data from a txt file</p>
+<dl class="method">
+<dt id="dataProcessing.plotter.Plotter.compute_phases">
+<code class="descname">compute_phases</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.compute_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.compute_phases" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute segmetation and convert intervall into index instead of time range</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dataProcessing.plotter.Plotter.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot" title="Permalink to this definition">¶</a></dt>
@@ -113,7 +113,7 @@ List of signal name</td>
 
 <dl class="method">
 <dt id="dataProcessing.plotter.Plotter.plot_data">
-<code class="descname">plot_data</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2='Time'</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_data</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2='Time'</em>, <em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie2016/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot one data over a second data in a scatter cloud</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -132,8 +132,14 @@ if given it plot signal1 over signal2</li>
 </dd></dl>
 
 <dl class="method">
+<dt id="dataProcessing.plotter.Plotter.plot_phases">
+<code class="descname">plot_phases</code><span class="sig-paren">(</span><em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
+<dd><p>plot on a figure the flight phases</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="dataProcessing.plotter.Plotter.set_data">
-<code class="descname">set_data</code><span class="sig-paren">(</span><em>data</em>, <em>units=False</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.set_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.set_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set data of the plotter</p>
 </dd></dl>
 
@@ -246,7 +252,7 @@ keys represent names of segments and values are lists of tuples (time start,time
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="modules.html">code</a><ul>
       <li>Previous: <a href="algorithms.html" title="previous chapter">algorithms package</a></li>
-      <li>Next: <a href="examples.html" title="next chapter">examples package</a></li>
+      <li>Next: <a href="data_info.html" title="next chapter">data_info package</a></li>
   </ul></li>
   </ul></li>
 </ul>
