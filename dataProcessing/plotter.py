@@ -126,7 +126,7 @@ class Plotter:
         # Customize the y axis / labels for the phases
 
         fig.grid()
-        yticks_label = [""] + [n for n in self.phases]
+        yticks_label = [""] + self.segments_order
         if fig == plt:
             fig.ylim((0, len(self.phases)+1))
             fig.yticks(np.arange(len(self.phases)+1), yticks_label)
