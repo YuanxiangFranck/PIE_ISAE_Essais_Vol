@@ -61,17 +61,16 @@
 * plot_data
 * plot</p>
 <p>Basic usage:</p>
-<dl class="docutils">
-<dt>..code-block:: python</dt>
-<dd>pp = Plotter(&#8220;&lt;path_to_file&gt;&#8221;)
-# Plot one signal
-pp.plot_data(&#8216;WOW_FBK_AMSC1_CHA&#8217;)
-# Plot multiple signals with phases
-pp.plot([&#8216;WOW_FBK_AMSC1_CHA&#8217;, &#8216;ADSP1 Pressure Altitude (feet)&#8217;])</dd>
-</dl>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pp</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span><span class="s2">&quot;&lt;path_to_file&gt;&quot;</span><span class="p">)</span>
+<span class="c1"># Plot one signal</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span><span class="p">)</span>
+<span class="c1"># Plot multiple signals with phases</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span><span class="p">,</span> <span class="s1">&#39;ADSP1 Pressure Altitude (feet)&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>Attributes:</p>
 <dl class="docutils">
-<dt>__phases:</dt>
+<dt>phases:</dt>
 <dd>:type dict
 dictionnary with np.array with the indexes of the dataframe of each phases</dd>
 </dl>
@@ -136,7 +135,7 @@ This attribute is used for muliple y axis plot</dd>
 
 <dl class="method">
 <dt id="dataProcessing.flycheck_plotter.Plotter.plot_phases">
-<code class="descname">plot_phases</code><span class="sig-paren">(</span><em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter.plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_phases</code><span class="sig-paren">(</span><em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie2016/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter.plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot on a figure the flight phases
 see the attribut segments_color for color selection</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -187,9 +186,6 @@ path to the file to parse</td>
 <tr class="field-even field"><th class="field-name">Out data:</th><td class="field-body">pd.DataFrame
 data in the text file</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Out [units]:</th><td class="field-body">dict
-units of each column</td>
-</tr>
 </tbody>
 </table>
 </dd></dl>
@@ -207,17 +203,16 @@ units of each column</td>
 * plot_data
 * plot</p>
 <p>Basic usage:</p>
-<dl class="docutils">
-<dt>..code-block:: python</dt>
-<dd>pp = Plotter(&#8220;&lt;path_to_file&gt;&#8221;)
-# Plot one signal
-pp.plot_data(&#8216;WOW_FBK_AMSC1_CHA&#8217;)
-# Plot multiple signals with phases
-pp.plot([&#8216;WOW_FBK_AMSC1_CHA&#8217;, &#8216;ADSP1 Pressure Altitude (feet)&#8217;])</dd>
-</dl>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pp</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span><span class="s2">&quot;&lt;path_to_file&gt;&quot;</span><span class="p">)</span>
+<span class="c1"># Plot one signal</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span><span class="p">)</span>
+<span class="c1"># Plot multiple signals with phases</span>
+<span class="n">pp</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span><span class="p">,</span> <span class="s1">&#39;ADSP1 Pressure Altitude (feet)&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>Attributes:</p>
 <dl class="docutils">
-<dt>__phases__:</dt>
+<dt>phases:</dt>
 <dd>:type dict
 dictionnary with np.array with the indexes of the dataframe of each phases</dd>
 </dl>
@@ -282,7 +277,7 @@ This attribute is used for muliple y axis plot</dd>
 
 <dl class="method">
 <dt id="dataProcessing.plotter.Plotter.plot_phases">
-<code class="descname">plot_phases</code><span class="sig-paren">(</span><em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_phases</code><span class="sig-paren">(</span><em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie2016/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot on a figure the flight phases
 see the attribut segments_color for color selection</p>
 <table class="docutils field-list" frame="void" rules="none">

@@ -1,12 +1,12 @@
 """
-Script to plot data
+Class to plot data
 
 
 """
 import logging
 
-import numpy as np
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 from dataProcessing.parser import txt_parser
@@ -51,7 +51,8 @@ class Plotter:
 
     Basic usage:
 
-    ..code-block:: python
+    .. code-block:: python
+
         pp = Plotter("<path_to_file>")
         # Plot one signal
         pp.plot_data('WOW_FBK_AMSC1_CHA')

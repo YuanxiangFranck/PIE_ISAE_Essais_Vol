@@ -82,8 +82,6 @@
 
 <span class="sd">    :out data: pd.DataFrame</span>
 <span class="sd">        data in the text file</span>
-<span class="sd">    :out [units]: dict</span>
-<span class="sd">        units of each column</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;	&quot;</span>
@@ -117,7 +115,7 @@
     <span class="n">args</span> <span class="o">=</span> <span class="n">arguments_parser</span><span class="p">()</span>
     <span class="c1"># Parse the data</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Read: &quot;</span><span class="o">+</span> <span class="n">args</span><span class="o">.</span><span class="n">txt_file</span><span class="o">+</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">data</span><span class="p">,</span> <span class="n">units</span> <span class="o">=</span> <span class="n">txt_parser</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">txt_file</span><span class="p">,</span> <span class="n">get_units</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">txt_parser</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">txt_file</span><span class="p">)</span>
 </pre></div>
 
           </div>
