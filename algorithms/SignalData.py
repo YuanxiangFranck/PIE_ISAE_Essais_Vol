@@ -95,7 +95,7 @@ class SignalData:
     def set_flight_segments(self, phases):
         "Set flight_segments attribute"
         self.flight_segments = phases
-        
+
     def apply_flight_segmentation(self, segment):
         "Restrict data to a segment of the flight segment"
         # Compute flight segmentation if it's not done
@@ -181,7 +181,12 @@ class SignalData:
 
 
     def normalizeFeatures(self, keep_dataFrame=False):
-        
+        """
+        Normalize the feature matrix
+
+        :param [keep_dataFrame=False]: bool
+            return data as a pandas dataframe to keep index and columns
+        """
         data = normalize(self.X, axis=0, norm='l1')
         if keep_dataFrame:
             idx = self.X.index
