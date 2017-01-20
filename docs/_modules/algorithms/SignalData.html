@@ -87,7 +87,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="n">sl_window</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SignalData.load"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="p">):</span>
         <span class="s2">&quot;Reload a signal see init&quot;</span>
@@ -108,17 +108,18 @@
 
 <span class="sd">        * data / raw data</span>
 <span class="sd">        * flight segments</span>
+<span class="sd">        * window size</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 <div class="viewcode-block" id="SignalData.clearAll"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.clearAll">[docs]</a>    <span class="k">def</span> <span class="nf">clearAll</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Clear all attributes&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clearFeatures</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="o">=</span> <span class="kc">None</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="kc">None</span></div>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Signal manipulation</span>
@@ -132,25 +133,29 @@
 
 <div class="viewcode-block" id="SignalData.compute_flight_segmentation"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.compute_flight_segmentation">[docs]</a>    <span class="k">def</span> <span class="nf">compute_flight_segmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Compute flight segmentation and set current data to &quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="o">=</span> <span class="n">flight_segmenter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="n">flight_segmenter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="c1"># filtering is adding new columns</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="SignalData.set_flight_segments"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.set_flight_segments">[docs]</a>    <span class="k">def</span> <span class="nf">set_flight_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+        <span class="s2">&quot;Set flight_segments attribute&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="n">phases</span></div>
+        
 <div class="viewcode-block" id="SignalData.apply_flight_segmentation"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.apply_flight_segmentation">[docs]</a>    <span class="k">def</span> <span class="nf">apply_flight_segmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">):</span>
-        <span class="s2">&quot;Restrict data to a segmet of the flight segment&quot;</span>
+        <span class="s2">&quot;Restrict data to a segment of the flight segment&quot;</span>
         <span class="c1"># Compute flight segmentation if it&#39;s not done</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">compute_flight_segmentation</span><span class="p">()</span>
         <span class="c1"># Check if the given segment is valid</span>
-        <span class="k">if</span> <span class="n">segment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Segement name not valide </span><span class="si">{}</span><span class="s1"> in </span><span class="si">{}</span><span class="s1">&#39;</span>
-                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">segment</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Segment name not valid </span><span class="si">{}</span><span class="s1"> in </span><span class="si">{}</span><span class="s1">&#39;</span>
+                            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">segment</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span><span class="p">))</span>
         <span class="c1"># don&#39;t do anything if no segments</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">[</span><span class="n">segment</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span><span class="p">[</span><span class="n">segment</span><span class="p">]):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Warning No segment found &quot;</span><span class="p">)</span>
-        <span class="c1"># Get all index in which the time is within a segment</span>
+        <span class="c1"># Get all indices in which the time is within a segment</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">size</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segemnts</span><span class="p">[</span><span class="n">segment</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span><span class="p">[</span><span class="n">segment</span><span class="p">]:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span> <span class="o">|</span> <span class="p">((</span><span class="n">start</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span> <span class="o">&lt;</span> <span class="n">end</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span></div>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -165,7 +170,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="SignalData.extractFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.extractFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">extractFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_dtc</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalData.extractFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.extractFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">extractFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature_names</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">n_dtc</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ravel_features</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extrait les features de la liste donnée en argument</span>
 <span class="sd">        et les ajoute à la matrice X</span>
@@ -183,27 +188,52 @@
                 <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_fft</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_fft</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;dtc&#39;</span><span class="p">:</span>
                 <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_dct</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n_dtc</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;time_over_threshold&#39;</span><span class="p">:</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_time_over_threshold</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;percent_time_over_threshold&#39;</span><span class="p">:</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_percent_time_over_threshold</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">fun</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">signal_data_features</span><span class="p">,</span> <span class="s2">&quot;get_&quot;</span><span class="o">+</span><span class="n">f</span><span class="p">)</span>
             <span class="n">agg</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">fun</span>
         <span class="c1"># If raw data (no sliding window)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">computed_features</span> <span class="o">=</span> <span class="p">{</span><span class="n">f</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-                                 <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">agg</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">computed_features</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="n">new_features_name</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">computed_features</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">f</span><span class="p">,</span> <span class="n">fun</span> <span class="ow">in</span> <span class="n">agg</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">fun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;fft&#39;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                        <span class="n">new_features_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+                        <span class="n">computed_features</span><span class="p">[</span><span class="n">f</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_features_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                    <span class="n">computed_features</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">computed_features</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">new_features_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">computed_features</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="c1"># return a multi indexed dataframe</span>
-            <span class="n">multi_indexed_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="n">multi_indexed_res</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
-                <span class="n">tmp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
-                <span class="n">computed_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">computed_features</span><span class="p">)</span></div>
+            <span class="c1"># [TODO] A TESTER !!!</span>
+            <span class="n">multi_indexed_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">rolling</span><span class="p">(</span><span class="n">window</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span><span class="p">,</span> <span class="n">min_periods</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">agg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ravel_features</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">feature_names</span><span class="p">:</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="n">multi_indexed_res</span><span class="p">[</span><span class="n">f</span><span class="p">]</span>
+                    <span class="n">tmp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">tmp</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">computed_features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">computed_features</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">multi_indexed_res</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SignalData.normalizeFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.normalizeFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">normalizeFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l1&#39;</span><span class="p">)</span></div></div>
+<div class="viewcode-block" id="SignalData.normalizeFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.normalizeFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">normalizeFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_dataFrame</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l1&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">keep_dataFrame</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">index</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">cols</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">idx</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="n">data</span></div></div>
 </pre></div>
 
           </div>

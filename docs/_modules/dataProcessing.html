@@ -27,7 +27,7 @@
     <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="examples package" href="examples.html" />
+    <link rel="next" title="data_info package" href="data_info.html" />
     <link rel="prev" title="algorithms package" href="algorithms.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -49,6 +49,121 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="module-dataProcessing.flycheck_plotter">
+<span id="dataprocessing-flycheck-plotter-module"></span><h2>dataProcessing.flycheck_plotter module<a class="headerlink" href="#module-dataProcessing.flycheck_plotter" title="Permalink to this headline">¶</a></h2>
+<p>Script to plot data</p>
+<dl class="class">
+<dt id="dataProcessing.flycheck_plotter.Plotter">
+<em class="property">class </em><code class="descclassname">dataProcessing.flycheck_plotter.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>input_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Class to plot data from a txt file</p>
+<p>See
+* plot_data
+* plot</p>
+<p>Basic usage:</p>
+<dl class="docutils">
+<dt>..code-block:: python</dt>
+<dd>pp = Plotter(&#8220;&lt;path_to_file&gt;&#8221;)
+# Plot one signal
+pp.plot_data(&#8216;WOW_FBK_AMSC1_CHA&#8217;)
+# Plot multiple signals with phases
+pp.plot([&#8216;WOW_FBK_AMSC1_CHA&#8217;, &#8216;ADSP1 Pressure Altitude (feet)&#8217;])</dd>
+</dl>
+<p>Attributes:</p>
+<dl class="docutils">
+<dt>__phases:</dt>
+<dd>:type dict
+dictionnary with np.array with the indexes of the dataframe of each phases</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attr data:</th><td class="field-body">DataFrame
+pandas DataFrame containing the data</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Attr segments_color:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">dict
+colors for each phases</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dataProcessing.flycheck_plotter.Plotter.compute_phases">
+<code class="descname">compute_phases</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter.compute_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter.compute_phases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute segmetation and convert intervals into index instead of time range</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dataProcessing.flycheck_plotter.Plotter.plot">
+<code class="descname">plot</code><span class="sig-paren">(</span><em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a list of signals</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>signals</strong> &#8211; list
+List of signal name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dataProcessing.flycheck_plotter.Plotter.plot_data">
+<code class="descname">plot_data</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2='Time'</em>, <em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie2016/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter.plot_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot one data over a second data in a scatter cloud</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>signal1</strong> &#8211; str
+name of the signal to plot</li>
+<li><strong></strong><strong>[</strong><strong>signal2='Time'</strong><strong>]</strong><strong></strong> &#8211; str
+if given it plot signal1 over signal2</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>:param [fig = plt ]</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">pyplot | AxesSubplot</span><dd>by default plot using pyplot
+This attribute is used for muliple y axis plot</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dataProcessing.flycheck_plotter.Plotter.plot_phases">
+<code class="descname">plot_phases</code><span class="sig-paren">(</span><em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter.plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot on a figure the flight phases
+see the attribut segments_color for color selection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fig</strong> &#8211; AxesSubplot
+axes subplot (using twinx) to plot phases on another y axis</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dataProcessing.flycheck_plotter.Plotter.set_data">
+<code class="descname">set_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#Plotter.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.Plotter.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set data of the plotter, then compute the phase</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="dataProcessing.flycheck_plotter.arguments_parser">
+<code class="descclassname">dataProcessing.flycheck_plotter.</code><code class="descname">arguments_parser</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/flycheck_plotter.html#arguments_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.flycheck_plotter.arguments_parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
 <div class="section" id="module-dataProcessing.parser">
 <span id="dataprocessing-parser-module"></span><h2>dataProcessing.parser module<a class="headerlink" href="#module-dataProcessing.parser" title="Permalink to this headline">¶</a></h2>
 <p>Script to parse the data file</p>
@@ -60,28 +175,20 @@
 
 <dl class="function">
 <dt id="dataProcessing.parser.txt_parser">
-<code class="descclassname">dataProcessing.parser.</code><code class="descname">txt_parser</code><span class="sig-paren">(</span><em>file_name</em>, <em>get_units=False</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#txt_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.txt_parser" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.parser.</code><code class="descname">txt_parser</code><span class="sig-paren">(</span><em>file_name</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#txt_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.txt_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read file_name and parse the data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>file_name</strong> &#8211; string
-path to the file to parse</li>
-<li><strong>get_units=False</strong> &#8211; bool
-if true, it returns an additional dictionary with the units of each
-column</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>file_name</strong> &#8211; string
+path to the file to parse</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Out data:</th><td class="field-body"><p class="first">pd.DataFrame
-data in the text file</p>
-</td>
+<tr class="field-even field"><th class="field-name">Out data:</th><td class="field-body">pd.DataFrame
+data in the text file</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Out [units]:</th><td class="field-body"><p class="first last">dict
-units of each column</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Out [units]:</th><td class="field-body">dict
+units of each column</td>
 </tr>
 </tbody>
 </table>
@@ -96,6 +203,43 @@ units of each column</p>
 <em class="property">class </em><code class="descclassname">dataProcessing.plotter.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>input_file=None</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Class to plot data from a txt file</p>
+<p>See
+* plot_data
+* plot</p>
+<p>Basic usage:</p>
+<dl class="docutils">
+<dt>..code-block:: python</dt>
+<dd>pp = Plotter(&#8220;&lt;path_to_file&gt;&#8221;)
+# Plot one signal
+pp.plot_data(&#8216;WOW_FBK_AMSC1_CHA&#8217;)
+# Plot multiple signals with phases
+pp.plot([&#8216;WOW_FBK_AMSC1_CHA&#8217;, &#8216;ADSP1 Pressure Altitude (feet)&#8217;])</dd>
+</dl>
+<p>Attributes:</p>
+<dl class="docutils">
+<dt>__phases__:</dt>
+<dd>:type dict
+dictionnary with np.array with the indexes of the dataframe of each phases</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attr data:</th><td class="field-body">DataFrame
+pandas DataFrame containing the data</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Attr segments_color:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">dict
+colors for each phases</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dataProcessing.plotter.Plotter.compute_phases">
+<code class="descname">compute_phases</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.compute_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.compute_phases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute segmetation and convert intervals into index instead of time range</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="dataProcessing.plotter.Plotter.plot">
 <code class="descname">plot</code><span class="sig-paren">(</span><em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot" title="Permalink to this definition">¶</a></dt>
@@ -113,7 +257,7 @@ List of signal name</td>
 
 <dl class="method">
 <dt id="dataProcessing.plotter.Plotter.plot_data">
-<code class="descname">plot_data</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2='Time'</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_data</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2='Time'</em>, <em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie2016/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot one data over a second data in a scatter cloud</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -129,12 +273,33 @@ if given it plot signal1 over signal2</li>
 </tr>
 </tbody>
 </table>
+<dl class="docutils">
+<dt>:param [fig = plt ]</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">pyplot | AxesSubplot</span><dd>by default plot using pyplot
+This attribute is used for muliple y axis plot</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="dataProcessing.plotter.Plotter.plot_phases">
+<code class="descname">plot_phases</code><span class="sig-paren">(</span><em>fig</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot on a figure the flight phases
+see the attribut segments_color for color selection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fig</strong> &#8211; AxesSubplot
+axes subplot (using twinx) to plot phases on another y axis</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="dataProcessing.plotter.Plotter.set_data">
-<code class="descname">set_data</code><span class="sig-paren">(</span><em>data</em>, <em>units=False</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.set_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set data of the plotter</p>
+<code class="descname">set_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#Plotter.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.Plotter.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set data of the plotter, then compute the phase</p>
 </dd></dl>
 
 </dd></dl>
@@ -233,6 +398,7 @@ keys represent names of segments and values are lists of tuples (time start,time
   <ul>
 <li><a class="reference internal" href="#">dataProcessing package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-dataProcessing.flycheck_plotter">dataProcessing.flycheck_plotter module</a></li>
 <li><a class="reference internal" href="#module-dataProcessing.parser">dataProcessing.parser module</a></li>
 <li><a class="reference internal" href="#module-dataProcessing.plotter">dataProcessing.plotter module</a></li>
 <li><a class="reference internal" href="#module-dataProcessing.segmenter">dataProcessing.segmenter module</a></li>
@@ -246,7 +412,7 @@ keys represent names of segments and values are lists of tuples (time start,time
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="modules.html">code</a><ul>
       <li>Previous: <a href="algorithms.html" title="previous chapter">algorithms package</a></li>
-      <li>Next: <a href="examples.html" title="next chapter">examples package</a></li>
+      <li>Next: <a href="data_info.html" title="next chapter">data_info package</a></li>
   </ul></li>
   </ul></li>
 </ul>

@@ -1,13 +1,17 @@
 """
 Script to plot data
+
+
 """
 import logging
 
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
+from data_info.units import units
 
 def arguments_parser():
     import argparse
@@ -40,23 +44,99 @@ def arguments_parser():
 class Plotter:
     """
     Class to plot data from a txt file
+
+    See
+    * plot_data
+    * plot
+
+    Basic usage:
+
+    ..code-block:: python
+        pp = Plotter("<path_to_file>")
+        # Plot one signal
+        pp.plot_data('WOW_FBK_AMSC1_CHA')
+        # Plot multiple signals with phases
+        pp.plot(['WOW_FBK_AMSC1_CHA', 'ADSP1 Pressure Altitude (feet)'])
+
+    Attributes:
+
+    phases:
+        :type dict
+        dictionnary with np.array with the indexes of the dataframe of each phases
+    :attr data: DataFrame
+        pandas DataFrame containing the data
+    :attr segments_color: dict
+        colors for each phases
     """
     def __init__(self, input_file=None):
+        self.phases = None
         if input_file is None:
             self.data = pd.DataFrame()
-            self.units = {}
         else:
-            self.data, self.units = txt_parser(input_file, get_units=True)
-            self.phases = segment(self.data)
+            self.data = txt_parser(input_file)
+            self.compute_phases()
         self.segments_color = {'climb': "r", 'cruise': "b",
                                'landing': 'm',
                                'descent': 'g', 'hold': "c",
-                               'landing': 'm',
                                'otg': 'y', 'take_off': 'k'}
+        self.segments_order = ["otg", "take_off", "landing", "climb", "descent", "hold", "cruise"]
+
+    def set_data(self, data):
+        """
+        Set data of the plotter, then compute the phase
+        """
+        self.data = data
+        self.compute_phases()
+
+    def compute_phases(self):
+        """
+        Compute segmetation and convert intervals into index instead of time range
+        """
+        phases = segment(self.data)
+        time = self.data.Time
+        self.phases = {}
+        for name, segments in phases.items():
+            idx = np.zeros(time.size).astype(bool)
+            for start, end in segments:
+                idx = idx | ( (start < time) & (time < end ) )
+            self.phases[name] = self.data.index[idx] # Was converted to pd.Series because of time
+
+    def plot_phases(self, fig=plt):
+        """
+        Plot on a figure the flight phases
+        see the attribut segments_color for color selection
+
+        :param fig: AxesSubplot
+            axes subplot (using twinx) to plot phases on another y axis
+        """
+        if "Time" not in self.data.columns:
+            print("Time not in data cannot plot phase")
+            return
+        prev_phases = np.zeros(self.data.Time.size)
+        for nb_phase, name in enumerate(self.segments_order):
+            idx = self.phases[name]
+            phases = prev_phases.copy()
+            # Compute index of the phase
+            phases[idx] = nb_phase + 1
+            # Plot the phase
+            fig.fill_between(self.data.Time, prev_phases, phases,
+                             facecolor=self.segments_color[name], linewidth=0,
+                             label=name, alpha=0.2)
+            prev_phases = phases.copy()
+        # Customize the y axis / labels for the phases
+
+        fig.grid()
+        yticks_label = [""] + self.segments_order
+        if fig == plt:
+            fig.ylim((0, len(self.phases)+1))
+            fig.yticks(np.arange(len(self.phases)+1), yticks_label)
+            plt.show()
+        else:
+            fig.set_ylim(0, len(self.phases)+1)
+            fig.set_yticklabels(yticks_label)
 
 
-
-    def plot_data(self, signal1, signal2='Time'):
+    def plot_data(self, signal1, signal2='Time', fig=plt):
         """
         Plot one data over a second data in a scatter cloud
 
@@ -64,6 +144,9 @@ class Plotter:
             name of the signal to plot
         :param [signal2='Time']: str
             if given it plot signal1 over signal2
+        :param [fig = plt ] : pyplot | AxesSubplot
+            by default plot using pyplot
+            This attribute is used for muliple y axis plot
         """
         # Check if each signal are in data
         if signal1 not in self.data.columns:
@@ -74,33 +157,21 @@ class Plotter:
             return
         if signal2 == "Time":
             signal2, signal1 = signal1, signal2
-
-        plt.plot(self.data[signal1], self.data[signal2],
+        fig.plot(self.data[signal1], self.data[signal2],
                  label=signal1+" / "+signal2)
-        plt.xlabel("{} [{}]".format(signal1, self.units.get(signal1, "")))
-        plt.ylabel("{} [{}]".format(signal2, self.units.get(signal2, "")))
-        # Add vertical bars to show different phases
-        _, ymax = plt.ylim()
-        for segment_name, segments in self.phases.items():
-            # If not segments skip this phase
-            if len(segments) == 0:
-                continue
-            segment_color = self.segments_color.get(segment_name, 'k')
-            for start, end in segments:
-                plt.axvline(x=start, color=segment_color, linestyle="dashed")
-                plt.text(start, ymax, segment_name, verticalalignment="top",
-                         color=segment_color, rotation=90)
-                plt.axvline(x=end, color=segment_color, linestyle="dotted")
-        plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+        xlabel = "{} [{}]".format(signal1, units.get(signal1, ""))
+        ylabel = "{} [{}]".format(signal2, units.get(signal2, ""))
+        if fig == plt:
+            # Case of basic plots without phase (using plt)
+            fig.xlabel(xlabel)
+            fig.ylabel(ylabel)
+        else:
+            # Case of plot in AxesSubplot
+            fig.set_xlabel(xlabel)
+            fig.set_ylabel(ylabel)
+        # Add legend to the plot
+        fig.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                    ncol=2, mode="expand", borderaxespad=0.)
-
-
-    def set_data(self, data, units=False):
-        "Set data of the plotter"
-        self.data = data
-        self.phases = segment(data)
-        if units:
-            self.units = units
 
 
     def plot(self, signals):
@@ -110,8 +181,11 @@ class Plotter:
         :param signals: list
             List of signal name
         """
+        _, host = plt.subplots()
+        par = host.twinx()
         for name in signals:
-            self.plot_data(name)
+            self.plot_data(name, fig=host)
+        self.plot_phases(par)
         plt.show()
 
 

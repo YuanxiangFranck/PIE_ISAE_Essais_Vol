@@ -92,6 +92,10 @@ class SignalData:
         # filtering is adding new columns
         self._raw_data = self.data.copy()
 
+    def set_flight_segments(self, phases):
+        "Set flight_segments attribute"
+        self.flight_segments = phases
+        
     def apply_flight_segmentation(self, segment):
         "Restrict data to a segment of the flight segment"
         # Compute flight segmentation if it's not done
@@ -121,7 +125,7 @@ class SignalData:
         """
         self.X = self.data.copy()
 
-    def extractFeatures(self, feature_names, n_fft=10, n_dtc=10, ravel_features=True):
+    def extractFeatures(self, feature_names, n_fft=10, n_dtc=10, threshold=1.0, ravel_features=True):
         """
         Extrait les features de la liste donnée en argument
         et les ajoute à la matrice X
@@ -139,17 +143,32 @@ class SignalData:
                 fun = lambda x: signal_data_features.get_fft(x, n_fft)
             elif f == 'dtc':
                 fun = lambda x: signal_data_features.get_dct(x, n_dtc)
+            elif f == 'time_over_threshold':
+                fun = lambda x: signal_data_features.get_time_over_threshold(x, threshold)
+            elif f == 'percent_time_over_threshold':
+                fun = lambda x: signal_data_features.get_percent_time_over_threshold(x, threshold)
             else:
                 fun = getattr(signal_data_features, "get_"+f)
             agg[f] = fun
         # If raw data (no sliding window)
         if self.sl_window is None:
-            computed_features = {f: self.data.apply(fun, axis=0)
-                                 for f, fun in agg.items()}
-            self.X = pd.DataFrame(computed_features).loc[:, feature_names]
+            new_features_name = []
+            computed_features = {}
+            for f, fun in agg.items():
+                data = fun(self.data)
+                if f == 'fft':
+                    for i in range(data.shape[1]):
+                        new_features_name.append(f + str(i))
+                        computed_features[f + str(i)] = data[:, i]
+
+                else:
+                    new_features_name.append(f)
+                    computed_features[f] = data
+            self.X = pd.DataFrame(computed_features).loc[:, new_features_name]
         else:
             computed_features = []
             # return a multi indexed dataframe
+            # [TODO] A TESTER !!!
             multi_indexed_res = self.data.rolling(window=self.sl_window, min_periods=1).agg(agg)
             if ravel_features:
                 for f in feature_names:

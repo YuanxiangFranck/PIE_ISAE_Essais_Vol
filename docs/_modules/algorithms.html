@@ -49,6 +49,12 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
+<div class="section" id="algorithms-1-flight-sub-delta-detection-module">
+<h2>algorithms.1_flight_sub_delta_detection module<a class="headerlink" href="#algorithms-1-flight-sub-delta-detection-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="algorithms-1-flight-sub-detection-module">
+<h2>algorithms.1_flight_sub_detection module<a class="headerlink" href="#algorithms-1-flight-sub-detection-module" title="Permalink to this headline">¶</a></h2>
+</div>
 <div class="section" id="module-algorithms.NNeighbor">
 <span id="algorithms-nneighbor-module"></span><h2>algorithms.NNeighbor module<a class="headerlink" href="#module-algorithms.NNeighbor" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
@@ -97,7 +103,7 @@ binary : boolean</p>
 <dl class="method">
 <dt id="algorithms.SignalData.SignalData.apply_flight_segmentation">
 <code class="descname">apply_flight_segmentation</code><span class="sig-paren">(</span><em>segment</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.apply_flight_segmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.apply_flight_segmentation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restrict data to a segmet of the flight segment</p>
+<dd><p>Restrict data to a segment of the flight segment</p>
 </dd></dl>
 
 <dl class="method">
@@ -114,6 +120,7 @@ keep:</p>
 <ul class="simple">
 <li>data / raw data</li>
 <li>flight segments</li>
+<li>window size</li>
 </ul>
 </dd></dl>
 
@@ -125,7 +132,7 @@ keep:</p>
 
 <dl class="method">
 <dt id="algorithms.SignalData.SignalData.extractFeatures">
-<code class="descname">extractFeatures</code><span class="sig-paren">(</span><em>feature_names</em>, <em>n_fft=10</em>, <em>n_dtc=10</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.extractFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.extractFeatures" title="Permalink to this definition">¶</a></dt>
+<code class="descname">extractFeatures</code><span class="sig-paren">(</span><em>feature_names</em>, <em>n_fft=10</em>, <em>n_dtc=10</em>, <em>threshold=1.0</em>, <em>ravel_features=True</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.extractFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.extractFeatures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extrait les features de la liste donnée en argument
 et les ajoute à la matrice X
 feature_names : list of strings
@@ -143,7 +150,7 @@ binary_transitions, fft, dtc (discrete cosine transform)</p>
 
 <dl class="method">
 <dt id="algorithms.SignalData.SignalData.normalizeFeatures">
-<code class="descname">normalizeFeatures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.normalizeFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.normalizeFeatures" title="Permalink to this definition">¶</a></dt>
+<code class="descname">normalizeFeatures</code><span class="sig-paren">(</span><em>keep_dataFrame=False</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.normalizeFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.normalizeFeatures" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -158,6 +165,12 @@ flight segments are kept</p>
 <code class="descname">setSegmentation</code><span class="sig-paren">(</span><em>w</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.setSegmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.setSegmentation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Segmentation du signal avec fenêtre de taille fixe.
 w : window size</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="algorithms.SignalData.SignalData.set_flight_segments">
+<code class="descname">set_flight_segments</code><span class="sig-paren">(</span><em>phases</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.set_flight_segments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.set_flight_segments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set flight_segments attribute</p>
 </dd></dl>
 
 <dl class="method">
@@ -178,7 +191,7 @@ pour certains algorithmes !</p>
 <p>&#64;author: Matthieu</p>
 <dl class="function">
 <dt id="algorithms.Symmetry.SymmetryTest">
-<code class="descclassname">algorithms.Symmetry.</code><code class="descname">SymmetryTest</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2</em>, <em>error</em>, <em>comment='ok'</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#SymmetryTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.SymmetryTest" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">algorithms.Symmetry.</code><code class="descname">SymmetryTest</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2</em>, <em>error</em>, <em>name_signal1=''</em>, <em>comment='ok'</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#SymmetryTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.SymmetryTest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Inputs :</p>
 <ul class="simple">
 <li>signal1, signal2 : two signals of the class SignalData to compare</li>
@@ -188,6 +201,11 @@ pour certains algorithmes !</p>
 <li>error : the result will be False if there is at least one value which is</li>
 </ul>
 <p>out of the relative error box</p>
+<ul class="simple">
+<li>[name_signal1] : optional, a string, the name of the first input. Allows</li>
+</ul>
+<p>the algorithm to check if the inputs are boolean or not (from specifications)
+By defaut, consider the signal as non boolean.</p>
 <ul class="simple">
 <li>[comment] : otpional, a string, if equals &#8216;none&#8217; then don&#8217;t print any result,</li>
 </ul>
@@ -201,8 +219,8 @@ the next values are the index of the signal.data where the differences where fou
 </dd></dl>
 
 <dl class="function">
-<dt id="algorithms.Symmetry.Symmetry_One_Flight">
-<code class="descclassname">algorithms.Symmetry.</code><code class="descname">Symmetry_One_Flight</code><span class="sig-paren">(</span><em>flight</em>, <em>error</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#Symmetry_One_Flight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.Symmetry_One_Flight" title="Permalink to this definition">¶</a></dt>
+<dt id="algorithms.Symmetry.Symmetry_Channels_One_Flight">
+<code class="descclassname">algorithms.Symmetry.</code><code class="descname">Symmetry_Channels_One_Flight</code><span class="sig-paren">(</span><em>flight</em>, <em>error</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#Symmetry_Channels_One_Flight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.Symmetry_Channels_One_Flight" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find the symmetry problems in a flight by comparing both channels A 
 and B for each measure of a flight.</p>
 <p>Inputs :</p>
@@ -224,29 +242,84 @@ The names are in result_anomaly[2*i] and the indexes in result_anomaly[2*i+1]
 with i &lt;= 0</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="algorithms.Symmetry.Symmetry_Lateral_One_Flight">
+<code class="descclassname">algorithms.Symmetry.</code><code class="descname">Symmetry_Lateral_One_Flight</code><span class="sig-paren">(</span><em>flight</em>, <em>error</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#Symmetry_Lateral_One_Flight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.Symmetry_Lateral_One_Flight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the symmetry problems in a flight by comparing the right and left side for each measure of a flight.</p>
+<p>Inputs :</p>
+<ul class="simple">
+<li>flight : must have been parsed by txt_parser. Contains all the signals</li>
+</ul>
+<p>of one flight</p>
+<ul class="simple">
+<li>error : relative error accepted for the detection of anomalies between</li>
+</ul>
+<p>two signals which should have been equal</p>
+<p>Output :</p>
+<ul class="simple">
+<li>result_anomaly : Contains the names of the supposed equal signals wich are</li>
+</ul>
+<p>actually different. Contains as well the indexes where the differences were 
+found
+The names are in result_anomaly[2*i] and the indexes in result_anomaly[2*i+1]
+with i &lt;= 0</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.Symmetry.is_bool">
+<code class="descclassname">algorithms.Symmetry.</code><code class="descname">is_bool</code><span class="sig-paren">(</span><em>signal_name</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#is_bool"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.is_bool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input :</p>
+<ul class="simple">
+<li>signal_name : a string, the name of the signal to test.</li>
+</ul>
+<p>Output :</p>
+<ul class="simple">
+<li>Result : a boolean, is True if the input signal is known as a boolean,</li>
+</ul>
+<p>and returns False if the name is contained in the list of regulated signals (non boolean)</p>
+</dd></dl>
+
 </div>
-<div class="section" id="algorithms-n-flights-module">
-<h2>algorithms.n_flights module<a class="headerlink" href="#algorithms-n-flights-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="algorithms-flight-analysis-fun-module">
+<h2>algorithms.flight_analysis_fun module<a class="headerlink" href="#algorithms-flight-analysis-fun-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-algorithms.n_flights_2">
-<span id="algorithms-n-flights-2-module"></span><h2>algorithms.n_flights_2 module<a class="headerlink" href="#module-algorithms.n_flights_2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="algorithms-flight-analysis-template-module">
+<h2>algorithms.flight_analysis_template module<a class="headerlink" href="#algorithms-flight-analysis-template-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-algorithms.flight_names">
+<span id="algorithms-flight-names-module"></span><h2>algorithms.flight_names module<a class="headerlink" href="#module-algorithms.flight_names" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Jan  5 19:11:55 2017</p>
+<p>&#64;author: Florent</p>
+<p>Flight Names</p>
+</div>
+<div class="section" id="algorithms-n-flights-cluster-module">
+<h2>algorithms.n_flights_cluster module<a class="headerlink" href="#algorithms-n-flights-cluster-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="algorithms-n-flights-pca-module">
+<h2>algorithms.n_flights_pca module<a class="headerlink" href="#algorithms-n-flights-pca-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="algorithms-n-flights-pca-fft-module">
+<h2>algorithms.n_flights_pca_fft module<a class="headerlink" href="#algorithms-n-flights-pca-fft-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-algorithms.n_flights_segements">
+<span id="algorithms-n-flights-segements-module"></span><h2>algorithms.n_flights_segements module<a class="headerlink" href="#module-algorithms.n_flights_segements" title="Permalink to this headline">¶</a></h2>
 <p>Détection de vols anormaux</p>
 <dl class="function">
-<dt id="algorithms.n_flights_2.compute_data">
-<code class="descclassname">algorithms.n_flights_2.</code><code class="descname">compute_data</code><span class="sig-paren">(</span><em>flight_names</em>, <em>flights_data</em>, <em>segment_to_study</em>, <em>needed_columns=None</em>, <em>needed_features=None</em>, <em>use_features=False</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_2.html#compute_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_2.compute_data" title="Permalink to this definition">¶</a></dt>
+<dt id="algorithms.n_flights_segements.compute_data">
+<code class="descclassname">algorithms.n_flights_segements.</code><code class="descname">compute_data</code><span class="sig-paren">(</span><em>flight_names</em>, <em>flights_data</em>, <em>segment_to_study</em>, <em>needed_columns=None</em>, <em>needed_features=None</em>, <em>use_features=False</em>, <em>ravel_features=True</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_segements.html#compute_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_segements.compute_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>loop over file and compute data
 :path: string</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="algorithms.n_flights_2.init_data">
-<code class="descclassname">algorithms.n_flights_2.</code><code class="descname">init_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_2.html#init_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_2.init_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Load all flights and extract features</p>
+<dt id="algorithms.n_flights_segements.init">
+<code class="descclassname">algorithms.n_flights_segements.</code><code class="descname">init</code><span class="sig-paren">(</span><em>cas</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_segements.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_segements.init" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize different senario</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="algorithms.n_flights_2.plot">
-<code class="descclassname">algorithms.n_flights_2.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>flights</em>, <em>flight_names</em>, <em>segment_to_study</em>, <em>use_features</em>, <em>figure=1</em>, <em>plot_fig=True</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_2.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_2.plot" title="Permalink to this definition">¶</a></dt>
+<dt id="algorithms.n_flights_segements.plot">
+<code class="descclassname">algorithms.n_flights_segements.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>flights</em>, <em>flight_names</em>, <em>segment_to_study</em>, <em>use_features</em>, <em>figure=1</em>, <em>plot_fig=True</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_segements.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_segements.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>plot computed data</p>
 </dd></dl>
 
@@ -257,6 +330,11 @@ with i &lt;= 0</p>
 <dl class="function">
 <dt id="algorithms.signal_data_features.get_amplitude">
 <code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_amplitude</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_amplitude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_covariance">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_covariance</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_covariance" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -274,10 +352,61 @@ n_fft plus grands coefficients de Fourier</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="algorithms.signal_data_features.get_max">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_max</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_max" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_mean">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_mean</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_mean" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_mean_crossings">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_mean_crossings</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/signal_data_features.html#get_mean_crossings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.signal_data_features.get_mean_crossings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renvoie le nombre de passages de la moyenne de x</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_min">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_min</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_min" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="algorithms.signal_data_features.get_nb_transitions">
 <code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_nb_transitions</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_nb_transitions" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_percent_time_over_threshold">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_percent_time_over_threshold</code><span class="sig-paren">(</span><em>x</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/signal_data_features.html#get_percent_time_over_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.signal_data_features.get_percent_time_over_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renvoie la proportion de pas de temps durant lesquels
+abs(x) est supérieur à un certain seuil val</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_std">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_std</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_std" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_time_over_threshold">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_time_over_threshold</code><span class="sig-paren">(</span><em>x</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/signal_data_features.html#get_time_over_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.signal_data_features.get_time_over_threshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renvoie le nombre de pas de temps durant lesquels
+abs(x) est supérieur à un certain seuil val</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.signal_data_features.get_var">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_var</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="headerlink" href="#algorithms.signal_data_features.get_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-algorithms.signal_names">
+<span id="algorithms-signal-names-module"></span><h2>algorithms.signal_names module<a class="headerlink" href="#module-algorithms.signal_names" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Jan  5 18:25:15 2017</p>
+<p>&#64;author: Florent</p>
+<p>Signal Names</p>
 </div>
 <div class="section" id="module-algorithms">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-algorithms" title="Permalink to this headline">¶</a></h2>
@@ -294,12 +423,20 @@ n_fft plus grands coefficients de Fourier</p>
   <ul>
 <li><a class="reference internal" href="#">algorithms package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#algorithms-1-flight-sub-delta-detection-module">algorithms.1_flight_sub_delta_detection module</a></li>
+<li><a class="reference internal" href="#algorithms-1-flight-sub-detection-module">algorithms.1_flight_sub_detection module</a></li>
 <li><a class="reference internal" href="#module-algorithms.NNeighbor">algorithms.NNeighbor module</a></li>
 <li><a class="reference internal" href="#module-algorithms.SignalData">algorithms.SignalData module</a></li>
 <li><a class="reference internal" href="#module-algorithms.Symmetry">algorithms.Symmetry module</a></li>
-<li><a class="reference internal" href="#algorithms-n-flights-module">algorithms.n_flights module</a></li>
-<li><a class="reference internal" href="#module-algorithms.n_flights_2">algorithms.n_flights_2 module</a></li>
+<li><a class="reference internal" href="#algorithms-flight-analysis-fun-module">algorithms.flight_analysis_fun module</a></li>
+<li><a class="reference internal" href="#algorithms-flight-analysis-template-module">algorithms.flight_analysis_template module</a></li>
+<li><a class="reference internal" href="#module-algorithms.flight_names">algorithms.flight_names module</a></li>
+<li><a class="reference internal" href="#algorithms-n-flights-cluster-module">algorithms.n_flights_cluster module</a></li>
+<li><a class="reference internal" href="#algorithms-n-flights-pca-module">algorithms.n_flights_pca module</a></li>
+<li><a class="reference internal" href="#algorithms-n-flights-pca-fft-module">algorithms.n_flights_pca_fft module</a></li>
+<li><a class="reference internal" href="#module-algorithms.n_flights_segements">algorithms.n_flights_segements module</a></li>
 <li><a class="reference internal" href="#module-algorithms.signal_data_features">algorithms.signal_data_features module</a></li>
+<li><a class="reference internal" href="#module-algorithms.signal_names">algorithms.signal_names module</a></li>
 <li><a class="reference internal" href="#module-algorithms">Module contents</a></li>
 </ul>
 </li>

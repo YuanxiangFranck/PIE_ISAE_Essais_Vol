@@ -135,7 +135,7 @@ def init(cas):
 
 
 if __name__ == "__main__":
-    usefeature, features, cols, ravelfeatures = init(1)
+    usefeature, features, cols, ravelfeatures = init(2)
     all_computed_data = {}
     signals_data = []
     dir_path = "../data/"
