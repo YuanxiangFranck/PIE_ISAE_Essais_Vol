@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+        <title>{name}</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+        <style type="text/css">{css}</style>
+        <script
+             src="https://code.jquery.com/jquery-3.1.1.min.js"
+             integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+             crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    </head>
+    <body>
+        <div class="section col-md-10">
+            <h1>File: {name}</h1>
+        </div>
+        <div class="section col-md-10">
+            <h2>Data header</h2>
+            {header}
+        </div>
+        <div class="section col-md-10">
+            <h2>Flight phases</h2>
+            {phases}
+        </div>
+        <div  class="section col-md-10">
+            <h2>Flight statistics</h2>
+            <!-- {stats} -->
+            <div id="phases_stats_pie">
+            </div>
+        </div>
+        <script>
+            var stats = {stats};
+            {js_code}
+        </script>
+    </body>
+</html>
