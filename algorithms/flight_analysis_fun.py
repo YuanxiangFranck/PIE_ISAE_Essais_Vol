@@ -116,3 +116,12 @@ def idx2date(dates, idx, sl_w, sl_s):
         return (dates[i_start][0] + idx * sl_s - elapsed, \
                 dates[i_start][0] + idx * sl_s + sl_w - elapsed)
         
+def idx2phase(start, stop, flight_segments, idx, sl_w, sl_s):
+    for phase in flight_segments.items():
+        phase_name, phase_dates = phase
+        #print(phase_name)
+        for i,dates in enumerate(phase_dates):
+            #print(dates)
+            #print(idx2date([(start,stop)], idx, sl_w, sl_s)[0])
+            if dates[0] <= idx2date([(start,stop)], idx, sl_w, sl_s)[0] <= dates[1]:
+                return phase_name,i
