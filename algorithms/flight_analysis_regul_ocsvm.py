@@ -24,7 +24,7 @@ Import des noms de signaux
 * signal_names_for_segmentation : signaux utilisés pour la segmentation
 * signal_names_bin : signaux binaires
 """
-from signal_names import signal_names_regul
+from signal_names import signal_names_regul, target_names_regul
 
 #%%
 """
@@ -32,7 +32,7 @@ Sélection et chargement du vol
 * modifier le path relatif si besoin
 """
 
-flight_name = 'E190-E2_20001_0085_29472_53398_request.txt'
+flight_name = 'E190-E2_20001_0083_29106_52495_request.txt'
 path = '../../data/'
 
 whole_flight = load_flight(path+flight_name)
@@ -76,8 +76,8 @@ if phase != 'all':
                 for date in flight_data.flight_segments[phase]]) \
             > sl_w)
     
-samples = extract_sl_window(flight_data.data, signal_names_regul, \
-                            sl_w, sl_s)
+samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
+                            target_names_regul, sl_w, sl_s)
 
 #%%
 """
@@ -88,7 +88,7 @@ Calcul des features
 
 from sklearn.preprocessing import scale
 
-features = ['mean_crossings','time_over_threshold','mean','std','amplitude']
+features = ['mean','std','percent_time_over_threshold']
 
 feature_matrix = get_feature_matrix(samples, features, normalized=False)
 
@@ -96,25 +96,62 @@ feature_matrix = scale(feature_matrix)
 
 #%%
 """
+Visualisation des données par phase de vol
+"""
+
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+reduced_data = PCA(n_components=2).fit_transform(feature_matrix)
+
+plt.figure(figsize=(10,10))
+
+color_dic = {'climb': "r", 'cruise': "b",
+                               'landing': 'm',
+                               'descent': 'g', 'hold': "c",
+                               'otg': 'y', 'take_off': 'k'}
+                               
+if phase == 'all':
+    flight_data.compute_flight_segmentation()
+    
+    phases = []
+    for i in range(len(samples)):
+        p = idx2phase(whole_flight.Time.iloc[0], whole_flight.Time.iloc[-1], \
+                             flight_data.flight_segments, i, sl_w, sl_s)
+        if p:
+            phases.append(p[0])
+        else:
+            phases.append('missing')
+
+    color_dic['missing'] = 'white'
+    
+    colors = [color_dic[phases[i]] for i in range(len(samples))]
+        
+    plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=colors, s=50)
+    
+else:
+     plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=color_dic[phase], s=50)
+     
+for i in range(reduced_data.shape[0]):
+    plt.text(reduced_data[i,0]+0.05,reduced_data[i,1],i)
+    
+#%%
+"""
 Analyse
 OCSVM
 """
 
-import matplotlib.pyplot as plt
 from sklearn import svm
 
 ocsvm = svm.OneClassSVM(nu=0.5, kernel="rbf", gamma=0.1)
 #ocsvm.fit(feature_matrix)
 #predictions = ocsvm.predict(feature_matrix)
-
-# PCA + visualization
-
-from sklearn.decomposition import PCA
-
-reduced_data = PCA(n_components=2).fit_transform(feature_matrix)
 ocsvm.fit(reduced_data)
 predictions = ocsvm.predict(reduced_data)
+
 outliers = reduced_data[predictions == -1]
+
+plt.figure(figsize=(10,10))
 
 # Step size of the mesh. Decrease to increase the quality of the VQ.
 h = 0.01     # point in the mesh [x_min, x_max]x[y_min, y_max].
@@ -128,7 +165,6 @@ xx, yy = np.meshgrid(np.arange(x_min, x_max, h), np.arange(y_min, y_max, h))
 Z = ocsvm.decision_function(np.c_[xx.ravel(), yy.ravel()])
 Z = Z.reshape(xx.shape)
 
-plt.title("Novelty Detection")
 plt.contourf(xx, yy, Z, levels=np.linspace(Z.min(), 0, 7), cmap=plt.cm.PuBu)
 a = plt.contour(xx, yy, Z, levels=[0], linewidths=2, colors='darkred')
 plt.contourf(xx, yy, Z, levels=[0, Z.max()], colors='palevioletred')
@@ -140,4 +176,10 @@ c = plt.scatter(outliers[:, 0], outliers[:, 1], c='gold', s=s)
 for i in range(reduced_data.shape[0]):
     plt.text(reduced_data[i,0]+0.05,reduced_data[i,1],i)
 
+plt.title('- OCSVM Outlier detection -\n'\
+      'Flight : {} / Phase : {}\n'\
+      'Data : relative error between regulation and target signals\n'\
+      'Features : {}\n'\
+      'Time window : {} s'.format(flight_name,phase,features, sl_w))
+    
 plt.show()
