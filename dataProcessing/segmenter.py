@@ -6,7 +6,7 @@ Created on Sat Nov  12 13:25:24 2016
 
 Tool to create flight segmentation
 
-TODO : regarder les recouvrements
+TODO : temps passé sur chaque phase sur chaque port
 """
 
 
@@ -71,6 +71,10 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     altitude = 'ADSP1 Pressure Altitude (feet)'
     altitude_rate = 'ADSP1 Altitude Rate (ft/min)'
     calib_air_speed = 'ADSP1 Calibrated Airspeed (knots)'
+    hp_amsc1_cha = 'HPRSOV_CMD_STATUS_ASMC1_CHA'
+    hp_amsc2_cha = 'HPRSOV_CMD_STATUS_ASMC2_CHA'
+    hp_amsc1_chb = 'HPRSOV_CMD_STATUS_ASMC1_CHB'
+    hp_amsc2_chb = 'HPRSOV_CMD_STATUS_ASMC2_CHB'
 
     # Extraction of relevant signals
     wow_signal = data[wow]
@@ -78,6 +82,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     cas_signal = data[calib_air_speed]
     delta_cas_signal = data[calib_air_speed].rolling(center = False, window = 120).mean() -  data[calib_air_speed].rolling(center = False, window = 120).mean().shift(1)
     alt_rate_signal = data[altitude_rate].rolling(center = False, window = 120).mean()
+    
     # Add filtered values to data
     data["delta_cas_signal"] = delta_cas_signal.fillna(method="bfill")
     data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
@@ -87,7 +92,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     if otg:
         times = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)].Time.values.flatten().tolist()
         intervals['otg'] = cut(times)
-    if take_off: # Ajouter CAS croissante
+    if take_off:
         times = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000)].Time.values.flatten().tolist()
         intervals['take_off'] = cut(times)
     if landing:
@@ -121,7 +126,7 @@ def get_weights(segments_dict, data):
         keys represent names of segments, values are float representing the time spent in this segment divided by the total duration of the flight
     """
     weights = dict()
-    total_duration = data.Time.iloc[-1,0] - data.Time.iloc[0,0]
+    total_duration = data.Time.iloc[-1] - data.Time.iloc[0]
     for segment in segments_dict.keys():
         weights[segment] = 0
         for time_values in segments_dict[segment]:
@@ -131,7 +136,7 @@ def get_weights(segments_dict, data):
 if __name__ == "__main__":
 
     # Chemin relatif vers le fichier txt de données
-    data_path = '../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt'
+    data_path = '../../Desktop/Articles Liebherr/pie_data/data2.txt'
 
     # data contient un DataFrame pandas
     data = txt_parser(data_path)
