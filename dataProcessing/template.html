@@ -21,15 +21,16 @@
         </div>
         <div class="section col-md-10">
             <h2>Flight phases</h2>
-            {phases}
+            <!-- {phases} -->
+            <div id="plot_phases"></div>
         </div>
         <div  class="section col-md-10">
             <h2>Flight statistics</h2>
             <!-- {stats} -->
-            <div id="phases_stats_pie">
-            </div>
+            <div id="phases_stats_pie"></div>
         </div>
         <script>
+            var phases = {phases};
             var stats = {stats};
             {js_code}
         </script>

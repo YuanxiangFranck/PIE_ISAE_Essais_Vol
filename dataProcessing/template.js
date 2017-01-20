@@ -19,3 +19,19 @@ var layout = {
     width: 500
 };
 Plotly.newPlot('phases_stats_pie', data, layout);
+
+var data = [];
+var index = phases["index"];
+var order =  ["otg", "take_off", "landing", "climb", "descent", "hold", "cruise"];
+for (var phase of order) {
+    var fill = phase=="otg"?'tozeroy':'tonexty';
+    data.push({
+        y: phases[phase],
+        x: index,
+        name: phase,
+        fill: fill,
+        type: "scatter"
+    });
+}
+
+Plotly.newPlot('plot_phases', data, {height: 400 });
