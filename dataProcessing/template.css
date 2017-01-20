@@ -1,3 +1,11 @@
 .section {
     margin: 20px;
 }
+
+.code {
+    padding: 9.5px;
+    color: #333;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}

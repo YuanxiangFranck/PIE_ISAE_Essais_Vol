@@ -29,9 +29,12 @@ for (var phase of order) {
         y: phases[phase],
         x: index,
         name: phase,
-        fill: fill,
+        fill: 'tozeroy',
         type: "scatter"
     });
 }
-
-Plotly.newPlot('plot_phases', data, {height: 400 });
+layout = {height: 400, title: "Flight phases",
+          xaxis: {title: "Time (s)"},
+          yaxis: {title: "Phase", range:[0,8]}
+         };
+Plotly.newPlot('plot_phases', data, layout);

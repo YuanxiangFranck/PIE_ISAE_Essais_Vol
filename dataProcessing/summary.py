@@ -24,7 +24,7 @@ def compute_phases_index(phases, time):
         plot = np.zeros(time.size)
         plot[idx] = nb+1
         out_phases[name] = plot.tolist()
-    out_phases["index"] = time.index.tolist()
+    out_phases["index"] = time.tolist()
     return out_phases
 
 
