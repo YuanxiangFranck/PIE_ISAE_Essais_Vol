@@ -37,7 +37,7 @@ def cut(time_list):
 
 def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, cruise=True, descent=True):
     """
-    Extract flight segments from a dataframe
+    Extract flight segments and corresponding pressure ports from a dataframe
 
     :param data: pd.DataFrame
         flight data
@@ -65,18 +65,49 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
 
     :out: dict
         keys represent names of segments and values are lists of tuples (time start,time end)
+        
+    :out: dict of dicts
+        keys represent names of segments and values are dictionnaries with pressure ports as keys and lists of tuples (time start,time end) as values
     """
     # Relevant signal names
     wow = 'WOW_FBK_AMSC1_CHA'
     altitude = 'ADSP1 Pressure Altitude (feet)'
     altitude_rate = 'ADSP1 Altitude Rate (ft/min)'
     calib_air_speed = 'ADSP1 Calibrated Airspeed (knots)'
-    hp_amsc1_cha = 'HPRSOV_CMD_STATUS_ASMC1_CHA'
-    hp_amsc2_cha = 'HPRSOV_CMD_STATUS_ASMC2_CHA'
-    hp_amsc1_chb = 'HPRSOV_CMD_STATUS_ASMC1_CHB'
-    hp_amsc2_chb = 'HPRSOV_CMD_STATUS_ASMC2_CHB'
-
+    hp_amsc1_cha = 'HPRSOV_CMD_STATUS_AMSC1_CHA'
+    hp_amsc2_cha = 'HPRSOV_CMD_STATUS_AMSC2_CHA'
+    hp_amsc1_chb = 'HPRSOV_CMD_STATUS_AMSC1_CHB'
+    hp_amsc2_chb = 'HPRSOV_CMD_STATUS_AMSC2_CHB'
+    apu_amsc1_cha = 'APU_BLEED_REQUEST_AMSC1_CHA'
+    apu_amsc1_chb = 'APU_BLEED_REQUEST_AMSC1_CHB'
+    apu_amsc2_cha = 'APU_BLEED_REQUEST_AMSC2_CHA'
+    apu_amsc2_chb = 'APU_BLEED_REQUEST_AMSC2_CHB'
+    prsov_amsc1_cha = 'PRSOV ACTIVATED_AMSC1_CHA'
+    prsov_amsc1_chb = 'PRSOV ACTIVATED_AMSC1_CHB'
+    prsov_amsc2_cha = 'PRSOV ACTIVATED_AMSC2_CHA'
+    prsov_amsc2_chb = 'PRSOV ACTIVATED_AMSC2_CHB'
+    
     # Extraction of relevant signals
+    hp_amsc1_cha_signal = data[hp_amsc1_cha]
+    hp_amsc2_cha_signal = data[hp_amsc2_cha]
+    hp_amsc1_chb_signal = data[hp_amsc1_chb]
+    hp_amsc2_chb_signal = data[hp_amsc2_chb]
+    apu_amsc1_cha_signal = data[apu_amsc1_cha]
+    apu_amsc1_chb_signal = data[apu_amsc1_chb]
+    apu_amsc2_cha_signal = data[apu_amsc2_cha]
+    apu_amsc2_chb_signal = data[apu_amsc2_chb]
+    prsov_amsc1_cha_signal = data[prsov_amsc1_cha]
+    prsov_amsc1_chb_signal = data[prsov_amsc1_chb]
+    prsov_amsc2_cha_signal = data[prsov_amsc2_cha]
+    prsov_amsc2_chb_signal = data[prsov_amsc1_chb]
+
+    hp1 = (hp_amsc1_cha_signal==1) | (hp_amsc1_chb_signal==1)
+    hp2 = (hp_amsc2_cha_signal==1) | (hp_amsc2_chb_signal==1)
+    apu = (apu_amsc1_cha_signal==1) | (apu_amsc1_chb_signal==1) | (apu_amsc2_cha_signal==1) | (apu_amsc2_chb_signal==1)
+    ip1 = (hp1==0) & (apu==0) & ((prsov_amsc1_cha_signal==1) | (prsov_amsc1_chb_signal==1))
+    ip2 = (hp2==0) & (apu==0) & ((prsov_amsc2_cha_signal==1) | (prsov_amsc2_chb_signal==1))
+    
+    
     wow_signal = data[wow]
     altitude_signal = data[altitude]
     cas_signal = data[calib_air_speed]
@@ -89,28 +120,107 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     # Compute intervals
     on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
     intervals = dict()
+    ports = dict()
     if otg:
         times = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & ip2].Time.values.flatten().tolist()
         intervals['otg'] = cut(times)
+        ports['otg'] = dict()
+        ports['otg']['hp1'] = cut(times_hp1)
+        ports['otg']['hp2'] = cut(times_hp2)
+        ports['otg']['apu'] = cut(times_apu)
+        ports['otg']['ip1'] = cut(times_ip1)
+        ports['otg']['ip2'] = cut(times_ip2)
     if take_off:
         times = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(cas_signal > 80) & (delta_cas_signal > 0.3) & (altitude_signal < 6000) & ip2].Time.values.flatten().tolist()
         intervals['take_off'] = cut(times)
+        ports['take_off'] = dict()
+        ports['take_off']['hp1'] = cut(times_hp1)
+        ports['take_off']['hp2'] = cut(times_hp2)
+        ports['take_off']['apu'] = cut(times_apu)
+        ports['take_off']['ip1'] = cut(times_ip1)
+        ports['take_off']['ip2'] = cut(times_ip2)
+    
     if landing:
         times = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(cas_signal < 150) & (delta_cas_signal < -0.3) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & ip2].Time.values.flatten().tolist()
         intervals['landing'] = cut(times)
+        ports['landing'] = dict()
+        ports['landing']['hp1'] = cut(times_hp1)
+        ports['landing']['hp2'] = cut(times_hp2)
+        ports['landing']['apu'] = cut(times_apu)
+        ports['landing']['ip1'] = cut(times_ip1)
+        ports['landing']['ip2'] = cut(times_ip2)
     if climb:
         times = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & ip2].Time.values.flatten().tolist()
         intervals['climb'] = cut(times)
+        ports['climb'] = dict()
+        ports['climb']['hp1'] = cut(times_hp1)
+        ports['climb']['hp2'] = cut(times_hp2)
+        ports['climb']['apu'] = cut(times_apu)
+        ports['climb']['ip1'] = cut(times_ip1)
+        ports['climb']['ip2'] = cut(times_ip2)
     if hold:
         times = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
         intervals['hold'] = cut(times)
+        ports['hold'] = dict()
+        ports['hold']['hp1'] = cut(times_hp1)
+        ports['hold']['hp2'] = cut(times_hp2)
+        ports['hold']['apu'] = cut(times_apu)
+        ports['hold']['ip1'] = cut(times_ip1)
+        ports['hold']['ip2'] = cut(times_ip2)
     if cruise:
         times = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
         intervals['cruise'] = cut(times)
+        ports['cruise'] = dict()
+        ports['cruise']['hp1'] = cut(times_hp1)
+        ports['cruise']['hp2'] = cut(times_hp2)
+        ports['cruise']['apu'] = cut(times_apu)
+        ports['cruise']['ip1'] = cut(times_ip1)
+        ports['cruise']['ip2'] = cut(times_ip2)
     if descent:
         times = data.loc[(~on_the_ground) & (alt_rate_signal < -500)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & ip2].Time.values.flatten().tolist()
         intervals['descent'] = cut(times)
-    return intervals
+        ports['descent'] = dict()
+        ports['descent']['hp1'] = cut(times_hp1)
+        ports['descent']['hp2'] = cut(times_hp2)
+        ports['descent']['apu'] = cut(times_apu)
+        ports['descent']['ip1'] = cut(times_ip1)
+        ports['descent']['ip2'] = cut(times_ip2)
+    return intervals,ports
 
 def get_weights(segments_dict, data):
     """
@@ -141,10 +251,11 @@ if __name__ == "__main__":
     # data contient un DataFrame pandas
     data = txt_parser(data_path)
 
-    seg = segment(data)
+    seg,ports = segment(data)
     weights= get_weights(seg,data)
     for key in seg.keys():
         print('Poids du segment {} : {}'.format(key,weights[key]))
         print('Segment {}'.format(key))
         print(seg[key])
         print('#########')
+    print(ports['otg']['apu'])
