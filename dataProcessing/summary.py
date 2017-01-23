@@ -38,7 +38,7 @@ def summary(path, out_path=None, out_dir="", data=None):
     template_data["name"] = name
     if data is None:
         data = txt_parser(path)
-    phases = segment(data)
+    phases, ports = segment(data)
     plot_phases = compute_phases_index(phases, data.Time)
     template_data["phases"] = plot_phases
 

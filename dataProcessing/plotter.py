@@ -71,6 +71,7 @@ class Plotter:
     """
     def __init__(self, input_file=None):
         self.phases = None
+        self.ports = None
         if input_file is None:
             self.data = pd.DataFrame()
         else:
@@ -93,7 +94,7 @@ class Plotter:
         """
         Compute segmetation and convert intervals into index instead of time range
         """
-        phases = segment(self.data)
+        phases, self.ports = segment(self.data)
         time = self.data.Time
         self.phases = {}
         for name, segments in phases.items():
