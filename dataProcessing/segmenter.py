@@ -13,6 +13,9 @@ TODO : temps passé sur chaque phase sur chaque port
 import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
+from pylab import *
+import numpy as np
+
 
 def cut(time_list):
     """
@@ -243,6 +246,22 @@ def get_weights(segments_dict, data):
             weights[segment] += time_values[1] - time_values[0]
     return {k: v / total_duration for k, v in weights.items()}
 
+
+def get_pie_chart(weights):
+    """
+    Plot a pie chart of the percentage of time spent on each segment
+    
+    :param weights: dict
+        Dictionnary with segment names as keys and weight as values (see get_weights to compute this dictionnary)
+    """
+    figure(1, figsize=(10,10))
+    labels = weights.keys()
+    fracs = [weights[key] for key in labels]
+    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
+    pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
+    title('Durée de chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
+    show()
+
 if __name__ == "__main__":
 
     # Chemin relatif vers le fichier txt de données
@@ -255,7 +274,7 @@ if __name__ == "__main__":
     weights= get_weights(seg,data)
     for key in seg.keys():
         print('Poids du segment {} : {}'.format(key,weights[key]))
-        print('Segment {}'.format(key))
         print(seg[key])
         print('#########')
-    print(ports['otg']['apu'])
+    print(ports['otg'])
+    get_pie_chart(weights)
