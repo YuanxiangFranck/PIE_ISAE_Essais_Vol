@@ -14,6 +14,7 @@ import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
 from pylab import *
+import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -246,6 +247,17 @@ def get_weights(segments_dict, data):
             weights[segment] += time_values[1] - time_values[0]
     return {k: v / total_duration for k, v in weights.items()}
 
+def get_weights_ports(ports_dict, data):
+    weights_ports = dict()
+    total_duration = data.Time.iloc[-1] - data.Time.iloc[0]
+    for segment in ports_dict.keys():
+        weights_ports[segment] = dict()
+        for port in ports_dict[segment].keys():
+            weights_ports[segment][port] = 0
+            for time_values in ports_dict[segment][port]:
+                weights_ports[segment][port] += time_values[1] - time_values[0]
+    return weights_ports
+
 
 def get_pie_chart(weights):
     """
@@ -260,7 +272,23 @@ def get_pie_chart(weights):
     colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
     pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
     title('Durée de chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
-    show()
+    draw()
+
+def get_chart_ports(ports):
+    weights_ports = get_weights_ports(ports,data)
+    f, axarr = plt.subplots(3, 3,figsize=(10,10))
+    f.suptitle('Utilisation des ports selon chaque phase')
+    i,j=0,0
+    for segment in weights_ports:
+        labels = weights_ports[segment].keys()
+        fracs = [weights_ports[segment][key] for key in labels]
+        colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
+        axarr[i, j].pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
+        axarr[i, j].set_title('{}'.format(segment), bbox={'facecolor':'0.8', 'pad':5})
+        if j==2:
+            i += 1
+        j = (j+1)%3
+    plt.show()
 
 if __name__ == "__main__":
 
@@ -277,4 +305,8 @@ if __name__ == "__main__":
         print(seg[key])
         print('#########')
     print(ports['otg'])
+    weights_ports = get_weights_ports(ports,data)
+    print(weights_ports)
+    
     get_pie_chart(weights)
+    get_chart_ports(ports)
