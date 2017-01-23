@@ -51,16 +51,16 @@ Si on est plus exigeant et que l'on recherche des signaux égaux à 1% près (er
 
 
 ## Affichage du nombre d'anomalies detectées en fonction du temps
-Il peut être très interessant de visualiser la date d'occurence de ces anomalies, en particulier pour détecter si elles apparaissent plutôt au début de vol, au milieu ou plutôt en fin de vol.
-Pour cela, dans un premier temps, j'ai utilisé un sequençage par fenêtres temporelle. Bientôt, j'aimerai effectuer un séquençage par phase de vol pour estimer s'il une phase est plus propice à ce type d'anomalies de symetrie.
+Il peut être très intéressant de visualiser la date d'occurence de ces anomalies, en particulier pour détecter si elles apparaissent plutôt au début de vol, au milieu ou plutôt en fin de vol.
+Pour cela, dans un premier temps, j'ai utilisé un sequençage par fenêtres temporelles. Bientôt, j'aimerais effectuer un séquençage par phase de vol pour estimer si une phase est plus propice à ce type d'anomalies de symetrie.
 
 ### Division par fenêtres temporelles
 
- j'ai découpé le vol en fenêtres temporelles de même longueur et, pour chaque fenêtres temporelle, j'ai compté le nombre de signaux qui présentaient au moins une anomalie.
+ J'ai découpé le vol en fenêtres temporelles de même longueur et, pour chaque fenêtres temporelle, j'ai compté le nombre de signaux qui présentaient au moins une anomalie.
 
-On renseigne dans la fonction **Anomalies_in_Time** la taille de la fenêtre (en pourcentage de la durée de vol total).
+On renseigne dans la fonction **Anomalies_in_Time** la taille de la fenêtre (en pourcentage de la durée de vol totale).
 
-Voici les graphs obtenus pour le vol **data1** (avec un seuil d'anomalie de 1%) :
+Voici les graphiques obtenus pour le vol **data1** (avec un seuil d'anomalie de 1%) :
 * avec un sequençage grossier (10 fenêtres) : 
 
 ![image](distribution_anomalies_in_time_big_window.png)
