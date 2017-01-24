@@ -25,7 +25,7 @@ Si je ne m'abuse, les signaux représentant les mêmes mesures physiques sur les
 
 Ceci a été implémenté. 
 
-Par exemple, pour le vol **data1**, lancer la fonction *Symmetry_Lateral_One_Flight* avec en argument une erreur de 1 redonnera le nom de tous les signaux supposés égaux mais qui diffèrent avec une erreur relative d'au moins 100% (ce qui est beaucoup), ainsi que les indices temporels correspondants aux différences.
+Par exemple, pour le vol **E190-E2-20001_0085_29472_53399_request.txt** (ex data1), lancer la fonction *Symmetry_Lateral_One_Flight* avec en argument une erreur de 1 redonnera le nom de tous les signaux supposés égaux mais qui diffèrent avec une erreur relative d'au moins 100% (ce qui est beaucoup), ainsi que les indices temporels correspondants aux différences.
 
  Dans cet exemple, si on est plus exigeant et que l'on recherche des signaux égaux à 1% près (erreur = 0.01), l'algorithme détecte 799 couples d'anomalies, parmi lesquels le couple **ZTS_ZN2_SNSR_MISC_F_AMSC1_CHA'** et **ZTS_ZN2_SNSR_MISC_F_AMSC2_CHA**. 
 
@@ -38,7 +38,7 @@ L'affichage de ces deux signaux montre bien qu'il y a une différence.
 ###Signaux égaux par redondance
 Dans ce cas de figure, les signaux des channels A et B, mentionnés à la fin de leur nom par les caractères **CHA** ou **CHB**, doivent être égaux. Ce test a été codé.
 
-Par exemple, pour le vol **data1**, lancer la fonction *Symmetry_Channels_One_Flight* avec en argument une erreur de 1 redonnera le nom de tous les signaux supposés égaux mais qui diffèrent avec une erreur relative d'au moins 100% (ce qui est beaucoup), ainsi que les indices temporels correspondants aux différences.
+Par exemple, pour le vol **E190-E2-20001_0085_29472_53399_request.txt** (ex data1), lancer la fonction *Symmetry_Channels_One_Flight* avec en argument une erreur de 1 redonnera le nom de tous les signaux supposés égaux mais qui diffèrent avec une erreur relative d'au moins 100% (ce qui est beaucoup), ainsi que les indices temporels correspondants aux différences.
 
  Dans cet exemple, l'algorithme en trouve 208, parmi lesquels le couple **ZONE1_TAV_DRIV_F_AMSC1_CHA** et **ZONE1_TAV_DRIV_F_AMSC1_CHB**. 
 
