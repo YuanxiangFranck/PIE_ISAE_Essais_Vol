@@ -1,4 +1,5 @@
 TODO : 
 
 Faire l'avancement du Gant 
-
+Demander avancement
+Verifier le PDD 
