@@ -105,7 +105,7 @@ def init(cas):
                 'ADSP1 Calibrated Airspeed (knots)']
         ravelfeatures = True
     elif cas == 2:
-    ## Cas 2: sans features, donnée filtrée
+        ## Cas 2: sans features, donnée filtrée
         usefeature = False
         features = ['mean', 'min', 'max', "covariance"]
         cols = ['WOW_FBK_AMSC1_CHA',

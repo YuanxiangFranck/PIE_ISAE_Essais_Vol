@@ -37,8 +37,6 @@ def txt_parser(file_name):
 
     :out data: pd.DataFrame
         data in the text file
-    :out [units]: dict
-        units of each column
     """
 
     sep = "	"
@@ -72,4 +70,4 @@ Script to parse the data file
     args = arguments_parser()
     # Parse the data
     logging.info("Read: "+ args.txt_file+"\n")
-    data, units = txt_parser(args.txt_file, get_units=True)
+    data = txt_parser(args.txt_file)

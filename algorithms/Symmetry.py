@@ -6,6 +6,7 @@ Created on Tue Dec 20 15:51:39 2016
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
     """
@@ -278,6 +279,76 @@ def Symmetry_Lateral_One_Flight(flight, error):
         
     return result_anomaly
     
+    
+    #%%
+    
+def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1) :
+        
+    """
+    Analyses the correlation of anomalies in time : gives number of anomalies 
+    for some time windows.       
+    
+    Inputs : 
+
+    - result_sym : results of a symmetry test which is : an array containing the 
+    names of the signals with anomalies (by pair), and the associated time indexes
+    of anomaly occurences
+    
+    - max_time_index : an integer : the maximal time index of the flight
+    
+    - window_size : size in percentage of the flight duration of the window on 
+    which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)
+    If window_size = 0, then divides the flight with respect to the flight phases.
+    By default : window_size = 0.1
+
+    Output :
+    
+    - result : a two lignes array : the first ligne is the time indexes of the 
+    begining of the windows, the second ligne is the number of anomalies detected 
+    during the corresponding time window
+    
+    
+    """  
+    result = [[],[]]
+    nm_anomaly = []
+    n = max_time_index 
+    
+    time_indexes = [result_sym[j] for j in range(len(result_sym)) if j%2 == 1]
+    time_indexes_1D = []
+   
+    for j in range(len(result_sym)) :
+        if j%2 == 1:
+           time_indexes_1D = np.concatenate((time_indexes_1D,result_sym[j]),0)
+    
+    time_indexes_1D = np.sort(time_indexes_1D)
+    
+    if window_size > 1 :
+        window_size = 1
+
+    if window_size > 0 :
+        step = np.int(window_size * max_time_index)
+        time_window_begining = [min(0+i*step,n) for i in range(np.int(n/step)+1) if i*step != n]       
+        
+        result[0] = time_window_begining 
+        
+        for w,t0 in enumerate(time_window_begining) :
+            nm_anomaly.append(0)
+            if w == len(time_window_begining)-1 :          
+                t1 = n
+            else :
+                t1 = time_window_begining[w+1]
+            for anomaly in range(len(time_indexes)) :
+                for time_anomaly in time_indexes[anomaly] :
+                    if time_anomaly in range(t0,t1) :
+                        nm_anomaly[w] = nm_anomaly[w] + 1
+                        break
+        result[1] = nm_anomaly
+   
+#***********************************
+#To do : implement calulation for the flight phases
+
+    return result
+   
 #%%
     
     
@@ -321,19 +392,19 @@ if __name__ == "__main__":
      #..............................................
      ## With lateral Symmetry 
     
-    result_sym = Symmetry_Lateral_One_Flight(flight,error)
+    result_lat = Symmetry_Lateral_One_Flight(flight,error)
     #names of the couples supposed equal by symmetry but actuelly different
-    anomalies_couples_names = [result_sym[j] for j in range(len(result_sym)) if j%2 == 0]
-    print("Il y a " + str(len(anomalies_couples_names)) +" anomalies detectees sur la symetrie laterale" )
+    anomalies_lat_couples_names = [result_lat[j] for j in range(len(result_lat)) if j%2 == 0]
+    print("Il y a " + str(len(anomalies_lat_couples_names)) +" anomalies detectees sur la symetrie laterale" )
     
     #Affichage de l'avant derniere anomalie 
-    s1 = flight[anomalies_couples_names[-2][0]]
-    s2 = flight[anomalies_couples_names[-2][1]]
+    s1 = flight[anomalies_lat_couples_names[-2][0]]
+    s2 = flight[anomalies_lat_couples_names[-2][1]]
     s1.plot()
     s2.plot()
     
     #On peut voir si les anomalies sont des booleans ou des signaux regulés
-    name_anomaly = [anomalies_couples_names[j] for j in range(len(anomalies_couples_names)) if j%2 == 0 ]
+    name_anomaly = [anomalies_lat_couples_names[j] for j in range(len(anomalies_lat_couples_names)) if j%2 == 0 ]
     is_bool_anomaly = [is_bool(j) for j in name_anomaly]
     if False in is_bool_anomaly:
         if True in is_bool_anomaly:
@@ -343,3 +414,12 @@ if __name__ == "__main__":
     else :
         print("Pour symetrie laterale : Il n'y a que des anomalies sur des booléans")
         
+        
+    #Plot du nombre d'anomalies en fonction du temps
+    nb_anomaly_time_ch = Anomalies_in_Time(result_channel, len(s1), 0.01)
+    plt.figure(0)
+    plt.plot(nb_anomaly_time_ch[0],nb_anomaly_time_ch[1],'ro')
+        
+    nb_anomaly_time_lat = Anomalies_in_Time(result_lat, len(s1), 0.1)
+    plt.figure(1)
+    plt.plot(nb_anomaly_time_lat[0],nb_anomaly_time_lat[1],'ro')

@@ -1,12 +1,12 @@
 """
-Script to plot data
+Class to plot data
 
 
 """
 import logging
 
-import numpy as np
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 from dataProcessing.parser import txt_parser
@@ -51,7 +51,8 @@ class Plotter:
 
     Basic usage:
 
-    ..code-block:: python
+    .. code-block:: python
+
         pp = Plotter("<path_to_file>")
         # Plot one signal
         pp.plot_data('WOW_FBK_AMSC1_CHA')
@@ -70,6 +71,7 @@ class Plotter:
     """
     def __init__(self, input_file=None):
         self.phases = None
+        self.ports = None
         if input_file is None:
             self.data = pd.DataFrame()
         else:
@@ -92,7 +94,7 @@ class Plotter:
         """
         Compute segmetation and convert intervals into index instead of time range
         """
-        phases = segment(self.data)
+        phases, self.ports = segment(self.data)
         time = self.data.Time
         self.phases = {}
         for name, segments in phases.items():
