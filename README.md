@@ -4,6 +4,18 @@ La documentation est directement généré à partir du code (docstring) et disp
 
 Pour plus d'infomations pour générer la documentation: [docs/README.md](https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/blob/master/docs/README.md)
 
+# Nom de variable
+
+| Nom                                 | Variable                          | Unité |
+| ----------------------------------- | --------------------------------- | ----- |
+| ADSP1 Pressure Altitude (feet)      | Za                                | ft    |
+| ADSP1 Calibrated Airspeed (knots)   | CAS                               | kts   |
+| ADSP1 Altitude Rate (ft/min)        | Vitesse avion                     | VZa   |
+| WOW_FBK_AMSC1_CHA                   | WoW                               | bool  |
+| HPRSOV_CMD_STATUS_AMSC{1,2}_CH{A,B} | HP_controller{1,2}_ch{A,B}_cmd    |
+| APU_BLEED_REQUEST_AMSC{1,2}_CH{A,B} | APU_controller{1,2}_ch{A,B}_cmd   |
+| PRSOV ACTIVATED_AMSC{1,2}_CH{A,B}   | PRSOV_controller{1,2}_ch{A,B}_cmd |
+
 # Python
 
 Il existe plusieurs méthodes pour développer sous ce projet.
