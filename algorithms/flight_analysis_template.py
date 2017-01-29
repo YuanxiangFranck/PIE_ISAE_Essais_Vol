@@ -64,6 +64,9 @@ if phase != 'all':
 Extraction des signaux par sliding window
 * n_samples : nombre de segments à découper par sliding window
 * vous pouvez aussi fixer manuellement sl_w et sl_s
+* en cas d'utilisation de deltas entre signaux, vous pouvez
+  préciser si l'écart doit être relatif/absolu pour chaque signal,
+  à l'aide de la liste delta_type
 """
 
 """
@@ -74,8 +77,11 @@ n_samples = 20
 sl_w = len(flight_data.data)//n_samples
 sl_s = sl_w
 
+delta_type = ['rel'] * len(signal_names_regul)
+#samples = extract_sl_window(flight_data.data, signal_names_regul, \
+#                            sl_w, sl_s, delta_type)
 samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
-                                  target_names_regul, sl_w, sl_s)
+                                  target_names_regul, sl_w, sl_s, delta_type)
 
 #%%
 """
