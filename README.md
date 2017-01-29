@@ -12,9 +12,9 @@ Pour plus d'infomations pour générer la documentation: [docs/README.md](https:
 | ADSP1 Calibrated Airspeed (knots)   | CAS                               | kts   |
 | ADSP1 Altitude Rate (ft/min)        | Vitesse avion                     | VZa   |
 | WOW_FBK_AMSC1_CHA                   | WoW                               | bool  |
-| HPRSOV_CMD_STATUS_AMSC{1,2}_CH{A,B} | HP_controller{1,2}_ch{A,B}_cmd    |
-| APU_BLEED_REQUEST_AMSC{1,2}_CH{A,B} | APU_controller{1,2}_ch{A,B}_cmd   |
-| PRSOV ACTIVATED_AMSC{1,2}_CH{A,B}   | PRSOV_controller{1,2}_ch{A,B}_cmd |
+| HPRSOV_CMD_STATUS_AMSC{1,2}_CH{A,B} | HP_controller{1,2}_ch{A,B}_cmd    | bool  |
+| APU_BLEED_REQUEST_AMSC{1,2}_CH{A,B} | APU_controller{1,2}_ch{A,B}_cmd   | bool  |
+| PRSOV ACTIVATED_AMSC{1,2}_CH{A,B}   | PRSOV_controller{1,2}_ch{A,B}_cmd | bool  |
 
 # Python
 
