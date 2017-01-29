@@ -44,6 +44,21 @@ def get_mean_crossings(x):
                 prec = not(prec)
     return count
 
+def get_threshold_crossings(x, val):
+    """
+    Renvoie le nombre de fois qua abs(x) passe au-dessus
+    d'un seuil (sert à détecter des oscillations)
+    * val doit avoir la même dimension que le nb de colonnes de x
+    """
+    count = np.zeros(x.shape[1])
+    for j in range(x.shape[1]):
+        prec = np.abs(x.iloc[0,j]) < val[j]
+        for i in range(1,x.shape[0]):
+            if (np.abs(x.iloc[i,j]) < val[j]) != prec:
+                count[j] += 1
+                prec = not(prec)
+    return count
+    
 def get_fft(x, n_fft):
     """
     Renvoie les parties réelles et imaginaires des
