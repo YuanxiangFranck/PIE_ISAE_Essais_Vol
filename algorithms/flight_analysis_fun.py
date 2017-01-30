@@ -33,7 +33,7 @@ def extract_sl_window(data, signals, sl_w, sl_s):
     samples = [SignalData(data.loc[i*sl_s:i*sl_s+sl_w, signals]) for i in range(m)]
     return samples
 
-def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s):
+def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
     assert(len(signals1) == len(signals2))
     
     def relative_delta(a_series,b_series):
@@ -42,7 +42,13 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s):
             if a == b == 0.: res.append(0)
             else: res.append( 2.*(a-b)/(np.abs(a)+np.abs(b)) )
         return res
-    
+
+    def absolute_delta(a_series,b_series):
+        res = []
+        for a,b in zip(a_series,b_series):
+            res.append(np.abs(a-b))
+        return res
+
     # sliding window width
     sl_w = sl_w
     # sliding window stride
@@ -54,7 +60,10 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s):
     for i,name in enumerate(signals1):
         dat1 = data.loc[:, signals1]
         dat2 = data.loc[:, signals2]
-        dic[signals1[i]+'_DELTA'] = relative_delta(dat1.iloc[:,i],dat2.iloc[:,i])
+        if delta_type[i] == 'rel':
+            dic[signals1[i]+'_DELTA'] = relative_delta(dat1.iloc[:,i],dat2.iloc[:,i])
+        else:
+            dic[signals1[i]+'_DELTA'] = absolute_delta(dat1.iloc[:,i],dat2.iloc[:,i])
     delta = pd.DataFrame(dic)
 
     delta_samples = [SignalData(delta.iloc[i*sl_s:i*sl_s+sl_w, :]) for i in range(m)]

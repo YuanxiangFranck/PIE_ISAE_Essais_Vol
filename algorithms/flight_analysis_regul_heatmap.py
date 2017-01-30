@@ -32,7 +32,7 @@ Sélection et chargement du vol
 * modifier le path relatif si besoin
 """
 
-flight_name = 'E190-E2_20001_0089_29800_54082_request.txt'
+flight_name = 'E190-E2_20001_0090_29867_54230_request.txt'
 path = '../../data/'
 
 whole_flight = load_flight(path+flight_name)
@@ -75,9 +75,18 @@ if phase != 'all':
     assert(min([date[1]-date[0] \
                 for date in flight_data.flight_segments[phase]]) \
             > sl_w)
+
+"""
+Chargement des valeurs d'écarts tolérées pour chaque signal de régulation,
+ainsi que son type (relatif/absolu)
+"""
+target_precisions = pd.read_csv('target_precisions.csv', header=0, sep='\t')
+
+thresholds = target_precisions['Precision'].as_matrix()
+delta_type = target_precisions['Type'].as_matrix()
     
 samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
-                                  target_names_regul, sl_w, sl_s)
+                                  target_names_regul, sl_w, sl_s, delta_type)
 
 #%%
 """
@@ -87,10 +96,9 @@ Calcul des features
 """
 
 features = ['percent_time_over_threshold']
-threshold = 0.1
 
 feature_matrix = get_feature_matrix(samples, features, normalized=False, \
-                                    threshold=threshold)
+                                    threshold=thresholds)
 
 #%%
 """
@@ -112,9 +120,8 @@ else:
                            idx,sl_w,sl_s) for idx in range(len(samples))]
                                          
 sns.heatmap(feature_matrix.T, xticklabels = time_labels, \
-            yticklabels=signal_names_regul)
-plt.title('- Percent time over threshold -\n'\
+            yticklabels=sorted(signal_names_regul), annot=False)
+plt.title('- Percent time off-regulation -\n'\
           'Flight : {} / Phase : {}\n'
-          'Data : relative error between regulation and target signals\n'\
-          'Threshold : {} %\n'\
-          'Time window : {} s'.format(flight_name,phase,threshold*100, sl_w))
+          'Data : regulation and target signals\n'\
+          'Time window : {} s'.format(flight_name,phase,sl_w))

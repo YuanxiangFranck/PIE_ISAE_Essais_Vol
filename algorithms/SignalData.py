@@ -147,6 +147,8 @@ class SignalData:
                 fun = lambda x: signal_data_features.get_time_over_threshold(x, threshold)
             elif f == 'percent_time_over_threshold':
                 fun = lambda x: signal_data_features.get_percent_time_over_threshold(x, threshold)
+            elif f == 'threshold_crossings':
+                fun = lambda x: signal_data_features.get_threshold_crossings(x, threshold)
             else:
                 fun = getattr(signal_data_features, "get_"+f)
             agg[f] = fun
