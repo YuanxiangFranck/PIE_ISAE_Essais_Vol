@@ -11,6 +11,8 @@ import numpy as np
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment, get_weights
 
+template_path = "dataProcessing/html_page/"
+
 def compute_phases_index(phases, time):
     order = ["otg", "take_off", "landing", "climb", "descent", "hold", "cruise"]
     out_phases = {}
@@ -43,11 +45,11 @@ def summary(path, out_path=None, out_dir="", data=None):
     template_data["phases"] = plot_phases
 
     template_data["stats"] = get_weights(phases, data)
-    with open("dataProcessing/template.css") as fc:
+    with open(template_path+"template.css") as fc:
         template_data["css"] = fc.read()
-    with open("dataProcessing/template.js") as fjs:
+    with open(template_path+"template.js") as fjs:
         template_data["js_code"] = fjs.read()
-    with open('dataProcessing/template.html') as ft:
+    with open(template_path+'template.html') as ft:
         template = ft.read()
     if out_path is None:
         out_path = out_dir + name+".html"
