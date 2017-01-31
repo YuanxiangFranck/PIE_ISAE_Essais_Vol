@@ -33,7 +33,7 @@ Sélection et chargement du vol
 * modifier le path relatif si besoin
 """
 
-flight_name = flight_names[1]
+flight_name = flight_names[4]
 path = '../../data/'
 
 whole_flight = load_flight(path+flight_name)
@@ -54,75 +54,99 @@ if phase != 'all':
     flight_data.apply_flight_segmentation(phase)
 
 #%%
+                                                                                                                                                                            
+"""
+Extraction des signaux par sliding window
+* n_samples : nombre de segments à découper par sliding window
+* vous pouvez aussi fixer manuellement sl_w et sl_s
+"""
 
-for k in range(70):
-                 
-    print(k)
-                                                                                                                                                                                       
-    """
-    Extraction des signaux par sliding window
-    * n_samples : nombre de segments à découper par sliding window
-    * vous pouvez aussi fixer manuellement sl_w et sl_s
-    """
+n_samples = 20
+
+sl_w = len(flight_data.data)//n_samples
+sl_s = sl_w
+
+"""
+On vérifie si chaque portion la phase étudiée est bien
+supérieure à la fenêtre de temps (cela empêche le bon 
+fonctionnement de la fonction "idx2date" et cela n'a
+pas de sens d'avoir une fenêtre plus grande que la phase
+elle-même)
+"""
+if phase != 'all':
+    assert(min([date[1]-date[0] \
+                for date in flight_data.flight_segments[phase]]) \
+            > sl_w)   
     
-    n_samples = 20
-    
-    sl_w = len(flight_data.data)//n_samples
-    sl_s = sl_w
-    
-    """
-    On vérifie si chaque portion la phase étudiée est bien
-    supérieure à la fenêtre de temps (cela empêche le bon 
-    fonctionnement de la fonction "idx2date" et cela n'a
-    pas de sens d'avoir une fenêtre plus grande que la phase
-    elle-même)
-    """
-    if phase != 'all':
-        assert(min([date[1]-date[0] \
-                    for date in flight_data.flight_segments[phase]]) \
-                > sl_w)   
-        
-    samples = extract_sl_window(flight_data.data, signal_names_bin[k*50:(k+1)*50], \
-                                sl_w, sl_s)
-    
-    
-    """
-    Calcul des features
-    * les features sont stockées dans un array numpy
-      de dimension (nb de segments * nb de features)
-    """
-    
-    features = ['nb_transitions']
-    
-    feature_matrix = get_feature_matrix(samples, features, normalized=False)
-    
-    
-    """
-    Analyse
-    Heatmap
-    """
-    
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    
+samples = extract_sl_window(flight_data.data, signal_names_bin, \
+                            sl_w, sl_s)
+
+#%%
+"""
+Calcul des features
+* les features sont stockées dans un array numpy
+  de dimension (nb de segments * nb de features)
+"""
+
+features = ['nb_transitions']
+
+feature_matrix = get_feature_matrix(samples, features, normalized=False)
+
+#%%
+"""
+Preprocessing
+élimination des signaux avec aucun changement d'état
+"""
+non_zero_signal_idx = []
+
+for i in range(feature_matrix.shape[1]):
+    if (feature_matrix[:,i] != 0).any():
+        non_zero_signal_idx.append(i)
+
+feature_matrix = feature_matrix[:,non_zero_signal_idx]
+
+non_zero_signal_names = []
+for idx in non_zero_signal_idx:
+    non_zero_signal_names.append(signal_names_bin[idx])
+
+#%%
+# Trier les signaux par nb de changements
+ordre = np.argsort(-np.sum(feature_matrix, axis=0))
+
+feature_matrix = feature_matrix[:,ordre]
+
+#feature_matrix = np.clip(feature_matrix, 0, 40)
+
+#%%
+"""
+Analyse
+Heatmap
+"""
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+n_heatmaps = 10
+n_sig = len(non_zero_signal_names)//n_heatmaps
+for k in range(n_heatmaps):
+
     plt.rcParams['figure.figsize']=(10,10)
     if phase != 'all':
         time_labels = [idx2date(flight_data.flight_segments[phase],\
-                               idx,sl_w) for idx in range(len(samples))]
+                               idx,sl_w,sl_s) for idx in range(len(samples))]
     else:
         origin = flight_data.data.Time.iloc[0]
         end = flight_data.data.Time.iloc[-1]
         time_labels = [idx2date([(origin,end)],\
-                               idx,sl_w) for idx in range(len(samples))]
+                               idx,sl_w,sl_s) for idx in range(len(samples))]
                                              
-    sns.heatmap(feature_matrix.T, xticklabels = time_labels, \
-                yticklabels=signal_names_bin[k*50:(k+1)*50])
+    sns.heatmap(feature_matrix.T[k*n_sig:(k+1)*n_sig], xticklabels = time_labels, \
+                yticklabels=non_zero_signal_names[k*n_sig:(k+1)*n_sig])
     plt.title('- Binary transitions -\n'\
               'Flight : {} / Phase : {}\n'
               'Data : binary signals\n'\
               'Time window : {} s'.format(flight_name,phase, sl_w))
     
-    plt.savefig('../../Resultats/heatmap/0085_53398/hm_bin_{}-{}_transitions_all.png'\
-                .format(k*50,(k+1)*50-1), bbox_inches='tight')
-    
+    plt.savefig('../../Resultats/heatmap/0088/hm_bin_transitions_all-{}.png'\
+                .format(k), bbox_inches='tight')
     plt.clf()
