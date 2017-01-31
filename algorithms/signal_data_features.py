@@ -13,7 +13,7 @@ get_min = lambda x: np.min(x, axis=0)
 get_amplitude = lambda x: np.max(x, axis=0) - np.min(x, axis=0)
 get_covariance = lambda x: np.cov(x, axis=0)
 # Count number of transition in binary signal
-get_nb_transitions = lambda x: np.sum(x[1:, :] != x[:-1, :], axis=0)
+get_nb_transitions = lambda x: np.sum(x.values[1:, :] != x.values[:-1, :], axis=0)
 
 # Detect if value is greater than specified threshold
 def get_time_over_threshold(x, val):
