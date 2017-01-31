@@ -21,6 +21,7 @@ function plot_phases(){
             y: phases[phase],
             x: index,
             name: phase,
+            line: {shape: 'hv'},
             fill: 'tozeroy',
             type: "scatter"
         });
