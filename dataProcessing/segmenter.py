@@ -328,11 +328,7 @@ def get_chart_ports(ports):
 if __name__ == "__main__":
 
     # Chemin relatif vers le fichier txt de données
-<<<<<<< HEAD
     data_path = '../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt'
-=======
-    data_path = '../data/E190-E2_20001_0083_29106_52495_request.txt'
->>>>>>> a2d79fb3879c7eafd2dc3de36f324e8b248d94f7
 
     # data contient un DataFrame pandas
     data = txt_parser(data_path)
