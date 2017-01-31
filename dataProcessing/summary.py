@@ -45,8 +45,14 @@ def summary(path, out_path=None, out_dir="", data=None):
     template_data["phases"] = plot_phases
 
     template_data["stats"] = get_weights(phases, data)
+    css_txt = ""
+    css_lib = ["bootstrap/dist/css/bootstrap.min.css"]
+    css_lib = [template_path+ "node_modules/" + n for n in css_lib]
+    for path in css_lib:
+        with open(path) as fc:
+            css_txt += fc.read()
     with open(template_path+"template.css") as fc:
-        template_data["css"] = fc.read()
+        template_data["css"] = css_txt + fc.read()
     with open(template_path+"template.js") as fjs:
         template_data["js_code"] = fjs.read()
     with open(template_path+'template.html') as ft:

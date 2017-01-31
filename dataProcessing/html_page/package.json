@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "watchify  src/index.js -o template.js -v --debug",
-    "build": "browserify src/index.js -v -t [ babelify --presets [ es2015 ] ] | uglifyjs -mcv > template.js"
+    "watch": "watchify  index.js -o template.js -v --debug",
+    "build": "browserify index.js -v -t [ babelify --presets [ es2015 ] ] | uglifyjs -mcv > template.js"
   },
   "author": "",
   "license": "ISC",
