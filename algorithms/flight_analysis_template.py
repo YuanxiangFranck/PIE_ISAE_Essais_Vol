@@ -77,11 +77,11 @@ n_samples = 20
 sl_w = len(flight_data.data)//n_samples
 sl_s = sl_w
 
-delta_type = ['rel'] * len(signal_names_regul)
-#samples = extract_sl_window(flight_data.data, signal_names_regul, \
-#                            sl_w, sl_s, delta_type)
-samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
-                                  target_names_regul, sl_w, sl_s, delta_type)
+samples = extract_sl_window(flight_data.data, signal_names_regul, \
+                            sl_w, sl_s)
+#delta_type = ['rel'] * len(signal_names_regul)
+#samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
+#                                  target_names_regul, sl_w, sl_s, delta_type)
 
 #%%
 """
