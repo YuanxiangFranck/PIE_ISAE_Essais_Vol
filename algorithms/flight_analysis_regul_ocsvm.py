@@ -25,6 +25,7 @@ Import des noms de signaux
 * signal_names_bin : signaux binaires
 """
 from signal_names import signal_names_regul, target_names_regul
+from flight_names import flight_names
 
 #%%
 """
@@ -32,7 +33,7 @@ Sélection et chargement du vol
 * modifier le path relatif si besoin
 """
 
-flight_name = 'E190-E2_20001_0083_29106_52495_request.txt'
+flight_name = flight_names[0]
 path = '../../data/'
 
 whole_flight = load_flight(path+flight_name)
@@ -75,9 +76,17 @@ if phase != 'all':
     assert(min([date[1]-date[0] \
                 for date in flight_data.flight_segments[phase]]) \
             > sl_w)
-    
-samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
-                            target_names_regul, sl_w, sl_s)
+
+"""
+Choix des signaux à extraire
+
+"""
+selected_signals = signal_names_regul
+data_label = 'all regulation signals'
+
+#samples = extract_sl_window_delta(flight_data.data, signal_names_regul[:4], \
+#                            target_names_regul[:4], sl_w, sl_s)
+samples = extract_sl_window(flight_data.data, selected_signals, sl_w, sl_s)
 
 #%%
 """
@@ -88,7 +97,7 @@ Calcul des features
 
 from sklearn.preprocessing import scale
 
-features = ['mean','std','percent_time_over_threshold']
+features = ['mean', 'std']
 
 feature_matrix = get_feature_matrix(samples, features, normalized=False)
 
@@ -96,7 +105,8 @@ feature_matrix = scale(feature_matrix)
 
 #%%
 """
-Visualisation des données par phase de vol
+Visualisation par PCA des features par phase de vol
+Association d'une couleur à chaque phase
 """
 
 import matplotlib.pyplot as plt
@@ -106,11 +116,11 @@ reduced_data = PCA(n_components=2).fit_transform(feature_matrix)
 
 plt.figure(figsize=(10,10))
 
-color_dic = {'climb': "r", 'cruise': "b",
-                               'landing': 'm',
-                               'descent': 'g', 'hold': "c",
-                               'otg': 'y', 'take_off': 'k'}
-                               
+color_dic = {'climb': 'r', 'cruise': 'b',
+             'landing': 'm',
+             'descent': 'g', 'hold': 'c',
+             'otg': 'y', 'take_off': 'k'}
+
 if phase == 'all':
     flight_data.compute_flight_segmentation()
     
@@ -126,14 +136,22 @@ if phase == 'all':
     color_dic['missing'] = 'white'
     
     colors = [color_dic[phases[i]] for i in range(len(samples))]
-        
-    plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=colors, s=50)
     
+    for col in color_dic.items():
+        p,c = col
+        plt.scatter([reduced_data[i, 0] for i in range(len(samples)) if colors[i] == c], \
+                    [reduced_data[i, 1] for i in range(len(samples)) if colors[i] == c], \
+                    c=c, label=p, alpha=0.5, s=60)
+    
+    plt.legend(scatterpoints=1)
+# une seule phase
 else:
-     plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=color_dic[phase], s=50)
+     plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=color_dic[phase], \
+                 label=phase, alpha=0.5, s=60)
+     plt.legend(scatterpoints=1)
      
 for i in range(reduced_data.shape[0]):
-    plt.text(reduced_data[i,0]+0.05,reduced_data[i,1],i)
+    plt.text(reduced_data[i,0]+0.2,reduced_data[i,1],i)
     
 #%%
 """
@@ -151,7 +169,7 @@ predictions = ocsvm.predict(reduced_data)
 
 outliers = reduced_data[predictions == -1]
 
-plt.figure(figsize=(10,10))
+plt.figure(figsize=(12,10))
 
 # Step size of the mesh. Decrease to increase the quality of the VQ.
 h = 0.01     # point in the mesh [x_min, x_max]x[y_min, y_max].
@@ -178,8 +196,8 @@ for i in range(reduced_data.shape[0]):
 
 plt.title('- OCSVM Outlier detection -\n'\
       'Flight : {} / Phase : {}\n'\
-      'Data : relative error between regulation and target signals\n'\
+      'Data : {}\n'\
       'Features : {}\n'\
-      'Time window : {} s'.format(flight_name,phase,features, sl_w))
+      'Time window : {} s'.format(flight_name,phase,data_label,features,sl_w))
     
 plt.show()
