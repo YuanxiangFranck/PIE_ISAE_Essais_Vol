@@ -6,15 +6,15 @@ Pour plus d'infomations pour générer la documentation: [docs/README.md](https:
 
 # Nom de variable
 
-| Nom                                 | Variable                          | Unité |
-| ----------------------------------- | --------------------------------- | ----- |
-| ADSP1 Pressure Altitude (feet)      | Za                                | ft    |
-| ADSP1 Calibrated Airspeed (knots)   | CAS                               | kts   |
-| ADSP1 Altitude Rate (ft/min)        | Vitesse avion                     | VZa   |
-| WOW_FBK_AMSC1_CHA                   | WoW                               | bool  |
-| HPRSOV_CMD_STATUS_AMSC{1,2}_CH{A,B} | HP_controller{1,2}_ch{A,B}_cmd    | bool  |
-| APU_BLEED_REQUEST_AMSC{1,2}_CH{A,B} | APU_controller{1,2}_ch{A,B}_cmd   | bool  |
-| PRSOV ACTIVATED_AMSC{1,2}_CH{A,B}   | PRSOV_controller{1,2}_ch{A,B}_cmd | bool  |
+| Nom                                 | Variable                          | Unité  |
+| ----------------------------------- | --------------------------------- | ------ |
+| ADSP1 Pressure Altitude (feet)      | Za                                | ft     |
+| ADSP1 Calibrated Airspeed (knots)   | CAS                               | kts    |
+| ADSP1 Altitude Rate (ft/min)        | VZa                               | ft/min |
+| WOW_FBK_AMSC1_CHA                   | WoW                               | bool   |
+| HPRSOV_CMD_STATUS_AMSC{1,2}_CH{A,B} | HP_controller{1,2}_ch{A,B}_cmd    | bool   |
+| APU_BLEED_REQUEST_AMSC{1,2}_CH{A,B} | APU_controller{1,2}_ch{A,B}_cmd   | bool   |
+| PRSOV ACTIVATED_AMSC{1,2}_CH{A,B}   | PRSOV_controller{1,2}_ch{A,B}_cmd | bool   |
 
 # Python
 
