@@ -6,16 +6,16 @@ Created on Sat Nov  12 13:25:24 2016
 
 Tool to create flight segmentation
 
-TODO : temps passé sur chaque phase sur chaque port
+TODO : Fichier de configuration, améliorer les filtres
 """
 
 
 import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
-from pylab import *
 import matplotlib.pyplot as plt
-import numpy as np
+from pylab import *
+
 
 
 def cut(time_list):
@@ -75,62 +75,67 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     """
     # Relevant signal names
     wow = 'WOW_FBK_AMSC1_CHA'
-    altitude = 'ADSP1 Pressure Altitude (feet)'
-    altitude_rate = 'ADSP1 Altitude Rate (ft/min)'
-    calib_air_speed = 'ADSP1 Calibrated Airspeed (knots)'
-    hp_amsc1_cha = 'HPRSOV_CMD_STATUS_AMSC1_CHA'
-    hp_amsc2_cha = 'HPRSOV_CMD_STATUS_AMSC2_CHA'
-    hp_amsc1_chb = 'HPRSOV_CMD_STATUS_AMSC1_CHB'
-    hp_amsc2_chb = 'HPRSOV_CMD_STATUS_AMSC2_CHB'
-    apu_amsc1_cha = 'APU_BLEED_REQUEST_AMSC1_CHA'
-    apu_amsc1_chb = 'APU_BLEED_REQUEST_AMSC1_CHB'
-    apu_amsc2_cha = 'APU_BLEED_REQUEST_AMSC2_CHA'
-    apu_amsc2_chb = 'APU_BLEED_REQUEST_AMSC2_CHB'
-    prsov_amsc1_cha = 'PRSOV ACTIVATED_AMSC1_CHA'
-    prsov_amsc1_chb = 'PRSOV ACTIVATED_AMSC1_CHB'
-    prsov_amsc2_cha = 'PRSOV ACTIVATED_AMSC2_CHA'
-    prsov_amsc2_chb = 'PRSOV ACTIVATED_AMSC2_CHB'
+    Za = 'ADSP1 Pressure Altitude (feet)'
+    VZa = 'ADSP1 Altitude Rate (ft/min)'
+    CAS = 'ADSP1 Calibrated Airspeed (knots)'
+    HP_controller1_chA_cmd = 'HPRSOV_CMD_STATUS_AMSC1_CHA'
+    HP_controller2_chA_cmd = 'HPRSOV_CMD_STATUS_AMSC2_CHA'
+    HP_controller1_chB_cmd = 'HPRSOV_CMD_STATUS_AMSC1_CHB'
+    HP_controller2_chB_cmd = 'HPRSOV_CMD_STATUS_AMSC2_CHB'
+    APU_controller1_chA_cmd = 'APU_BLEED_REQUEST_AMSC1_CHA'
+    APU_controller1_chB_cmd = 'APU_BLEED_REQUEST_AMSC1_CHB'
+    APU_controller2_chA_cmd = 'APU_BLEED_REQUEST_AMSC2_CHA'
+    APU_controller_2_chB_cmd = 'APU_BLEED_REQUEST_AMSC2_CHB'
+    PRSOV_controller1_chA_cmd = 'PRSOV ACTIVATED_AMSC1_CHA'
+    PRSOV_controller1_chB_cmd = 'PRSOV ACTIVATED_AMSC1_CHB'
+    PRSOV_controller2_chA_cmd = 'PRSOV ACTIVATED_AMSC2_CHA'
+    PRSOV_controller2_chB_cmd = 'PRSOV ACTIVATED_AMSC2_CHB'
     
     # Extraction of relevant signals
-    hp_amsc1_cha_signal = data[hp_amsc1_cha]
-    hp_amsc2_cha_signal = data[hp_amsc2_cha]
-    hp_amsc1_chb_signal = data[hp_amsc1_chb]
-    hp_amsc2_chb_signal = data[hp_amsc2_chb]
-    apu_amsc1_cha_signal = data[apu_amsc1_cha]
-    apu_amsc1_chb_signal = data[apu_amsc1_chb]
-    apu_amsc2_cha_signal = data[apu_amsc2_cha]
-    apu_amsc2_chb_signal = data[apu_amsc2_chb]
-    prsov_amsc1_cha_signal = data[prsov_amsc1_cha]
-    prsov_amsc1_chb_signal = data[prsov_amsc1_chb]
-    prsov_amsc2_cha_signal = data[prsov_amsc2_cha]
-    prsov_amsc2_chb_signal = data[prsov_amsc1_chb]
+    HP_controller1_chA_cmd_signal = data[HP_controller1_chA_cmd]
+    HP_controller2_chA_cmd_signal = data[HP_controller2_chA_cmd]
+    HP_controller1_chB_cmd_signal = data[HP_controller1_chB_cmd]
+    HP_controller2_chB_cmd_signal = data[HP_controller2_chB_cmd]
+    APU_controller1_chA_cmd_signal = data[APU_controller1_chA_cmd]
+    APU_controller1_chB_cmd_signal = data[APU_controller1_chB_cmd]
+    APU_controller2_chA_cmd_signal = data[APU_controller2_chA_cmd]
+    APU_controller_2_chB_cmd_signal = data[APU_controller_2_chB_cmd]
+    PRSOV_controller1_chA_cmd_signal = data[PRSOV_controller1_chA_cmd]
+    PRSOV_controller1_chB_cmd_signal = data[PRSOV_controller1_chB_cmd]
+    PRSOV_controller2_chA_cmd_signal = data[PRSOV_controller2_chA_cmd]
+    PRSOV_controller2_chB_cmd_signal = data[PRSOV_controller2_chB_cmd]
 
-    hp1 = (hp_amsc1_cha_signal==1) | (hp_amsc1_chb_signal==1)
-    hp2 = (hp_amsc2_cha_signal==1) | (hp_amsc2_chb_signal==1)
-    apu = (apu_amsc1_cha_signal==1) | (apu_amsc1_chb_signal==1) | (apu_amsc2_cha_signal==1) | (apu_amsc2_chb_signal==1)
-    ip1 = (hp1==0) & (apu==0) & ((prsov_amsc1_cha_signal==1) | (prsov_amsc1_chb_signal==1))
-    ip2 = (hp2==0) & (apu==0) & ((prsov_amsc2_cha_signal==1) | (prsov_amsc2_chb_signal==1))
+    hp1 = (HP_controller1_chA_cmd_signal==1) | (HP_controller1_chB_cmd_signal==1)
+    hp2 = (HP_controller2_chA_cmd_signal==1) | (HP_controller2_chB_cmd_signal==1)
+    apu = (APU_controller1_chA_cmd_signal==1) | (APU_controller1_chB_cmd_signal==1) | (APU_controller2_chA_cmd_signal==1) | (APU_controller_2_chB_cmd_signal==1)
+    ip1 = (hp1==0) & (apu==0) & ((PRSOV_controller1_chA_cmd_signal==1) | (PRSOV_controller1_chB_cmd_signal==1))
+    ip2 = (hp2==0) & (apu==0) & ((PRSOV_controller2_chA_cmd_signal==1) | (PRSOV_controller2_chB_cmd_signal==1))
+    no_bleed = ~(hp1|hp2|ip1|ip2|apu)
     
     
     wow_signal = data[wow]
-    altitude_signal = data[altitude]
-    cas_signal = data[calib_air_speed]
-    delta_cas_signal = data[calib_air_speed].rolling(center = False, window = 120).mean() -  data[calib_air_speed].rolling(center = False, window = 120).mean().shift(1)
-    alt_rate_signal = data[altitude_rate].rolling(center = False, window = 120).mean()
+    Za_signal = data[Za]
+    CAS_signal = data[CAS]
+    WINDOW_CAS = 120
+    delta_CAS_signal = data[CAS].rolling(center = False, window = WINDOW_CAS).mean() -  data[CAS].rolling(center = False, window = WINDOW_CAS).mean().shift(1)
+    alt_rate_signal = data[VZa].rolling(center = False, window = 120).mean()
     
-    
-    # Add filtered values to data
-    data["delta_cas_signal"] = delta_cas_signal.fillna(method="bfill")
-    data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
-    is_taking_off_signal = data["delta_cas_signal"].copy()
-    is_landing_signal = data["delta_cas_signal"].copy()
 
+    # Add filtered values to data
+    data["delta_CAS_signal"] = delta_CAS_signal.fillna(method="bfill")
+    data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
+    
+    is_taking_off_signal = data["delta_CAS_signal"].copy()
+    is_landing_signal = data["delta_CAS_signal"].copy()
+    is_descending_signal = data["alt_rate_signal"].copy()
+    
+    # Hysteresis to detect take_off phases
     triggered = False
-    for i in range(len(data["delta_cas_signal"])):
-        if data["delta_cas_signal"][i] > 0.2:
+    for i in range(len(data["delta_CAS_signal"])):
+        if data["delta_CAS_signal"][i] > 0.2:
             triggered = True
         if triggered:
-            if data["delta_cas_signal"][i] < -0.1:
+            if data["delta_CAS_signal"][i] < -0.1:
                 triggered = False
                 is_taking_off_signal[i] = 0
             else:
@@ -138,34 +143,55 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         else:
             is_taking_off_signal[i] = 0
     
-    
+    # Hysteresis to detect landing phases
     triggered = False
-    for i in range(len(data["delta_cas_signal"])):
-        if data["delta_cas_signal"][i] < - 0.2:
+    for i in range(len(data["delta_CAS_signal"])):
+        if data["delta_CAS_signal"][i] < - 0.2:
             triggered = True
         if triggered:
-            if data["delta_cas_signal"][i] > 0.1:
+            if data["delta_CAS_signal"][i] > 0.1:
                 triggered = False
                 is_landing_signal[i] = 0
             else:
                 is_landing_signal[i] = 1
         else:
             is_landing_signal[i] = 0
-        
+    
+    
+    # Hysteresis to detect descent
+    triggered = False
+    for i in range(len(data["alt_rate_signal"])):
+        if data["alt_rate_signal"][i] < - 0.1:
+            triggered = True
+        if triggered:
+            if data["alt_rate_signal"][i] > 0.5:
+                triggered = False
+                is_descending_signal[i] = 0
+            else:
+                is_descending_signal[i] = 1
+        else:
+            is_descending_signal[i] = 0
+    
+    
+    # Add hysteresis to data
     data['is_taking_off'] = is_taking_off_signal
     data['is_landing'] = is_landing_signal
-    
+    data['is_descending'] = is_descending_signal
+
     # Compute intervals
-    on_the_ground = (wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)
+    on_the_ground = (wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)
     intervals = dict()
     ports = dict()
+    ports_full_flight = dict()
+    
     if otg:
-        times = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(wow_signal==1) & (cas_signal < 80) & (altitude_signal < 15000) & ip2].Time.values.flatten().tolist()
+        times = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & ip2].Time.values.flatten().tolist()
+        times_no_bleed = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & no_bleed].Time.values.flatten().tolist()
         intervals['otg'] = cut(times)
         ports['otg'] = dict()
         ports['otg']['hp1'] = cut(times_hp1)
@@ -173,13 +199,15 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         ports['otg']['apu'] = cut(times_apu)
         ports['otg']['ip1'] = cut(times_ip1)
         ports['otg']['ip2'] = cut(times_ip2)
+        ports['otg']['no bleed'] = cut(times_no_bleed)
     if take_off:
-        times = data.loc[(cas_signal > 80) & (is_taking_off_signal==1) & (altitude_signal < 6000)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(cas_signal > 80) & (is_taking_off_signal==1) & (altitude_signal < 6000) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(cas_signal > 80) & (is_taking_off_signal==1) & (altitude_signal < 6000) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(cas_signal > 80) & (is_taking_off_signal==1) & (altitude_signal < 6000) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(cas_signal > 80) & (is_taking_off_signal==1) & (altitude_signal < 6000) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(cas_signal > 80) & (is_taking_off_signal==1) & (altitude_signal < 6000) & ip2].Time.values.flatten().tolist()
+        times = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & (~on_the_ground)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & hp1 & (~on_the_ground)].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & hp2 & (~on_the_ground)].Time.values.flatten().tolist()
+        times_apu = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & apu & (~on_the_ground)].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & ip1 & (~on_the_ground)].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & ip2 & (~on_the_ground)].Time.values.flatten().tolist()
+        times_no_bleed = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & no_bleed & (~on_the_ground)].Time.values.flatten().tolist()
         intervals['take_off'] = cut(times)
         ports['take_off'] = dict()
         ports['take_off']['hp1'] = cut(times_hp1)
@@ -187,14 +215,16 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         ports['take_off']['apu'] = cut(times_apu)
         ports['take_off']['ip1'] = cut(times_ip1)
         ports['take_off']['ip2'] = cut(times_ip2)
+        ports['take_off']['no bleed'] = cut(times_no_bleed)
     
     if landing:
-        times = data.loc[(cas_signal < 150) & (is_landing_signal==1) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(cas_signal < 150) & (is_landing_signal==1) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(cas_signal < 150) & (is_landing_signal==1) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(cas_signal < 150) & (is_landing_signal==1) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(cas_signal < 150) & (is_landing_signal==1) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(cas_signal < 150) & (is_landing_signal==1) & (altitude_signal < 6000) & (alt_rate_signal > -500) & (alt_rate_signal < 0) & ip2].Time.values.flatten().tolist()
+        times = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (~on_the_ground)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & ip2].Time.values.flatten().tolist()
+        times_no_bleed = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & no_bleed].Time.values.flatten().tolist()
         intervals['landing'] = cut(times)
         ports['landing'] = dict()
         ports['landing']['hp1'] = cut(times_hp1)
@@ -202,13 +232,15 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         ports['landing']['apu'] = cut(times_apu)
         ports['landing']['ip1'] = cut(times_ip1)
         ports['landing']['ip2'] = cut(times_ip2)
+        ports['landing']['no bleed'] = cut(times_no_bleed)
     if climb:
-        times = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) & (alt_rate_signal > 500) & ip2].Time.values.flatten().tolist()
+        times = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & ip2].Time.values.flatten().tolist()
+        times_no_bleed = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & no_bleed].Time.values.flatten().tolist()
         intervals['climb'] = cut(times)
         ports['climb'] = dict()
         ports['climb']['hp1'] = cut(times_hp1)
@@ -216,13 +248,15 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         ports['climb']['apu'] = cut(times_apu)
         ports['climb']['ip1'] = cut(times_ip1)
         ports['climb']['ip2'] = cut(times_ip2)
+        ports['climb']['no bleed'] = cut(times_no_bleed)
     if hold:
-        times = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(~on_the_ground) & (altitude_signal > 6000) &(altitude_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
+        times = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
+        times_no_bleed = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & no_bleed].Time.values.flatten().tolist()
         intervals['hold'] = cut(times)
         ports['hold'] = dict()
         ports['hold']['hp1'] = cut(times_hp1)
@@ -230,13 +264,15 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         ports['hold']['apu'] = cut(times_apu)
         ports['hold']['ip1'] = cut(times_ip1)
         ports['hold']['ip2'] = cut(times_ip2)
+        ports['hold']['no bleed'] = cut(times_no_bleed)
     if cruise:
-        times = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(~on_the_ground) & (altitude_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
+        times = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
+        times_hp1 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
+        times_hp2 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
+        times_apu = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
+        times_ip1 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
+        times_ip2 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
+        times_no_bleed = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & no_bleed].Time.values.flatten().tolist()
         intervals['cruise'] = cut(times)
         ports['cruise'] = dict()
         ports['cruise']['hp1'] = cut(times_hp1)
@@ -244,6 +280,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         ports['cruise']['apu'] = cut(times_apu)
         ports['cruise']['ip1'] = cut(times_ip1)
         ports['cruise']['ip2'] = cut(times_ip2)
+        ports['cruise']['no bleed'] = cut(times_no_bleed)
     if descent:
         times = data.loc[(~on_the_ground) & (alt_rate_signal < -500)].Time.values.flatten().tolist()
         times_hp1 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & hp1].Time.values.flatten().tolist()
@@ -251,6 +288,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         times_apu = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & apu].Time.values.flatten().tolist()
         times_ip1 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & ip1].Time.values.flatten().tolist()
         times_ip2 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & ip2].Time.values.flatten().tolist()
+        times_no_bleed = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & no_bleed].Time.values.flatten().tolist()
         intervals['descent'] = cut(times)
         ports['descent'] = dict()
         ports['descent']['hp1'] = cut(times_hp1)
@@ -258,7 +296,33 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         ports['descent']['apu'] = cut(times_apu)
         ports['descent']['ip1'] = cut(times_ip1)
         ports['descent']['ip2'] = cut(times_ip2)
-    return intervals,ports
+        ports['descent']['no bleed'] = cut(times_no_bleed)
+        
+    ports_full_flight['hp1'] = cut(data.loc[hp1].Time.values.flatten().tolist())
+    ports_full_flight['hp2'] = cut(data.loc[hp2].Time.values.flatten().tolist())
+    ports_full_flight['ip1'] = cut(data.loc[ip1].Time.values.flatten().tolist())
+    ports_full_flight['ip2'] = cut(data.loc[ip2].Time.values.flatten().tolist())
+    ports_full_flight['apu'] = cut(data.loc[apu].Time.values.flatten().tolist())
+    ports_full_flight['no bleed'] = cut(data.loc[no_bleed].Time.values.flatten().tolist())
+    return intervals, ports, ports_full_flight
+
+
+def tuples_to_durations(dic):
+    """
+        Convert a dictionnary containing lists of tuples (t_start, t_end) as values into the same dictionnary with durations
+        as values
+        
+        :param dic: dict
+            Dictionnary with lists of tuples (t_start, t_end) as values
+        :out dict
+            Dictionnary with lists of durations as values
+    """
+    durations = dict()
+    for key in dic.keys():
+        durations[key] = 0
+        for time_values in dic[key]:
+            durations[key] += time_values[1] - time_values[0]
+    return durations
 
 def get_weights(segments_dict, data):
     """
@@ -281,67 +345,148 @@ def get_weights(segments_dict, data):
             weights[segment] += time_values[1] - time_values[0]
     return {k: v / total_duration for k, v in weights.items()}
 
+def seg_durations(segments_dict, data):
+    """
+    Return the duration of each segment
+    """
+    weights = dict()
+    for segment in segments_dict.keys():
+        weights[segment] = 0
+        for time_values in segments_dict[segment]:
+            weights[segment] += time_values[1] - time_values[0]
+    return {k: v  for k, v in weights.items()}
+
 def get_weights_ports(ports_dict, data):
+    """
+    For each segment, compute the duration on each pressure port
+    
+    :param ports_dict: dict
+        Dictionnary of dictionnary
+    
+    :param data: pd.DataFrame
+        flight data
+    
+    :out: dict of dicts
+        
+    """
     weights_ports = dict()
-    total_duration = data.Time.iloc[-1] - data.Time.iloc[0]
-    for segment in ports_dict.keys():
-        weights_ports[segment] = dict()
-        for port in ports_dict[segment].keys():
-            weights_ports[segment][port] = 0
-            for time_values in ports_dict[segment][port]:
-                weights_ports[segment][port] += time_values[1] - time_values[0]
+    seg,_,_ = segment(data)
+    durations = seg_durations(seg,data)  # durations of the segments
+    for each_segment in ports_dict.keys():
+        duration = durations[each_segment]
+        weights_ports[each_segment] = dict()
+        for port in ports_dict[each_segment].keys():
+            weights_ports[each_segment][port] = 0
+            for time_values in ports_dict[each_segment][port]:
+                weights_ports[each_segment][port] += time_values[1] - time_values[0]
+            if duration != 0: weights_ports[each_segment][port] = weights_ports[each_segment][port]/duration
     return weights_ports
 
 
-def get_pie_chart(weights):
+def plot_seg(data):
     """
     Plot a pie chart of the percentage of time spent on each segment
     
     :param weights: dict
         Dictionnary with segment names as keys and weight as values (see get_weights to compute this dictionnary)
     """
+    seg,_,_= segment(data)
+    weights = get_weights(seg, data)
     figure(1, figsize=(10,10))
-    labels = weights.keys()
+    labels = list(weights.keys()) 
     fracs = [weights[key] for key in labels]
-    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
+    if sum([weight for weight in fracs]) < 1:
+        fracs.append(1 - sum([weight for weight in fracs]))
+        labels.append('no segment')
+    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid','red'][:len(fracs)]
     pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
-    title('Durée de chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
+    title('Temps passé dans chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
     draw()
 
-def get_chart_ports(ports):
-    weights_ports = get_weights_ports(ports,data)
-    f, axarr = plt.subplots(2, 4,figsize=(14,7))
+def plot_ports_seg(data):
+    _,ports,_ = segment(data)
+    for each_segment in ports.keys():
+        ports[each_segment] = tuples_to_durations(ports[each_segment])
+    f, axarr = plt.subplots(2, 7,figsize=(23,7))
     f.suptitle('Utilisation des ports selon chaque phase',bbox={'facecolor':'0.8', 'pad':5})
-    i,j=0,0
-    for segment in weights_ports:
-        labels = weights_ports[segment].keys()
-        fracs = [weights_ports[segment][key] for key in labels]
+    j = 0
+    for each_segment in ports:
+        labels = ports[each_segment].keys()  # pressure ports names
+        labels_1 = [label for label in labels if label[-1]=='1'] + ['apu','no bleed'] # left pressure ports + apu
+        labels_2 = [label for label in labels if label[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
+        fracs_1 = [ports[each_segment][key] for key in labels_1]
+        fracs_2 = [ports[each_segment][key] for key in labels_2]
         colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
-        axarr[i, j].pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
-        axarr[i, j].set_title('{}'.format(segment), bbox={'facecolor':'0.8', 'pad':5})
-        if j==3:
-            i += 1
-        j = (j+1)%4
-        axarr[1, 3].set_visible(False)
+        axarr[0, j].pie(fracs_1,labels=labels_1,colors=colors,autopct='%1.1f%%')
+        axarr[0, j].set_title('{} côté 1'.format(each_segment), bbox={'facecolor':'0.8', 'pad':5})
+        axarr[1, j].pie(fracs_2,labels=labels_2,colors=colors,autopct='%1.1f%%')
+        axarr[1, j].set_title('{} côté 2'.format(each_segment), bbox={'facecolor':'0.8', 'pad':5})
+        j = (j+1)%7
     plt.show()
+    
+def plot_ports_sides(data):
+    _,_,ports_full_flight = segment(data)
+    #flight_duration = data.Time.iloc[-1] - data.Time.iloc[0]
+    ports_durations = tuples_to_durations(ports_full_flight)
+    #for port in ports_durations.keys():
+    #    ports_durations[port] /= flight_duration
+    f, axarr = plt.subplots(1, 2,figsize=(20,10))
+    labels = ports_durations.keys()  # pressure ports names
+    labels_1 = [label for label in labels if label[-1]=='1'] + ['apu','no bleed'] # left pressure ports + apu
+    labels_2 = [label for label in labels if label[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
+    fracs_1 = [ports_durations[key] for key in labels_1]
+    fracs_2 = [ports_durations[key] for key in labels_2]
+    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
+    axarr[0].pie(fracs_1,labels=labels_1,colors=colors,autopct='%1.1f%%')
+    axarr[0].set_title('côté 1', bbox={'facecolor':'0.8', 'pad':5})
+    axarr[1].pie(fracs_2,labels=labels_2,colors=colors,autopct='%1.1f%%')
+    axarr[1].set_title('côté 2', bbox={'facecolor':'0.8', 'pad':5})
+    plt.show()
+    
+def plot_ports(data):
+    """
+    Plot a pie chart of the percentage of time spent on each pressure port
+    
+    :param ports_full_flight: dict
+        Dictionnary with ports names as keys and listes of tuples (t_start,t_end) as values
+    
+    :param data
+        pandas df
+    """
+    _,_,ports_full_flight = segment(data)
+    flight_duration = data.Time.iloc[-1] - data.Time.iloc[0]
+    ports_durations = tuples_to_durations(ports_full_flight)
+    # Convert durations on each port into percentage of the flight duration
+    for port in ports_durations.keys():
+        ports_durations[port] /= flight_duration
+    figure(1, figsize=(10,10))
+    labels = ports_durations.keys()
+    fracs = [ports_durations[key] for key in labels]
+    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
+    pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
+    title('Temps passé sur chaque port, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
+    show()
+
+
 
 if __name__ == "__main__":
 
     # Chemin relatif vers le fichier txt de données
-    data_path = '../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt'
+    data_path = '../../Desktop/Articles Liebherr/pie_data/data2.txt'
+
 
     # data contient un DataFrame pandas
     data = txt_parser(data_path)
 
-    seg,ports = segment(data)
-    weights= get_weights(seg,data)
-    for key in seg.keys():
-        print('Poids du segment {} : {}'.format(key,weights[key]))
-        print(seg[key])
-        print('#########')
-    print(ports['otg'])
-    weights_ports = get_weights_ports(ports,data)
-    print(weights_ports)
+    #for key in seg.keys():
+    #    print('Poids du segment {} : {}'.format(key,weights[key]))
+    #    print(seg[key])
+    #    print('#########')
+    #print(ports['otg'])
+    #weights_ports = get_weights_ports(ports,data)
+    #print(weights_ports)
     
-    get_pie_chart(weights)
-    get_chart_ports(ports)
+    plot_seg(data)
+    plot_ports_seg(data)
+    plot_ports_sides(data)
+    plot_ports(data)
