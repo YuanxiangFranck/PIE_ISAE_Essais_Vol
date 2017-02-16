@@ -88,7 +88,7 @@ class SignalData:
 
     def compute_flight_segmentation(self):
         "Compute flight segmentation and set current data to "
-        self.flight_segments, _ = flight_segmenter(self.data)
+        self.flight_segments, _, _ = flight_segmenter(self.data)
         # filtering is adding new columns
         self._raw_data = self.data.copy()
 
