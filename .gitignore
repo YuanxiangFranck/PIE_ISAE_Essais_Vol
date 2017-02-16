@@ -2,3 +2,5 @@ __pycache__/
 *.pyc
 docs/build/
 docs/_modules/
+dataProcessing/html_page/node_modules/
+dataProcessing/html_page/template.js
