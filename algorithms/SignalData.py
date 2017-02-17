@@ -43,6 +43,7 @@ class SignalData:
         self.X = None
         self.sl_window = sl_window
         self.flight_segments = None
+        self.ports = None
 
     def load(self, signals):
         "Reload a signal see init"
@@ -87,8 +88,8 @@ class SignalData:
         self.sl_window = w
 
     def compute_flight_segmentation(self):
-        "Compute flight segmentation and set current data to "
-        self.flight_segments,_,_ = flight_segmenter(self.data)
+        "Compute flight segments and ports, and set attributes."
+        self.flight_segments,_,self.ports = flight_segmenter(self.data)
         # filtering is adding new columns
         self._raw_data = self.data.copy()
 
