@@ -32,7 +32,7 @@ Sélection et chargement du vol
 * modifier le path relatif si besoin
 """
 
-flight_name = 'E190-E2_20001_0090_29867_54230_request.txt'
+flight_name = 'E190-E2_20001_0092_29998_54590_request.txt'
 path = '../../data/'
 
 whole_flight = load_flight(path+flight_name)
@@ -49,6 +49,8 @@ Segmentation et sélection de la phase de vol
 phase = 'all'
 
 flight_data.reset_data()
+flight_data.compute_flight_segmentation()
+
 if phase != 'all':
     flight_data.apply_flight_segmentation(phase)
 
@@ -107,21 +109,71 @@ Heatmap
 """
 
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+from matplotlib import gridspec
+from matplotlib.lines import Line2D
 import seaborn as sns
 
-plt.rcParams['figure.figsize']=(10,10)
 if phase != 'all':
     time_labels = [idx2date(flight_data.flight_segments[phase],\
-                           idx,sl_w,sl_s) for idx in range(len(samples))]
+                           idx,sl_w,sl_s) for idx in range(n_samples)]
 else:
     origin = flight_data.data.Time.iloc[0]
     end = flight_data.data.Time.iloc[-1]
     time_labels = [idx2date([(origin,end)],\
-                           idx,sl_w,sl_s) for idx in range(len(samples))]
-                                         
+                           idx,sl_w,sl_s) for idx in range(n_samples)]
+
+# Affichage de la phase de vol
+color_dic = {'climb': 'r', 'cruise': 'b',
+             'landing': 'm',
+             'descent': 'g', 'hold': 'c',
+             'otg': 'y', 'take_off': 'k'}
+
+if phase == 'all':
+    phases = []
+    for i in range(n_samples):
+        p = idx2phase(whole_flight.Time.iloc[0], whole_flight.Time.iloc[-1], \
+                             flight_data.flight_segments, i, sl_w, sl_s)
+        if p:
+            phases.append(p[0])
+        else:
+            phases.append('missing')
+
+    color_dic['missing'] = 'white'
+
+    phase_cmap = ListedColormap([color_dic[phases[i]] \
+                                 for i in range(n_samples)])
+
+fig = plt.figure(figsize=(10*n_samples//20,10))
+gs = gridspec.GridSpec(2, 1, height_ratios=[1, 50])
+
+ax0 = plt.subplot(gs[0])
+ax0.imshow(np.arange(n_samples).reshape(1,-1), cmap=phase_cmap, \
+             interpolation='nearest')
+ax0.set_axis_off()
+ax0.grid(False)
+        
+ax1 = plt.subplot(gs[1])                              
 sns.heatmap(feature_matrix.T, xticklabels = time_labels, \
-            yticklabels=sorted(signal_names_regul), annot=False)
-plt.title('- Percent time off-regulation -\n'\
+            yticklabels=sorted(signal_names_regul), annot=False, ax=ax1)
+
+box1 = ax1.get_position()
+box0 = ax0.get_position()
+ax0.set_position([box1.x0, box0.y1-0.095, box1.x1-box1.x0,0.04])
+
+def create_proxy(c):
+    line = Line2D([0],[0],color=c,marker='s',linestyle='None')
+    return line
+    
+proxies = [create_proxy(color) for color in color_dic.values()]
+fig.legend(proxies, color_dic.keys(), numpoints=1, markerscale=2, \
+           loc=(0.89,0.695), ncol=1)
+
+ax0.set_title('- Percent time off-regulation -\n'\
           'Flight : {} / Phase : {}\n'
           'Data : regulation and target signals\n'\
           'Time window : {} s'.format(flight_name,phase,sl_w))
+
+#plt.savefig('test.pdf', bbox_inches='tight')
+
+plt.show()
