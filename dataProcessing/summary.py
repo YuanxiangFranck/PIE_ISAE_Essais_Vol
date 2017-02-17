@@ -38,7 +38,12 @@ def compute_phases_index(phases, time):
     out_phases["index"] = time.tolist()
     return out_phases
 
+
 def process_ports(ports, ports_full_flight):
+    """
+    Preprocessing the data for each plot of ports
+    see plot_ports, plot_ports_sides, plot_ports_seg in segmenter
+    """
     for each_segment in ports:
         ports[each_segment] = tuples_to_durations(ports[each_segment])
     ports_durations = tuples_to_durations(ports_full_flight)
@@ -85,12 +90,7 @@ def summary(path, out_path=None, out_dir="", data=None):
     :param [data=None]: dataFrame
         data of the flight
     """
-    # Get file header
     template_data = {}
-    with open(path) as f:
-        template_data["header"] = "".join([f.readline()+"</br>" for _ in range(6)])
-    name = path.split("/")[-1][:-4] # Remove dir and ".txt" extention
-    template_data["name"] = name
     # Parse data and compute segmentation
     if data is None:
         data = txt_parser(path)
@@ -105,14 +105,23 @@ def summary(path, out_path=None, out_dir="", data=None):
     # Compute and add data for phases
     plot_phases = compute_phases_index(phases, data.Time)
     template_data["phases"] = plot_phases
-
     template_data["stats"] = {k:int(v*100) for k, v in get_weights(phases, data).items()}
+
+    # Add css to template
     css_txt = ""
     css_lib = ["bootstrap/dist/css/bootstrap.min.css"]
     css_lib = [template_path+ "node_modules/" + n for n in css_lib]
-    for path in css_lib:
-        with open(path) as fc:
+    for css_path in css_lib:
+        with open(css_path) as fc:
             css_txt += fc.read()
+
+    # Get file header
+    with open(path) as f:
+        template_data["header"] = "".join([f.readline()+"</br>" for _ in range(6)])
+    name = path.split("/")[-1][:-4] # Remove dir and ".txt" extention
+    template_data["name"] = name
+
+    # Fill template
     with open(template_path+"template.css") as fc:
         template_data["css"] = css_txt + fc.read()
     with open(template_path+"template.js") as fjs:
