@@ -9,7 +9,7 @@ Function to return a quick summary of the data
 """
 import numpy as np
 from dataProcessing.parser import txt_parser
-from dataProcessing.segmenter import segment, get_weights
+from dataProcessing.segmenter import segment, get_weights, tuples_to_durations
 
 template_path = "dataProcessing/html_page/"
 
@@ -38,6 +38,36 @@ def compute_phases_index(phases, time):
     out_phases["index"] = time.tolist()
     return out_phases
 
+def process_ports(ports, ports_full_flight):
+    for each_segment in ports:
+        ports[each_segment] = tuples_to_durations(ports[each_segment])
+    ports_durations = tuples_to_durations(ports_full_flight)
+
+    # Compute plot_ports data
+    labels = [key for key in ports_durations]
+    fracs = [ports_durations[key] for key in labels]
+    ports_data = [{"labels": labels, "values":fracs,"type":"pie"}]
+
+    # Compute plot_ports_sides
+    labels_1 = [l for l in labels if l[-1]=='1'] + ['apu','no bleed'] # left pressure ports + apu
+    labels_2 = [l for l in labels if l[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
+    fracs_1 = [ports_durations[key] for key in labels_1]
+    fracs_2 = [ports_durations[key] for key in labels_2]
+    ports_side_data = [{"labels": labels_1, "values":fracs_1,"type":"pie"},
+                       {"labels": labels_2, "values":fracs_2,"type":"pie"}]
+
+    # Compute plot_ports_seg
+    ports_seg_data = {}
+    for each_segment in ports:
+        labels = ports[each_segment].keys()  # pressure ports names
+        labels_1 = [label for label in labels if label[-1]=='1'] + ['apu','no bleed'] # left pressure ports + apu
+        labels_2 = [label for label in labels if label[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
+        fracs_1 = [ports[each_segment][key] for key in labels_1]
+        fracs_2 = [ports[each_segment][key] for key in labels_2]
+        ports_seg_data[each_segment+"1"] = {"labels": labels_1, "values":fracs_1,"type":"pie"}
+        ports_seg_data[each_segment+"1"] = {"labels": labels_2, "values":fracs_2,"type":"pie"}
+    return ports_data, ports_side_data, ports_seg_data
+
 
 def summary(path, out_path=None, out_dir="", data=None):
     """
@@ -61,9 +91,18 @@ def summary(path, out_path=None, out_dir="", data=None):
         template_data["header"] = "".join([f.readline()+"</br>" for _ in range(6)])
     name = path.split("/")[-1][:-4] # Remove dir and ".txt" extention
     template_data["name"] = name
+    # Parse data and compute segmentation
     if data is None:
         data = txt_parser(path)
     phases, ports, ports_full_flight = segment(data)
+
+    # Compute and add data for ports plot
+    ports_data, ports_side_data, ports_seg_data = process_ports(ports, ports_full_flight)
+    template_data["ports_data"] = ports_data
+    template_data["ports_side_data"] = ports_side_data
+    template_data["ports_seg_data"] = ports_seg_data
+
+    # Compute and add data for phases
     plot_phases = compute_phases_index(phases, data.Time)
     template_data["phases"] = plot_phases
 
