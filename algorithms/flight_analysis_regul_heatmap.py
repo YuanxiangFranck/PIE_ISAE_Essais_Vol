@@ -152,8 +152,8 @@ ax0.imshow(np.arange(n_samples).reshape(1,-1), cmap=phase_cmap, \
              interpolation='nearest')
 ax0.set_axis_off()
 ax0.grid(False)
-        
-ax1 = plt.subplot(gs[1])                              
+
+ax1 = plt.subplot(gs[1])
 sns.heatmap(feature_matrix.T, xticklabels = time_labels, \
             yticklabels=sorted(signal_names_regul), annot=False, ax=ax1)
 
@@ -164,7 +164,7 @@ ax0.set_position([box1.x0, box0.y1-0.095, box1.x1-box1.x0,0.04])
 def create_proxy(c):
     line = Line2D([0],[0],color=c,marker='s',linestyle='None')
     return line
-    
+
 proxies = [create_proxy(color) for color in color_dic.values()]
 fig.legend(proxies, color_dic.keys(), numpoints=1, markerscale=2, \
            loc=(0.89,0.695), ncol=1)

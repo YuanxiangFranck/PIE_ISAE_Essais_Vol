@@ -28,7 +28,7 @@ def arguments_parser():
 
 
 
-def txt_parser(file_name):
+def txt_parser(file_name, name_line=8, nb_lines_to_skip=11):
     """
     Read file_name and parse the data
 
@@ -42,7 +42,7 @@ def txt_parser(file_name):
     sep = "	"
     # Compute a dictionary with the units
     with open(file_name) as ff:
-        for _ in range(8):
+        for _ in range(name_line):
             ff.readline()
         names = ff.readline().strip().split(sep)
 
@@ -51,7 +51,7 @@ def txt_parser(file_name):
     # Line 8 are the signals name
     # Line 9 contains the units of each line
     # Line 10 gives aquisition time TO_CHECK!!!!
-    df = pd.read_csv(file_name, skiprows=11, names=names, sep=sep, engine="c")
+    df = pd.read_csv(file_name, skiprows=nb_lines_to_skip, names=names, sep=sep, engine="c")
 
     # Remove last line (often -9999999)
     df = df[:-1]

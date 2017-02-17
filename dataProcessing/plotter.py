@@ -94,7 +94,7 @@ class Plotter:
         """
         Compute segmetation and convert intervals into index instead of time range
         """
-        phases, self.ports = segment(self.data)
+        phases, self.ports, ports_full_flight = segment(self.data)
         time = self.data.Time
         self.phases = {}
         for name, segments in phases.items():
