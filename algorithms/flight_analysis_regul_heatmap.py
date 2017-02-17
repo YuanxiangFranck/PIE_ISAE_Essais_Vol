@@ -122,12 +122,14 @@ else:
     end = flight_data.data.Time.iloc[-1]
     time_labels = [idx2date([(origin,end)],\
                            idx,sl_w,sl_s) for idx in range(n_samples)]
+                            
+################################
+# Affichage de la phase de vol #
+################################
 
-# Affichage de la phase de vol
-color_dic = {'climb': 'r', 'cruise': 'b',
-             'landing': 'm',
-             'descent': 'g', 'hold': 'c',
-             'otg': 'y', 'take_off': 'k'}
+phase_color_dic = {'climb': 'r', 'cruise': 'b', 'landing': 'm', \
+                    'descent': 'g', 'hold': 'c', 'otg': 'y', \
+                    'take_off': 'k', 'missing': 'white'}
 
 if phase == 'all':
     phases = []
@@ -139,35 +141,78 @@ if phase == 'all':
         else:
             phases.append('missing')
 
-    color_dic['missing'] = 'white'
-
-    phase_cmap = ListedColormap([color_dic[phases[i]] \
+    phase_cmap = ListedColormap([phase_color_dic[phases[i]] \
+                                 for i in range(n_samples)])
+else:
+    phase_cmap = ListedColormap([phase_color_dic[phase] \
                                  for i in range(n_samples)])
 
-fig = plt.figure(figsize=(10*n_samples//20,10))
-gs = gridspec.GridSpec(2, 1, height_ratios=[1, 50])
+#######################
+# Affichage des ports #
+#######################
 
+port_color_dic = {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'o', \
+             'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}
+
+if phase == 'all':
+    ports = []
+    for i in range(n_samples):
+        p = idx2phase(whole_flight.Time.iloc[0], whole_flight.Time.iloc[-1], \
+                             flight_data.ports, i, sl_w, sl_s)
+        if p:
+            ports.append(p[0])
+        else:
+            ports.append('missing')
+    
+    port_cmap = ListedColormap([port_color_dic[phases[i]] \
+                             for i in range(n_samples)])
+else:
+    # TO DO
+    pass
+
+#########################
+# Création de la figure #
+#########################
+
+fig = plt.figure(figsize=(10*n_samples//20,10))
+gs = gridspec.GridSpec(3, 1, height_ratios=[1, 1, 50])
+
+# Phases
 ax0 = plt.subplot(gs[0])
 ax0.imshow(np.arange(n_samples).reshape(1,-1), cmap=phase_cmap, \
              interpolation='nearest')
 ax0.set_axis_off()
 ax0.grid(False)
 
+# Ports
 ax1 = plt.subplot(gs[1])
-sns.heatmap(feature_matrix.T, xticklabels = time_labels, \
-            yticklabels=sorted(signal_names_regul), annot=False, ax=ax1)
+ax1.imshow(np.arange(n_samples).reshape(1,-1), cmap=port_cmap, \
+             interpolation='nearest')
+ax1.set_axis_off()
+ax1.grid(False)
 
-box1 = ax1.get_position()
+ax2 = plt.subplot(gs[2])
+sns.heatmap(feature_matrix.T, xticklabels = time_labels, \
+            yticklabels=sorted(signal_names_regul), annot=False, ax=ax2)
+
 box0 = ax0.get_position()
-ax0.set_position([box1.x0, box0.y1-0.095, box1.x1-box1.x0,0.04])
+box1 = ax1.get_position()
+box2 = ax2.get_position()
+
+ax0.set_position([box2.x0, box0.y1-0.095, box2.x1-box2.x0, 0.04])
+ax1.set_position([box2.x0, box1.y1-0.095, box2.x1-box2.x0, 0.04])
 
 def create_proxy(c):
     line = Line2D([0],[0],color=c,marker='s',linestyle='None')
     return line
 
-proxies = [create_proxy(color) for color in color_dic.values()]
-fig.legend(proxies, color_dic.keys(), numpoints=1, markerscale=2, \
+phase_proxies = [create_proxy(color) for color in phase_color_dic.values()]
+fig.legend(phase_proxies, phase_color_dic.keys(), numpoints=1, markerscale=2, \
            loc=(0.89,0.695), ncol=1)
+
+phase_proxies = [create_proxy(color) for color in phase_color_dic.values()]
+fig.legend(phase_proxies, phase_color_dic.keys(), numpoints=1, markerscale=2, \
+           loc=(0.89,0.495), ncol=1)
 
 ax0.set_title('- Percent time off-regulation -\n'\
           'Flight : {} / Phase : {}\n'
