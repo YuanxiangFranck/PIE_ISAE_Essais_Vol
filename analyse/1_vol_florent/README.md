@@ -33,3 +33,15 @@ Sur cette heatmap, on remarque par exemple que sur ce vol, le premier signal (`A
 
 ## Détection d'anomalies par OCSVM
 
+L'algorithme possède deux paramètres, $\nu$ et $\gamma$, qui ont un effet direct sur le nombre d'anomalies (`outliers`) détectées.
+
+$\nu$   |$\gamma$ | outliers
+--------|---------|---------
+0.7     |0.1      |68
+0.5     |0.1      |51
+0.3     |0.1      |31
+0.2     |0.1      |21
+0.15    |0.1      |15
+--------|---------|---------
+0.2     |0.01     |20
+0.5     |0.01     |50
