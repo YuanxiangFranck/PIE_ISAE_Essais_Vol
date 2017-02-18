@@ -67,9 +67,9 @@ function plot_port_usage_per_phases(){
     Plotly.newPlot('port_usage_side', ports_side_data, layout);
     layout.height = 700;
     layout.annotations = [];
-    for (port_data of ports_seg_data){
-        x = port_data.domain.x[0];
-        y = port_data.domain.y[1]+.15;
+    for (let port_data of ports_seg_data){
+        let x = port_data.domain.x[0];
+        let y = port_data.domain.y[1]+.15;
         layout.annotations.push({font: {size: 20}, showarrow: false,
                                  text: port_data.name, x: x, y: y});
     }
