@@ -134,53 +134,41 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     # Add filtered values to data
     data["delta_CAS_signal"] = delta_CAS_signal.fillna(method="bfill")
     data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
+    nb_data = data["delta_CAS_signal"].size
+    is_taking_off_signal = np.zeros(nb_data)
+    is_landing_signal    = np.zeros(nb_data)
+    is_descending_signal = np.zeros(nb_data)
 
-    is_taking_off_signal = data["delta_CAS_signal"].copy()
-    is_landing_signal = data["delta_CAS_signal"].copy()
-    is_descending_signal = data["alt_rate_signal"].copy()
-
-    # Hysteresis to detect take_off phases
-    triggered = False
-    for i in range(len(data["delta_CAS_signal"])):
-        if data["delta_CAS_signal"][i] > 0.2:
-            triggered = True
-        if triggered:
+    take_off_triggered = False
+    landing_triggered = False
+    descent_triggered = False
+    for i in range(nb_data):
+        # Hysteresis to detect take_off phases
+        if not take_off_triggered and data["delta_CAS_signal"][i] > 0.2:
+            take_off_triggered = True
+        if take_off_triggered:
             if data["delta_CAS_signal"][i] < -0.1:
-                triggered = False
-                is_taking_off_signal[i] = 0
+                take_off_triggered = False
             else:
                 is_taking_off_signal[i] = 1
-        else:
-            is_taking_off_signal[i] = 0
 
-    # Hysteresis to detect landing phases
-    triggered = False
-    for i in range(len(data["delta_CAS_signal"])):
-        if data["delta_CAS_signal"][i] < - 0.2:
-            triggered = True
-        if triggered:
+        # Hysteresis to detect landing phases
+        if not landing_triggered and data["delta_CAS_signal"][i] < - 0.2:
+            landing_triggered = True
+        if landing_triggered:
             if data["delta_CAS_signal"][i] > 0.1:
-                triggered = False
-                is_landing_signal[i] = 0
+                landing_triggered = False
             else:
                 is_landing_signal[i] = 1
-        else:
-            is_landing_signal[i] = 0
 
-
-    # Hysteresis to detect descent
-    triggered = False
-    for i in range(len(data["alt_rate_signal"])):
-        if data["alt_rate_signal"][i] < - 0.1:
-            triggered = True
-        if triggered:
+        # Hysteresis to detect descent
+        if not descent_triggered and data["alt_rate_signal"][i] < - 0.1:
+            descent_triggered = True
+        if descent_triggered:
             if data["alt_rate_signal"][i] > 0.5:
-                triggered = False
-                is_descending_signal[i] = 0
+                descent_triggered = False
             else:
                 is_descending_signal[i] = 1
-        else:
-            is_descending_signal[i] = 0
 
 
     # Add hysteresis to data
@@ -193,6 +181,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     not_on_the_ground = np.logical_not(on_the_ground)
     ports_idx = {"hp1": hp1, "hp2": hp2, "apu": apu,
                  "ip1": ip1, "ip2": ip2, "no bleed": no_bleed}
+
     segments = {}
     if otg:
         segments["otg"] = on_the_ground
