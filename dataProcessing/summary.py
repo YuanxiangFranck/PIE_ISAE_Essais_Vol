@@ -58,19 +58,36 @@ def process_ports(ports, ports_full_flight):
     labels_2 = [l for l in labels if l[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
     fracs_1 = [ports_durations[key] for key in labels_1]
     fracs_2 = [ports_durations[key] for key in labels_2]
-    ports_side_data = [{"labels": labels_1, "values":fracs_1,"type":"pie"},
-                       {"labels": labels_2, "values":fracs_2,"type":"pie"}]
+    ports_side_data = [{"labels": labels_1, "values":fracs_1,
+                        "domain":{"x":[0,.48], "y": [0,1]},
+                        "type":"pie", "name":"Side 1"},
+                       {"labels": labels_2, "values":fracs_2,
+                        "domain":{"x":[.52,1], "y": [0,1]},
+                        "type":"pie", "name":"Side 2"}]
 
     # Compute plot_ports_seg
-    ports_seg_data = {}
-    for each_segment in ports:
+    ports_seg_data = []
+    nb_ports = len(ports)
+    for nb, each_segment in enumerate(ports):
         labels = ports[each_segment].keys()  # pressure ports names
         labels_1 = [label for label in labels if label[-1]=='1'] + ['apu','no bleed'] # left pressure ports + apu
         labels_2 = [label for label in labels if label[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
         fracs_1 = [ports[each_segment][key] for key in labels_1]
+        if sum(fracs_1) == 0:
+            fracs_1.append(1)
+            labels_1.append("no data")
         fracs_2 = [ports[each_segment][key] for key in labels_2]
-        ports_seg_data[each_segment+"1"] = {"labels": labels_1, "values":fracs_1,"type":"pie"}
-        ports_seg_data[each_segment+"1"] = {"labels": labels_2, "values":fracs_2,"type":"pie"}
+        if sum(fracs_2) == 0:
+            fracs_2.append(1)
+            labels_2.append("no data")
+        domain = {"x": [nb/nb_ports+.01, (nb+1)/nb_ports-.01], "y":[.52, 1]}
+        ports_seg_data.append({"labels": labels_1, "values":fracs_1,
+                               "domain": domain, "type":"pie",
+                               "name": each_segment+" 1"})
+        domain = {"x": [nb/nb_ports+.01, (nb+1)/nb_ports-.01], "y":[0, .48]}
+        ports_seg_data.append({"labels": labels_2, "values":fracs_2,
+                               "domain": domain, "type":"pie",
+                               "name": each_segment+" 2"})
     return ports_data, ports_side_data, ports_seg_data
 
 
