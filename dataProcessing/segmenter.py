@@ -82,6 +82,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     :out: dict of dicts
         keys represent names of segments and values are dictionnaries with pressure ports as keys and lists of tuples (time start,time end) as values
     """
+
     # Relevant signal names
     wow = 'WOW_FBK_AMSC1_CHA'
     Za = 'ADSP1 Pressure Altitude (feet)'
@@ -189,123 +190,36 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
 
     # Compute intervals
     on_the_ground = (wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)
-    intervals = dict()
-    ports = dict()
-    ports_full_flight = dict()
-
+    not_on_the_ground = np.logical_not(on_the_ground)
+    ports_idx = {"hp1": hp1, "hp2": hp2, "apu": apu,
+                 "ip1": ip1, "ip2": ip2, "no bleed": no_bleed}
+    segments = {}
     if otg:
-        times = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & ip2].Time.values.flatten().tolist()
-        times_no_bleed = data.loc[(wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000) & no_bleed].Time.values.flatten().tolist()
-        intervals['otg'] = cut(times)
-        ports['otg'] = dict()
-        ports['otg']['hp1'] = cut(times_hp1)
-        ports['otg']['hp2'] = cut(times_hp2)
-        ports['otg']['apu'] = cut(times_apu)
-        ports['otg']['ip1'] = cut(times_ip1)
-        ports['otg']['ip2'] = cut(times_ip2)
-        ports['otg']['no bleed'] = cut(times_no_bleed)
+        segments["otg"] = on_the_ground
     if take_off:
-        times = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & (~on_the_ground)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & hp1 & (~on_the_ground)].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & hp2 & (~on_the_ground)].Time.values.flatten().tolist()
-        times_apu = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & apu & (~on_the_ground)].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & ip1 & (~on_the_ground)].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & ip2 & (~on_the_ground)].Time.values.flatten().tolist()
-        times_no_bleed = data.loc[(CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & no_bleed & (~on_the_ground)].Time.values.flatten().tolist()
-        intervals['take_off'] = cut(times)
-        ports['take_off'] = dict()
-        ports['take_off']['hp1'] = cut(times_hp1)
-        ports['take_off']['hp2'] = cut(times_hp2)
-        ports['take_off']['apu'] = cut(times_apu)
-        ports['take_off']['ip1'] = cut(times_ip1)
-        ports['take_off']['ip2'] = cut(times_ip2)
-        ports['take_off']['no bleed'] = cut(times_no_bleed)
-
+        segments["take_off"] = (CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & (~on_the_ground)
     if landing:
-        times = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (~on_the_ground)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & ip2].Time.values.flatten().tolist()
-        times_no_bleed = data.loc[(CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (is_descending_signal==1) & (~on_the_ground) & no_bleed].Time.values.flatten().tolist()
-        intervals['landing'] = cut(times)
-        ports['landing'] = dict()
-        ports['landing']['hp1'] = cut(times_hp1)
-        ports['landing']['hp2'] = cut(times_hp2)
-        ports['landing']['apu'] = cut(times_apu)
-        ports['landing']['ip1'] = cut(times_ip1)
-        ports['landing']['ip2'] = cut(times_ip2)
-        ports['landing']['no bleed'] = cut(times_no_bleed)
+        segments["landing"]  = (CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (~on_the_ground)
     if climb:
-        times = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & ip2].Time.values.flatten().tolist()
-        times_no_bleed = data.loc[(~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500) & no_bleed].Time.values.flatten().tolist()
-        intervals['climb'] = cut(times)
-        ports['climb'] = dict()
-        ports['climb']['hp1'] = cut(times_hp1)
-        ports['climb']['hp2'] = cut(times_hp2)
-        ports['climb']['apu'] = cut(times_apu)
-        ports['climb']['ip1'] = cut(times_ip1)
-        ports['climb']['ip2'] = cut(times_ip2)
-        ports['climb']['no bleed'] = cut(times_no_bleed)
+        segments["climb"]    = (~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500)
     if hold:
-        times = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
-        times_no_bleed = data.loc[(~on_the_ground) & (Za_signal > 6000) &(Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & no_bleed].Time.values.flatten().tolist()
-        intervals['hold'] = cut(times)
-        ports['hold'] = dict()
-        ports['hold']['hp1'] = cut(times_hp1)
-        ports['hold']['hp2'] = cut(times_hp2)
-        ports['hold']['apu'] = cut(times_apu)
-        ports['hold']['ip1'] = cut(times_ip1)
-        ports['hold']['ip2'] = cut(times_ip2)
-        ports['hold']['no bleed'] = cut(times_no_bleed)
+        segments["hold"]     = (~on_the_ground) & (Za_signal > 6000) & (Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)
     if cruise:
-        times = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & ip2].Time.values.flatten().tolist()
-        times_no_bleed = data.loc[(~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500) & no_bleed].Time.values.flatten().tolist()
-        intervals['cruise'] = cut(times)
-        ports['cruise'] = dict()
-        ports['cruise']['hp1'] = cut(times_hp1)
-        ports['cruise']['hp2'] = cut(times_hp2)
-        ports['cruise']['apu'] = cut(times_apu)
-        ports['cruise']['ip1'] = cut(times_ip1)
-        ports['cruise']['ip2'] = cut(times_ip2)
-        ports['cruise']['no bleed'] = cut(times_no_bleed)
+        segments["cruise"]   = (~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)
     if descent:
-        times = data.loc[(~on_the_ground) & (alt_rate_signal < -500)].Time.values.flatten().tolist()
-        times_hp1 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & hp1].Time.values.flatten().tolist()
-        times_hp2 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & hp2].Time.values.flatten().tolist()
-        times_apu = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & apu].Time.values.flatten().tolist()
-        times_ip1 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & ip1].Time.values.flatten().tolist()
-        times_ip2 = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & ip2].Time.values.flatten().tolist()
-        times_no_bleed = data.loc[(~on_the_ground) & (alt_rate_signal < -500) & no_bleed].Time.values.flatten().tolist()
-        intervals['descent'] = cut(times)
-        ports['descent'] = dict()
-        ports['descent']['hp1'] = cut(times_hp1)
-        ports['descent']['hp2'] = cut(times_hp2)
-        ports['descent']['apu'] = cut(times_apu)
-        ports['descent']['ip1'] = cut(times_ip1)
-        ports['descent']['ip2'] = cut(times_ip2)
-        ports['descent']['no bleed'] = cut(times_no_bleed)
+        segments["descent"]  = (~on_the_ground) & (alt_rate_signal < -500)
+
+    # Compute segments and ports
+    intervals = {}
+    ports = {}
+    ports_full_flight = {}
+    for segment_name, segment_idx in segments.items():
+        times = data.loc[segment_idx].Time.values.flatten().tolist()
+        intervals[segment_name] = cut(times)
+        ports[segment_name] = {}
+        for port_name, port_idx in ports_idx.items():
+            time_on_port = data.loc[segment_idx & port_idx].Time.values.flatten().tolist()
+            ports[segment_name][port_name] = cut(time_on_port)
 
     ports_full_flight['hp1'] = cut(data.loc[hp1].Time.values.flatten().tolist())
     ports_full_flight['hp2'] = cut(data.loc[hp2].Time.values.flatten().tolist())
