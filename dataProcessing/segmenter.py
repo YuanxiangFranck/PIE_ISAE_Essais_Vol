@@ -7,6 +7,7 @@ Created on Sat Nov  12 13:25:24 2016
 Tool to create flight segmentation
 
 TODO : Fichier de configuration, améliorer les filtres
+TODO: ajouter des "constantes" en début de fichier au lieu de coder les valeurs en dur
 """
 
 
@@ -24,20 +25,28 @@ def cut(time_list):
     """
     if not time_list:
         return []
+
+    # Check if there are jumps or not
     jumps = []
     for i in range(len(time_list)-2):
         if time_list[i + 1] != time_list[i] + 1:
             jumps.append((time_list[i],time_list[i+1]))
+
     if not jumps:
-        return [(time_list[0],time_list[-1])] # if time values are continuous, start time = first time, end time = last time
+        # if time values are continuous, start time = first time, end time = last time
+        return [(time_list[0],time_list[-1])]
     elif len(jumps)==1:
-        return [(time_list[0],jumps[0][0]),(jumps[0][1],time_list[-1])] # If there is one single jump, one segment before the jump, one segment after
-    dates = []
-    dates.append((time_list[0],jumps[0][0])) # First segment
+        # If there is one single jump, one segment before the jump, one segment after
+        return [(time_list[0],jumps[0][0]),(jumps[0][1],time_list[-1])]
+
+    # Compute dates
+    dates = [ (time_list[0], jumps[0][0]) ]  # First segment
     for i in range(len(jumps)-1):
-        dates.append((jumps[i][1],jumps[i+1][0])) # Intermediate segments
-    dates.append((jumps[-1][1],time_list[-1])) # Last segment
+        # Intermediate segments
+        dates.append((jumps[i][1], jumps[i+1][0]))
+    dates.append((jumps[-1][1], time_list[-1])) # Last segment
     return dates
+
 
 def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, cruise=True, descent=True):
     """
@@ -317,11 +326,9 @@ def tuples_to_durations(dic):
         :out dict
             Dictionnary with lists of durations as values
     """
-    durations = dict()
-    for key in dic.keys():
-        durations[key] = 0
-        for time_values in dic[key]:
-            durations[key] += time_values[1] - time_values[0]
+    durations = {}
+    for key, time_values in dic.items():
+        durations[key] = sum(end-start for start, end in time_values)
     return durations
 
 def get_weights(segments_dict, data):
