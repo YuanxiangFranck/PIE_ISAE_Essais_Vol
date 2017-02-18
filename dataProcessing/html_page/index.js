@@ -32,6 +32,7 @@ function plot_phases(){
              };
     Plotly.newPlot('plot_phases', data, layout);
 }
+
 function plot_ratio_pie_chart(){
     let rest = 1;
     let values = [];
@@ -57,5 +58,18 @@ function plot_ratio_pie_chart(){
 
 }
 
+function plot_port_usage_per_phases(){
+    let layout = {
+        height: 400,
+        width: 500
+    };
+    Plotly.newPlot('port_usage', ports_data, layout);
+    layout.width = 1200;
+    Plotly.newPlot('port_usage_side', ports_side_data, layout);
+    layout.height = 600;
+    Plotly.newPlot('port_usage_phases', ports_seg_data, layout);
+}
+
 plot_ratio_pie_chart();
 plot_phases();
+plot_port_usage_per_phases();
