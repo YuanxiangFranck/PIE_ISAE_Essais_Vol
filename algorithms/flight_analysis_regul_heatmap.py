@@ -151,7 +151,7 @@ else:
 # Affichage des ports #
 #######################
 
-port_color_dic = {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'o', \
+port_color_dic = {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange', \
              'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}
 
 if phase == 'all':
@@ -164,7 +164,7 @@ if phase == 'all':
         else:
             ports.append('missing')
     
-    port_cmap = ListedColormap([port_color_dic[phases[i]] \
+    port_cmap = ListedColormap([port_color_dic[ports[i]] \
                              for i in range(n_samples)])
 else:
     # TO DO
@@ -193,14 +193,15 @@ ax1.grid(False)
 
 ax2 = plt.subplot(gs[2])
 sns.heatmap(feature_matrix.T, xticklabels = time_labels, \
-            yticklabels=sorted(signal_names_regul), annot=False, ax=ax2)
+            yticklabels=sorted(signal_names_regul), annot=False, \
+            ax=ax2, robust=True)
 
 box0 = ax0.get_position()
 box1 = ax1.get_position()
 box2 = ax2.get_position()
 
 ax0.set_position([box2.x0, box0.y1-0.095, box2.x1-box2.x0, 0.04])
-ax1.set_position([box2.x0, box1.y1-0.095, box2.x1-box2.x0, 0.04])
+ax1.set_position([box2.x0, box0.y1-0.125, box2.x1-box2.x0, 0.04])
 
 def create_proxy(c):
     line = Line2D([0],[0],color=c,marker='s',linestyle='None')
@@ -210,8 +211,8 @@ phase_proxies = [create_proxy(color) for color in phase_color_dic.values()]
 fig.legend(phase_proxies, phase_color_dic.keys(), numpoints=1, markerscale=2, \
            loc=(0.89,0.695), ncol=1)
 
-phase_proxies = [create_proxy(color) for color in phase_color_dic.values()]
-fig.legend(phase_proxies, phase_color_dic.keys(), numpoints=1, markerscale=2, \
+port_proxies = [create_proxy(color) for color in port_color_dic.values()]
+fig.legend(port_proxies, port_color_dic.keys(), numpoints=1, markerscale=2, \
            loc=(0.89,0.495), ncol=1)
 
 ax0.set_title('- Percent time off-regulation -\n'\
