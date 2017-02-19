@@ -13,48 +13,10 @@ TODO: ajouter des "constantes" en début de fichier au lieu de coder les valeurs
 
 import sys,os
 sys.path.append(os.path.abspath('..'))
-from dataProcessing.parser import txt_parser
 import matplotlib.pyplot as plt
-from pylab import *
-
-
-def hysteresis(x, th_lo, th_hi, init=False):
-    hi = x >= th_hi
-    lo_or_hi = (x <= th_lo) | hi
-    ind = np.nonzero(lo_or_hi)[0]
-    if not ind.size:
-        return np.zeros_like(x, dtype=bool) | init
-    cnt = np.cumsum(lo_or_hi)
-    return where(cnt, hi[ind[cnt-1]], init)
-
-
-def cut(time_list):
-    """
-        Create a list of tuples (time start,time end) from a list of discontinuous time values
-    """
-    if not time_list:
-        return []
-
-    # Check if there are jumps or not
-    jumps = []
-    for i in range(len(time_list)-2):
-        if time_list[i + 1] != time_list[i] + 1:
-            jumps.append((time_list[i],time_list[i+1]))
-
-    if not jumps:
-        # if time values are continuous, start time = first time, end time = last time
-        return [(time_list[0],time_list[-1])]
-    elif len(jumps)==1:
-        # If there is one single jump, one segment before the jump, one segment after
-        return [(time_list[0],jumps[0][0]),(jumps[0][1],time_list[-1])]
-
-    # Compute dates
-    dates = [ (time_list[0], jumps[0][0]) ]  # First segment
-    for i in range(len(jumps)-1):
-        # Intermediate segments
-        dates.append((jumps[i][1], jumps[i+1][0]))
-    dates.append((jumps[-1][1], time_list[-1])) # Last segment
-    return dates
+import numpy as np
+from dataProcessing.parser import txt_parser
+from dataProcessing.segmenter_utils import hysteresis, tuples_to_durations, get_weights, cut
 
 
 def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, cruise=True, descent=True):
@@ -195,78 +157,6 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     return intervals, ports, ports_full_flight
 
 
-def tuples_to_durations(dic):
-    """
-        Convert a dictionnary containing lists of tuples (t_start, t_end) as values into the same dictionnary with durations
-        as values
-
-        :param dic: dict
-            Dictionnary with lists of tuples (t_start, t_end) as values
-        :out dict
-            Dictionnary with lists of durations as values
-    """
-    durations = {}
-    for key, time_values in dic.items():
-        durations[key] = sum(end-start for start, end in time_values)
-    return durations
-
-def get_weights(segments_dict, data):
-    """
-    Compute the duration of each segment divided by the duration of the flight
-
-    :param segments_dict: dict
-        Dictionnary containing flight segments, keys represent names of segments, values are lists of tuples (time start,time end)
-
-    :param data: pd.DataFrame
-        flight data
-
-    :out: dict
-        keys represent names of segments, values are float representing the time spent in this segment divided by the total duration of the flight
-    """
-    weights = dict()
-    total_duration = data.Time.iloc[-1] - data.Time.iloc[0]
-    for segment in segments_dict.keys():
-        weights[segment] = 0
-        for time_values in segments_dict[segment]:
-            weights[segment] += time_values[1] - time_values[0]
-    return {k: v / total_duration for k, v in weights.items()}
-
-def seg_durations(segments_dict, data):
-    """
-    Return the duration of each segment
-    """
-    weights = dict()
-    for segment in segments_dict.keys():
-        weights[segment] = 0
-        for time_values in segments_dict[segment]:
-            weights[segment] += time_values[1] - time_values[0]
-    return {k: v  for k, v in weights.items()}
-
-def get_weights_ports(ports_dict, data):
-    """
-    For each segment, compute the duration on each pressure port
-
-    :param ports_dict: dict
-        Dictionnary of dictionnary
-
-    :param data: pd.DataFrame
-        flight data
-
-    :out: dict of dicts
-
-    """
-    weights_ports = dict()
-    seg,_,_ = segment(data)
-    durations = seg_durations(seg,data)  # durations of the segments
-    for each_segment in ports_dict.keys():
-        duration = durations[each_segment]
-        weights_ports[each_segment] = dict()
-        for port in ports_dict[each_segment].keys():
-            weights_ports[each_segment][port] = 0
-            for time_values in ports_dict[each_segment][port]:
-                weights_ports[each_segment][port] += time_values[1] - time_values[0]
-            if duration != 0: weights_ports[each_segment][port] = weights_ports[each_segment][port]/duration
-    return weights_ports
 
 
 def plot_seg(data):
@@ -289,6 +179,7 @@ def plot_seg(data):
     title('Temps passé dans chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
     draw()
 
+
 def plot_ports_seg(data):
     _,ports,_ = segment(data)
     for each_segment in ports.keys():
@@ -310,6 +201,7 @@ def plot_ports_seg(data):
         j = (j+1)%7
     plt.show()
 
+
 def plot_ports_sides(data):
     _,_,ports_full_flight = segment(data)
     #flight_duration = data.Time.iloc[-1] - data.Time.iloc[0]
@@ -328,6 +220,7 @@ def plot_ports_sides(data):
     axarr[1].pie(fracs_2,labels=labels_2,colors=colors,autopct='%1.1f%%')
     axarr[1].set_title('côté 2', bbox={'facecolor':'0.8', 'pad':5})
     plt.show()
+
 
 def plot_ports(data):
     """
