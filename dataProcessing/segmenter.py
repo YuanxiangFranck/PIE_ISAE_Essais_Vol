@@ -18,6 +18,15 @@ import matplotlib.pyplot as plt
 from pylab import *
 
 
+def hysteresis(x, th_lo, th_hi, init=False):
+    hi = x >= th_hi
+    lo_or_hi = (x <= th_lo) | hi
+    ind = np.nonzero(lo_or_hi)[0]
+    if not ind.size:
+        return np.zeros_like(x, dtype=bool) | init
+    cnt = np.cumsum(lo_or_hi)
+    return where(cnt, hi[ind[cnt-1]], init)
+
 
 def cut(time_list):
     """
@@ -135,50 +144,17 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     data["delta_CAS_signal"] = delta_CAS_signal.fillna(method="bfill")
     data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
     nb_data = data["delta_CAS_signal"].size
-    is_taking_off_signal = np.zeros(nb_data)
-    is_landing_signal    = np.zeros(nb_data)
-    is_descending_signal = np.zeros(nb_data)
-
-    take_off_triggered = False
-    landing_triggered = False
-    descent_triggered = False
-    for i in range(nb_data):
-        # Hysteresis to detect take_off phases
-        if not take_off_triggered and data["delta_CAS_signal"][i] > 0.2:
-            take_off_triggered = True
-        if take_off_triggered:
-            if data["delta_CAS_signal"][i] < -0.1:
-                take_off_triggered = False
-            else:
-                is_taking_off_signal[i] = 1
-
-        # Hysteresis to detect landing phases
-        if not landing_triggered and data["delta_CAS_signal"][i] < - 0.2:
-            landing_triggered = True
-        if landing_triggered:
-            if data["delta_CAS_signal"][i] > 0.1:
-                landing_triggered = False
-            else:
-                is_landing_signal[i] = 1
-
-        # Hysteresis to detect descent
-        if not descent_triggered and data["alt_rate_signal"][i] < - 0.1:
-            descent_triggered = True
-        if descent_triggered:
-            if data["alt_rate_signal"][i] > 0.5:
-                descent_triggered = False
-            else:
-                is_descending_signal[i] = 1
-
 
     # Add hysteresis to data
+    is_taking_off_signal = hysteresis(data["delta_CAS_signal"], .2, -.1)
+    is_landing_signal = hysteresis(-data["delta_CAS_signal"], .2, -.1)
+    is_descending_signal = hysteresis(-data["alt_rate_signal"], .1, -.5)
     data['is_taking_off'] = is_taking_off_signal
-    data['is_landing'] = is_landing_signal
+    data['is_landing']    = is_landing_signal
     data['is_descending'] = is_descending_signal
 
     # Compute intervals
     on_the_ground = (wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)
-    not_on_the_ground = np.logical_not(on_the_ground)
     ports_idx = {"hp1": hp1, "hp2": hp2, "apu": apu,
                  "ip1": ip1, "ip2": ip2, "no bleed": no_bleed}
 
