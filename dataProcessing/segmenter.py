@@ -18,6 +18,8 @@ import numpy as np
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter_utils import hysteresis, tuples_to_durations, get_weights, cut
 
+plot_colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue', 'dodgerblue',
+              'indianred', 'orchid']
 
 def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, cruise=True, descent=True):
     """
@@ -105,15 +107,14 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     # Add filtered values to data
     data["delta_CAS_signal"] = delta_CAS_signal.fillna(method="bfill")
     data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
-    nb_data = data["delta_CAS_signal"].size
 
     # Add hysteresis to data
     is_taking_off_signal = hysteresis(data["delta_CAS_signal"], .2, -.1)
     is_landing_signal = hysteresis(-data["delta_CAS_signal"], .2, -.1)
-    is_descending_signal = hysteresis(-data["alt_rate_signal"], .1, -.5)
+    # is_descending_signal = hysteresis(-data["alt_rate_signal"], .1, -.5)
     data['is_taking_off'] = is_taking_off_signal
     data['is_landing']    = is_landing_signal
-    data['is_descending'] = is_descending_signal
+    # data['is_descending'] = is_descending_signal
 
     # Compute intervals
     on_the_ground = (wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)
@@ -168,16 +169,16 @@ def plot_seg(data):
     """
     seg,_,_= segment(data)
     weights = get_weights(seg, data)
-    figure(1, figsize=(10,10))
+    plt.figure(1, figsize=(10,10))
     labels = list(weights.keys())
     fracs = [weights[key] for key in labels]
     if sum([weight for weight in fracs]) < 1:
         fracs.append(1 - sum([weight for weight in fracs]))
         labels.append('no segment')
     colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid','red'][:len(fracs)]
-    pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
-    title('Temps passé dans chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
-    draw()
+    plt.pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
+    plt.title('Temps passé dans chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
+    plt.draw()
 
 
 def plot_ports_seg(data):
@@ -203,22 +204,19 @@ def plot_ports_seg(data):
 
 
 def plot_ports_sides(data):
-    _,_,ports_full_flight = segment(data)
+    _, _, ports_full_flight = segment(data)
     #flight_duration = data.Time.iloc[-1] - data.Time.iloc[0]
     ports_durations = tuples_to_durations(ports_full_flight)
     #for port in ports_durations.keys():
     #    ports_durations[port] /= flight_duration
-    f, axarr = plt.subplots(1, 2,figsize=(20,10))
+    _, axarr = plt.subplots(1, 2, figsize=(20, 10))
     labels = ports_durations.keys()  # pressure ports names
-    labels_1 = [label for label in labels if label[-1]=='1'] + ['apu','no bleed'] # left pressure ports + apu
-    labels_2 = [label for label in labels if label[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
-    fracs_1 = [ports_durations[key] for key in labels_1]
-    fracs_2 = [ports_durations[key] for key in labels_2]
-    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
-    axarr[0].pie(fracs_1,labels=labels_1,colors=colors,autopct='%1.1f%%')
-    axarr[0].set_title('côté 1', bbox={'facecolor':'0.8', 'pad':5})
-    axarr[1].pie(fracs_2,labels=labels_2,colors=colors,autopct='%1.1f%%')
-    axarr[1].set_title('côté 2', bbox={'facecolor':'0.8', 'pad':5})
+    for side in [1, 2]:
+        labels_1 = [l for l in labels if l[-1]==str(side)] + ['apu', 'no bleed']
+        fracs_1 = [ports_durations[key] for key in labels_1]
+        axarr[side-1].pie(fracs_1, labels=labels_1, autopct='%1.1f%%',
+                            colors=plot_colors[:len(labels)])
+        axarr[side-1].set_title('côté '+str(side), bbox={'facecolor':'0.8', 'pad':5})
     plt.show()
 
 
@@ -232,19 +230,20 @@ def plot_ports(data):
     :param data
         pandas df
     """
-    _,_,ports_full_flight = segment(data)
+    _, _, ports_full_flight = segment(data)
     flight_duration = data.Time.iloc[-1] - data.Time.iloc[0]
     ports_durations = tuples_to_durations(ports_full_flight)
     # Convert durations on each port into percentage of the flight duration
     for port in ports_durations.keys():
         ports_durations[port] /= flight_duration
-    figure(1, figsize=(10,10))
+    plt.figure(1, figsize=(10, 10))
     labels = ports_durations.keys()
     fracs = [ports_durations[key] for key in labels]
-    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
-    pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
-    title('Temps passé sur chaque port, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
-    show()
+    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue', 'dodgerblue',
+              'indianred', 'orchid'][:len(labels)]
+    plt.pie(fracs, labels=labels, colors=colors, autopct='%1.1f%%')
+    plt.title('Temps passé sur chaque port, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
+    plt.show()
 
 
 
@@ -255,7 +254,7 @@ if __name__ == "__main__":
 
 
     # data contient un DataFrame pandas
-    data = txt_parser(data_path)
+    flight_data = txt_parser(data_path)
 
     #for key in seg.keys():
     #    print('Poids du segment {} : {}'.format(key,weights[key]))
@@ -265,7 +264,7 @@ if __name__ == "__main__":
     #weights_ports = get_weights_ports(ports,data)
     #print(weights_ports)
 
-    plot_seg(data)
-    plot_ports_seg(data)
-    plot_ports_sides(data)
-    plot_ports(data)
+    plot_seg(flight_data)
+    plot_ports_seg(flight_data)
+    plot_ports_sides(flight_data)
+    plot_ports(flight_data)
