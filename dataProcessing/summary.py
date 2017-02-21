@@ -44,8 +44,9 @@ def process_ports(ports, ports_full_flight):
     Preprocessing the data for each plot of ports
     see plot_ports, plot_ports_sides, plot_ports_seg in segmenter
     """
-    for each_segment in ports:
-        ports[each_segment] = tuples_to_durations(ports[each_segment])
+    new_ports = {}
+    for each_segment, ports_usage in ports.items():
+        new_ports[each_segment] = tuples_to_durations(ports_usage)
     ports_durations = tuples_to_durations(ports_full_flight)
 
     # Compute plot_ports data
@@ -58,7 +59,7 @@ def process_ports(ports, ports_full_flight):
     for side in [1, 2]:
         labels_tmp = [l for l in labels if l[-1] == str(side)] + ['apu', 'no bleed']
         fracs_tmp = [ports_durations[key] for key in labels_tmp]
-        domain = {"y": [0, 1]}
+        domain = {"y": [0, 0.8]}
         if side == 1:
             domain["x"] = [0, 0.48]
         else:
@@ -70,25 +71,25 @@ def process_ports(ports, ports_full_flight):
     ports_seg_data = []
     nb_ports = len(ports)
     for nb, each_segment in enumerate(phases_order):
-        labels = ports[each_segment].keys()  # pressure ports names
+        labels = new_ports[each_segment].keys()  # pressure ports names
         for side in [1, 2]:
             labels_1 = [l for l in labels if l[-1] == str(side)] + ['apu', 'no bleed']
-            fracs_1 = [ports[each_segment][key] for key in labels_1]
+            fracs_1 = [new_ports[each_segment][key] for key in labels_1]
             if sum(fracs_1) == 0:
                 fracs_1.append(1)
                 labels_1.append("no data")
             domain = {"x": [nb/nb_ports+.01, (nb+1)/nb_ports-.01]}
             if side == 1:
-                domain["y"] = [.52, 1]
+                domain["y"] = [.52, .8]
             else:
-                domain["y"] = [0, 0.48]
+                domain["y"] = [0, 0.28]
             ports_seg_data.append({"labels": labels_1, "values":fracs_1,
                                    "domain": domain, "type":"pie",
                                    "name": each_segment+" "+str(side)})
     return ports_data, ports_side_data, ports_seg_data
 
 
-def summary(path, out_path=None, out_dir="", data=None):
+def summary(path, out_path=None, out_dir="", data=None, phases_data=None):
     """
     Compute summary
 
@@ -108,8 +109,10 @@ def summary(path, out_path=None, out_dir="", data=None):
     # Parse data and compute segmentation
     if data is None:
         data = txt_parser(path)
-    phases, ports, ports_full_flight = segment(data)
-
+    if phases_data is None:
+        phases, ports, ports_full_flight = segment(data)
+    else:
+        phases, ports, ports_full_flight = phases_data
     # Compute and add data for ports plot
     ports_data, ports_side_data, ports_seg_data = process_ports(ports, ports_full_flight)
     template_data["ports_data"] = ports_data
