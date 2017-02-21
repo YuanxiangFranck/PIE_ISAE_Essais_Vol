@@ -23,8 +23,9 @@ Import des noms de signaux
 * target_names_regul : cibles des signaux de régulation
 * signal_names_for_segmentation : signaux utilisés pour la segmentation
 * signal_names_bin : signaux binaires
+* signal_names_endogene : signaux endogènes
 """
-from signal_names import signal_names_regul, target_names_regul
+from signal_names import signal_names_regul, signal_names_endogene
 from flight_names import flight_names
 
 #%%
@@ -50,6 +51,8 @@ Segmentation et sélection de la phase de vol
 phase = 'all'
 
 flight_data.reset_data()
+flight_data.compute_flight_segmentation()
+
 if phase != 'all':
     flight_data.apply_flight_segmentation(phase)
 
@@ -81,11 +84,11 @@ if phase != 'all':
 Choix des signaux à extraire
 
 """
-selected_signals = signal_names_regul
+selected_signals = signal_names_regul+signal_names_endogene
 data_label = 'all regulation signals'
 
-#samples = extract_sl_window_delta(flight_data.data, signal_names_regul[:4], \
-#                            target_names_regul[:4], sl_w, sl_s)
+#samples = extract_sl_window_delta(flight_data.data, signal_names_regul, \
+#                            target_names_regul, sl_w, sl_s)
 samples = extract_sl_window(flight_data.data, selected_signals, sl_w, sl_s)
 
 #%%
@@ -97,7 +100,7 @@ Calcul des features
 
 from sklearn.preprocessing import scale
 
-features = ['mean', 'std']
+features = ['mean', 'std', 'amplitude']
 
 feature_matrix = get_feature_matrix(samples, features, normalized=False)
 
@@ -116,16 +119,13 @@ reduced_data = PCA(n_components=2).fit_transform(feature_matrix)
 
 plt.figure(figsize=(10,10))
 
-color_dic = {'climb': 'r', 'cruise': 'b',
-             'landing': 'm',
-             'descent': 'g', 'hold': 'c',
-             'otg': 'y', 'take_off': 'k'}
+phase_color_dic = {'climb': 'r', 'cruise': 'b', 'landing': 'm', \
+                    'descent': 'g', 'hold': 'c', 'otg': 'y', \
+                    'take_off': 'k', 'missing': 'white'}
 
 if phase == 'all':
-    flight_data.compute_flight_segmentation()
-    
     phases = []
-    for i in range(len(samples)):
+    for i in range(n_samples):
         p = idx2phase(whole_flight.Time.iloc[0], whole_flight.Time.iloc[-1], \
                              flight_data.flight_segments, i, sl_w, sl_s)
         if p:
@@ -133,26 +133,63 @@ if phase == 'all':
         else:
             phases.append('missing')
 
-    color_dic['missing'] = 'white'
+    colors = [phase_color_dic[phases[i]] for i in range(n_samples)]
     
-    colors = [color_dic[phases[i]] for i in range(len(samples))]
-    
-    for col in color_dic.items():
+    for col in phase_color_dic.items():
         p,c = col
-        plt.scatter([reduced_data[i, 0] for i in range(len(samples)) if colors[i] == c], \
-                    [reduced_data[i, 1] for i in range(len(samples)) if colors[i] == c], \
-                    c=c, label=p, alpha=0.5, s=60)
-    
+        plt.scatter([reduced_data[i, 0] for i in range(n_samples) if colors[i] == c], \
+                    [reduced_data[i, 1] for i in range(n_samples) if colors[i] == c], \
+                    c=c, label=p, alpha=0.7, s=60)
+
     plt.legend(scatterpoints=1)
+
 # une seule phase
 else:
-     plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=color_dic[phase], \
+     plt.scatter(reduced_data[:, 0], reduced_data[:, 1], c=phase_color_dic[phase], \
                  label=phase, alpha=0.5, s=60)
      plt.legend(scatterpoints=1)
      
 for i in range(reduced_data.shape[0]):
     plt.text(reduced_data[i,0]+0.2,reduced_data[i,1],i)
+
+    #%%
+"""
+Visualisation par PCA des features par port débitant
+Association d'une couleur à chaque port
+"""
+
+plt.figure(figsize=(10,10))
+
+port_color_dic = {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange', \
+             'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}
+
+if phase == 'all':
+    ports = []
+    for i in range(n_samples):
+        p = idx2phase(whole_flight.Time.iloc[0], whole_flight.Time.iloc[-1], \
+                             flight_data.ports, i, sl_w, sl_s)
+        if p:
+            ports.append(p[0])
+        else:
+            ports.append('missing')
+
+    colors = [port_color_dic[ports[i]] for i in range(n_samples)]
     
+    for col in port_color_dic.items():
+        p,c = col
+        plt.scatter([reduced_data[i, 0] for i in range(n_samples) if colors[i] == c], \
+                    [reduced_data[i, 1] for i in range(n_samples) if colors[i] == c], \
+                    c=c, label=p, alpha=0.7, s=60)
+
+    plt.legend(scatterpoints=1)
+
+# une seule phase
+else:
+     #TO DO
+     pass
+
+for i in range(reduced_data.shape[0]):
+    plt.text(reduced_data[i,0]+0.2,reduced_data[i,1],i)
 #%%
 """
 Analyse
@@ -161,7 +198,7 @@ OCSVM
 
 from sklearn import svm
 
-ocsvm = svm.OneClassSVM(nu=0.5, kernel="rbf", gamma=0.1)
+ocsvm = svm.OneClassSVM(nu=0.3, kernel="rbf", gamma=0.1)
 #ocsvm.fit(feature_matrix)
 #predictions = ocsvm.predict(feature_matrix)
 ocsvm.fit(reduced_data)
