@@ -18,13 +18,14 @@ from flight_analysis_fun import *
 
 #%%
 """
-Import des noms de signaux
+Import des noms de signaux et noms de vols
 * signal_names_regul : signaux de régulation
 * target_names_regul : cibles des signaux de régulation
 * signal_names_for_segmentation : signaux utilisés pour la segmentation
 * signal_names_bin : signaux binaires
 """
 from signal_names import signal_names_regul, target_names_regul
+from flight_names import flight_names
 
 #%%
 """
@@ -32,7 +33,7 @@ Sélection et chargement du vol
 * modifier le path relatif si besoin
 """
 
-flight_name = 'E190-E2_20001_0092_29998_54590_request.txt'
+flight_name = flight_names[10]
 path = '../../data/'
 
 whole_flight = load_flight(path+flight_name)
@@ -82,7 +83,7 @@ if phase != 'all':
 Chargement des valeurs d'écarts tolérées pour chaque signal de régulation,
 ainsi que son type (relatif/absolu)
 """
-target_precisions = pd.read_csv('target_precisions.csv', header=0, sep='\t')
+target_precisions = pd.read_csv('target_precisions.csv', header=0, sep=',')
 
 thresholds = target_precisions['Precision'].as_matrix()
 delta_type = target_precisions['Type'].as_matrix()
@@ -220,6 +221,7 @@ ax0.set_title('- Percent time off-regulation -\n'\
           'Data : regulation and target signals\n'\
           'Time window : {} s'.format(flight_name,phase,sl_w))
 
-#plt.savefig('test.pdf', bbox_inches='tight')
+plt.savefig('../../Resultats/heatmap/{}/hm_regul_percent_time_off_regulation_all.pdf'\
+                .format(flight_name), bbox_inches='tight')
 
 plt.show()
