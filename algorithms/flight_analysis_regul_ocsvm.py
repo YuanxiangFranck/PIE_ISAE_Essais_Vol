@@ -199,10 +199,12 @@ OCSVM
 from sklearn import svm
 
 ocsvm = svm.OneClassSVM(nu=0.3, kernel="rbf", gamma=0.1)
-#ocsvm.fit(feature_matrix)
-#predictions = ocsvm.predict(feature_matrix)
+
 ocsvm.fit(reduced_data)
 predictions = ocsvm.predict(reduced_data)
+
+anomalies = {}
+anomalies['global'] = (predictions == -1)
 
 outliers = reduced_data[predictions == -1]
 
@@ -238,3 +240,63 @@ plt.title('- OCSVM Outlier detection -\n'\
       'Time window : {} s'.format(flight_name,phase,data_label,features,sl_w))
     
 plt.show()
+
+#%%
+"""
+OCSVM par signal
+"""
+
+signal_prefix = list(set((s.split('_AMSC')[0] for s in selected_signals)))
+signal_suffix = list('_AMSC{}_CH{}'.format(x,y) for x in [1,2] for y in ['A','B'])
+
+for prefix in signal_prefix:
+    ps_selected_signals = [prefix + suffix for suffix in signal_suffix]
+
+    ps_samples = extract_sl_window(flight_data.data, ps_selected_signals, sl_w, sl_s)
+
+    features = ['mean', 'std', 'amplitude']
+
+    ps_feature_matrix = get_feature_matrix(ps_samples, features, normalized=False)
+
+    ps_feature_matrix = scale(ps_feature_matrix)
+
+    ps_reduced_data = PCA(n_components=2).fit_transform(ps_feature_matrix)
+
+    ocsvm.fit(ps_reduced_data)
+    ps_predictions = ocsvm.predict(ps_reduced_data)
+
+    anomalies[prefix] = (ps_predictions == -1)
+
+#%%
+"""
+Génération d'une heatmap d'anomalies
+"""
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+anomaly_matrix = np.zeros((len(signal_prefix)+1, n_samples))
+
+anomaly_matrix[0,:] = anomalies['global']
+
+for i,s in enumerate(signal_prefix):
+    for j in range(n_samples):
+        anomaly_matrix[i+1,j] = anomalies[s][j]
+
+
+if phase != 'all':
+    time_labels = [idx2date(flight_data.flight_segments[phase],\
+                           idx,sl_w,sl_s) for idx in range(n_samples)]
+else:
+    origin = flight_data.data.Time.iloc[0]
+    end = flight_data.data.Time.iloc[-1]
+    time_labels = [idx2date([(origin,end)],\
+                           idx,sl_w,sl_s) for idx in range(n_samples)]
+
+fig = plt.figure(figsize=(10,30))
+
+sns.heatmap(anomaly_matrix.T, yticklabels = time_labels, \
+            xticklabels=['global'] + signal_prefix, annot=False, \
+            cmap='Reds', cbar=False)
+
+plt.savefig('../../Resultats/OCSVM/ocsvm_anomaly_heatmap.pdf', bbox_inches='tight')
