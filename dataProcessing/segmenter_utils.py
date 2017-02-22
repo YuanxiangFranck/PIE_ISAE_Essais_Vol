@@ -5,33 +5,26 @@ Utilst function for segmenter
 import numpy as np
 
 
-def cut(time_list):
+def cut(times, dt=1):
     """
         Create a list of tuples (time start,time end) from a list of discontinuous time values
     """
-    if not time_list:
+    time_list = times.values
+    if not time_list.size:
         return []
 
-    # Check if there are jumps or not
-    jumps = []
-    for i in range(len(time_list)-2):
-        if time_list[i + 1] != time_list[i] + 1:
-            jumps.append((time_list[i],time_list[i+1]))
+    jumps = time_list[1:] != time_list[:-1]+dt
+    nb_jumps = sum(jumps) # numbers of jumps
 
-    if not jumps:
-        # if time values are continuous, start time = first time, end time = last time
-        return [(time_list[0],time_list[-1])]
-    elif len(jumps)==1:
-        # If there is one single jump, one segment before the jump, one segment after
-        return [(time_list[0],jumps[0][0]),(jumps[0][1],time_list[-1])]
-
-    # Compute dates
-    dates = [ (time_list[0], jumps[0][0]) ]  # First segment
-    for i in range(len(jumps)-1):
-        # Intermediate segments
-        dates.append((jumps[i][1], jumps[i+1][0]))
-    dates.append((jumps[-1][1], time_list[-1])) # Last segment
-    return dates
+    dates = np.zeros((nb_jumps+1, 2))
+    # Fist time value
+    dates[0, 0] = time_list[0]
+    # Last time value
+    dates[-1, -1] = time_list[-1]
+    # Add all other jumps
+    dates[1:, 0] = time_list[1:][jumps]
+    dates[:-1, 1] = time_list[:-1][jumps]
+    return dates.tolist()
 
 
 def hysteresis(x, th_lo, th_hi, init=False):

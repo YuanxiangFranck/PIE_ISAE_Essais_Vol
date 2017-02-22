@@ -142,19 +142,18 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     ports = {}
     ports_full_flight = {}
     for segment_name, segment_idx in segments.items():
-        times = data.loc[segment_idx].Time.values.flatten().tolist()
-        intervals[segment_name] = cut(times)
+        intervals[segment_name] = cut(data.Time[segment_idx])
         ports[segment_name] = {}
         for port_name, port_idx in ports_idx.items():
-            time_on_port = data.loc[segment_idx & port_idx].Time.values.flatten().tolist()
+            time_on_port = data.Time[segment_idx & port_idx]
             ports[segment_name][port_name] = cut(time_on_port)
 
-    ports_full_flight['hp1'] = cut(data.loc[hp1].Time.values.flatten().tolist())
-    ports_full_flight['hp2'] = cut(data.loc[hp2].Time.values.flatten().tolist())
-    ports_full_flight['ip1'] = cut(data.loc[ip1].Time.values.flatten().tolist())
-    ports_full_flight['ip2'] = cut(data.loc[ip2].Time.values.flatten().tolist())
-    ports_full_flight['apu'] = cut(data.loc[apu].Time.values.flatten().tolist())
-    ports_full_flight['no bleed'] = cut(data.loc[no_bleed].Time.values.flatten().tolist())
+    ports_full_flight['hp1'] = cut(data.Time[hp1])
+    ports_full_flight['hp2'] = cut(data.Time[hp2])
+    ports_full_flight['ip1'] = cut(data.Time[ip1])
+    ports_full_flight['ip2'] = cut(data.Time[ip2])
+    ports_full_flight['apu'] = cut(data.Time[apu])
+    ports_full_flight['no bleed'] = cut(data.Time[no_bleed])
     return intervals, ports, ports_full_flight
 
 
