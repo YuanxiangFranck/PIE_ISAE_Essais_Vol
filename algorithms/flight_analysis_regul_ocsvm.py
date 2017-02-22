@@ -300,3 +300,20 @@ sns.heatmap(anomaly_matrix.T, yticklabels = time_labels, \
             cmap='Reds', cbar=False)
 
 plt.savefig('../../Resultats/OCSVM/ocsvm_anomaly_heatmap.pdf', bbox_inches='tight')
+
+#%%
+"""
+Génération d'un rapport d'anomalies
+"""
+
+report = {}
+report['Time frame'] = time_labels
+report['Phase'] = phases
+report['Anomaly'] = anomalies['global']
+report['Anomalous signals'] = \
+[', '.join([s for s in signal_prefix if anomalies[s][i]]) \
+           for i in range(n_samples)]
+
+pd.DataFrame(report).to_csv('../../Resultats/OCSVM/anomaly_report.csv', \
+        columns = ['Time frame','Phase','Anomaly','Anomalous signals'], \
+        index_label = 'Time Id')
