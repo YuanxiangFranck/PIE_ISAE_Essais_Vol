@@ -196,15 +196,16 @@ Analyse
 OCSVM
 """
 
+# OCSVM on reduced data
+
 from sklearn import svm
 
-ocsvm = svm.OneClassSVM(nu=0.3, kernel="rbf", gamma=0.1)
+nu = 0.3
+gamma = 0.1
+ocsvm = svm.OneClassSVM(nu=nu, kernel="rbf", gamma=gamma)
 
 ocsvm.fit(reduced_data)
 predictions = ocsvm.predict(reduced_data)
-
-anomalies = {}
-anomalies['global'] = (predictions == -1)
 
 outliers = reduced_data[predictions == -1]
 
@@ -234,12 +235,23 @@ for i in range(reduced_data.shape[0]):
     plt.text(reduced_data[i,0]+0.05,reduced_data[i,1],i)
 
 plt.title('- OCSVM Outlier detection -\n'\
+      'nu = {} / gamma = {}\n'\
       'Flight : {} / Phase : {}\n'\
       'Data : {}\n'\
       'Features : {}\n'\
-      'Time window : {} s'.format(flight_name,phase,data_label,features,sl_w))
+      'Time window : {} s'.format(gamma, nu, flight_name, phase, data_label, \
+      features, sl_w))
     
 plt.show()
+
+#%%
+# OCSVM on original high-dimensional data
+
+ocsvm.fit(feature_matrix)
+predictions = ocsvm.predict(feature_matrix)
+
+anomalies = {}
+anomalies['global'] = (predictions == -1)
 
 #%%
 """
@@ -260,10 +272,8 @@ for prefix in signal_prefix:
 
     ps_feature_matrix = scale(ps_feature_matrix)
 
-    ps_reduced_data = PCA(n_components=2).fit_transform(ps_feature_matrix)
-
-    ocsvm.fit(ps_reduced_data)
-    ps_predictions = ocsvm.predict(ps_reduced_data)
+    ocsvm.fit(ps_feature_matrix)
+    ps_predictions = ocsvm.predict(ps_feature_matrix)
 
     anomalies[prefix] = (ps_predictions == -1)
 
@@ -310,6 +320,8 @@ report = {}
 report['Time frame'] = time_labels
 report['Phase'] = phases
 report['Anomaly'] = anomalies['global']
+report['Anomaly score'] = [sum(anomalies[s][i] for s in signal_prefix) \
+                           for i in range(n_samples)]
 report['Anomalous signals'] = \
 [', '.join([s for s in signal_prefix if anomalies[s][i]]) \
            for i in range(n_samples)]
