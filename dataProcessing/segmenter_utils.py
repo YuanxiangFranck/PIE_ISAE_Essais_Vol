@@ -56,7 +56,7 @@ def hysteresis(x, th_lo, th_hi, init=False):
     if not ind.size:
         return np.zeros_like(x, dtype=bool) | init
     cnt = np.cumsum(lo_or_hi)
-    return np.where(cnt, hi[ind[cnt-1]], init)
+    return np.where(cnt, hi[ind[cnt-1]], init).astype(bool)
 
 
 def tuples_to_durations(dic):

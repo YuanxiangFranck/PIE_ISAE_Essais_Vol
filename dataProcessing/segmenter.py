@@ -14,7 +14,6 @@ TODO: ajouter des "constantes" en début de fichier au lieu de coder les valeurs
 import sys,os
 sys.path.append(os.path.abspath('..'))
 import matplotlib.pyplot as plt
-import numpy as np
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter_utils import hysteresis, tuples_to_durations, get_weights, cut
 
@@ -118,6 +117,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
 
     # Compute intervals
     on_the_ground = (wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)
+    not_on_the_ground = ~(on_the_ground)
     ports_idx = {"hp1": hp1, "hp2": hp2, "apu": apu,
                  "ip1": ip1, "ip2": ip2, "no bleed": no_bleed}
 
@@ -125,17 +125,17 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     if otg:
         segments["otg"] = on_the_ground
     if take_off:
-        segments["take_off"] = (CAS_signal > 80) & (is_taking_off_signal==1) & (Za_signal < 6000) & (~on_the_ground)
+        segments["take_off"] = not_on_the_ground & (Za_signal < 6000)  & (CAS_signal > 80) & is_taking_off_signal
     if landing:
-        segments["landing"]  = (CAS_signal < 150) & (is_landing_signal==1) & (Za_signal < 6000) & (alt_rate_signal > -500) & (~on_the_ground)
+        segments["landing"]  = not_on_the_ground & (Za_signal < 6000)  & (alt_rate_signal > -500) & (CAS_signal < 150) & is_landing_signal
     if climb:
-        segments["climb"]    = (~on_the_ground) & (Za_signal > 6000) & (alt_rate_signal > 500)
+        segments["climb"]    = not_on_the_ground & (Za_signal >= 6000) & (alt_rate_signal > 500)
     if hold:
-        segments["hold"]     = (~on_the_ground) & (Za_signal > 6000) & (Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)
+        segments["hold"]     = not_on_the_ground & (Za_signal >= 6000) & (Za_signal < 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)
     if cruise:
-        segments["cruise"]   = (~on_the_ground) & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)
+        segments["cruise"]   = not_on_the_ground & (Za_signal > 25000) & (alt_rate_signal > -500) & (alt_rate_signal < 500)
     if descent:
-        segments["descent"]  = (~on_the_ground) & (alt_rate_signal < -500)
+        segments["descent"]  = not_on_the_ground & (alt_rate_signal < -500)
 
     # Compute segments and ports
     intervals = {}
@@ -148,12 +148,9 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
             time_on_port = data.Time[segment_idx & port_idx]
             ports[segment_name][port_name] = cut(time_on_port)
 
-    ports_full_flight['hp1'] = cut(data.Time[hp1])
-    ports_full_flight['hp2'] = cut(data.Time[hp2])
-    ports_full_flight['ip1'] = cut(data.Time[ip1])
-    ports_full_flight['ip2'] = cut(data.Time[ip2])
-    ports_full_flight['apu'] = cut(data.Time[apu])
-    ports_full_flight['no bleed'] = cut(data.Time[no_bleed])
+    # Compute ports_full_fight
+    for port_name, port_idx in ports_idx.items():
+        ports_full_flight[port_name] = cut(data.Time[port_idx])
     return intervals, ports, ports_full_flight
 
 
@@ -166,26 +163,26 @@ def plot_seg(data):
     :param weights: dict
         Dictionnary with segment names as keys and weight as values (see get_weights to compute this dictionnary)
     """
-    seg,_,_= segment(data)
+    seg, _, _= segment(data)
     weights = get_weights(seg, data)
-    plt.figure(1, figsize=(10,10))
+    plt.figure(1, figsize=(10, 10))
     labels = list(weights.keys())
     fracs = [weights[key] for key in labels]
-    if sum([weight for weight in fracs]) < 1:
-        fracs.append(1 - sum([weight for weight in fracs]))
+    sum_weight = sum(weight for weight in fracs)
+    if sum_weight < 1:
+        fracs.append(1 - sum_weight)
         labels.append('no segment')
-    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid','red'][:len(fracs)]
-    plt.pie(fracs,labels=labels,colors=colors,autopct='%1.1f%%')
+    plt.pie(fracs, labels=labels, colors=plot_colors[:len(fracs)], autopct='%1.1f%%')
     plt.title('Temps passé dans chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
     plt.draw()
 
 
 def plot_ports_seg(data):
-    _,ports,_ = segment(data)
-    for each_segment in ports.keys():
-        ports[each_segment] = tuples_to_durations(ports[each_segment])
-    f, axarr = plt.subplots(2, 7,figsize=(23,7))
-    f.suptitle('Utilisation des ports selon chaque phase',bbox={'facecolor':'0.8', 'pad':5})
+    _, ports, _ = segment(data)
+    for each_segment, ports_on_segment in ports.items():
+        ports[each_segment] = tuples_to_durations(ports_on_segment)
+    f, axarr = plt.subplots(2, 7, figsize=(23, 7))
+    f.suptitle('Utilisation des ports selon chaque phase', bbox={'facecolor':'0.8', 'pad':5})
     j = 0
     for each_segment in ports:
         labels = ports[each_segment].keys()  # pressure ports names
@@ -193,10 +190,10 @@ def plot_ports_seg(data):
         labels_2 = [label for label in labels if label[-1]=='2'] + ['apu','no bleed'] # right pressure ports + apu
         fracs_1 = [ports[each_segment][key] for key in labels_1]
         fracs_2 = [ports[each_segment][key] for key in labels_2]
-        colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue','dodgerblue','indianred','orchid'][:len(labels)]
-        axarr[0, j].pie(fracs_1,labels=labels_1,colors=colors,autopct='%1.1f%%')
+        colors = plot_colors[:len(labels)]
+        axarr[0, j].pie(fracs_1, labels=labels_1, colors=colors, autopct='%1.1f%%')
         axarr[0, j].set_title('{} côté 1'.format(each_segment), bbox={'facecolor':'0.8', 'pad':5})
-        axarr[1, j].pie(fracs_2,labels=labels_2,colors=colors,autopct='%1.1f%%')
+        axarr[1, j].pie(fracs_2, labels=labels_2, colors=colors, autopct='%1.1f%%')
         axarr[1, j].set_title('{} côté 2'.format(each_segment), bbox={'facecolor':'0.8', 'pad':5})
         j = (j+1)%7
     plt.show()
@@ -211,10 +208,10 @@ def plot_ports_sides(data):
     _, axarr = plt.subplots(1, 2, figsize=(20, 10))
     labels = ports_durations.keys()  # pressure ports names
     for side in [1, 2]:
-        labels_1 = [l for l in labels if l[-1]==str(side)] + ['apu', 'no bleed']
+        labels_1 = [l for l in labels if l[-1] == str(side)] + ['apu', 'no bleed']
         fracs_1 = [ports_durations[key] for key in labels_1]
         axarr[side-1].pie(fracs_1, labels=labels_1, autopct='%1.1f%%',
-                            colors=plot_colors[:len(labels)])
+                          colors=plot_colors[:len(labels)])
         axarr[side-1].set_title('côté '+str(side), bbox={'facecolor':'0.8', 'pad':5})
     plt.show()
 
