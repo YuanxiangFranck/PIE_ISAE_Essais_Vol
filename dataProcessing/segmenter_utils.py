@@ -7,7 +7,14 @@ import numpy as np
 
 def cut(times, dt=1):
     """
-        Create a list of tuples (time start,time end) from a list of discontinuous time values
+    Create a list of tuples (time start,time end) from a list of discontinuous time values
+
+    :param times: pd.Series
+        Series with time stamp of a phase
+    :param [dt=1]: float
+        difference between two time stamp
+    :out: list of list
+        List of couple of start, end time
     """
     time_list = times.values
     if not time_list.size:
@@ -28,6 +35,21 @@ def cut(times, dt=1):
 
 
 def hysteresis(x, th_lo, th_hi, init=False):
+    """
+    Compute hysteresis for take off, landing and descent
+
+    :param x: pd.Series
+        data to apply hysteresis on
+    :param th_lo: float
+        lower bound for the hysteresis
+    :param th_hi: float
+        high bound for the hysteresis
+    :param [init=True]: bool
+        initial value for the hysteresis
+
+    :out: np.array
+        array of boolean
+    """
     hi = x >= th_hi
     lo_or_hi = (x <= th_lo) | hi
     ind = np.nonzero(lo_or_hi)[0]
@@ -39,13 +61,13 @@ def hysteresis(x, th_lo, th_hi, init=False):
 
 def tuples_to_durations(dic):
     """
-        Convert a dictionnary containing lists of tuples (t_start, t_end) as values into the same dictionnary with durations
-        as values
+    Convert a dictionnary containing lists of tuples (t_start, t_end) as values into the same dictionnary with durations
+    as values
 
-        :param dic: dict
-            Dictionnary with lists of tuples (t_start, t_end) as values
-        :out dict
-            Dictionnary with lists of durations as values
+    :param dic: dict
+        Dictionnary with lists of tuples (t_start, t_end) as values
+    :out : dict
+        Dictionnary with lists of durations as values
     """
     durations = {}
     for key, time_values in dic.items():
@@ -66,11 +88,7 @@ def get_weights(segments_dict, data):
     :out: dict
         keys represent names of segments, values are float representing the time spent in this segment divided by the total duration of the flight
     """
-    weights = {}
+    weights = tuples_to_durations(segments_dict)
     total_duration = data.Time.iloc[-1] - data.Time.iloc[0]
-    for segment in segments_dict.keys():
-        weights[segment] = 0
-        for time_values in segments_dict[segment]:
-            weights[segment] += time_values[1] - time_values[0]
     return {k: v / total_duration for k, v in weights.items()}
 
