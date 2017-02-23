@@ -93,14 +93,16 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     ip1 = (hp1==0) & (apu==0) & ((PRSOV_controller1_chA_cmd_signal==1) | (PRSOV_controller1_chB_cmd_signal==1))
     ip2 = (hp2==0) & (apu==0) & ((PRSOV_controller2_chA_cmd_signal==1) | (PRSOV_controller2_chB_cmd_signal==1))
     no_bleed = ~(hp1|hp2|ip1|ip2|apu)
+    time_step = 1 
 
 
     wow_signal = data[wow]
     Za_signal = data[Za]
     CAS_signal = data[CAS]
-    WINDOW_CAS = 120
-    delta_CAS_signal = data[CAS].rolling(center = False, window = WINDOW_CAS).mean() -  data[CAS].rolling(center = False, window = WINDOW_CAS).mean().shift(1)
-    alt_rate_signal = data[VZa].rolling(center = False, window = 120).mean()
+    window_CAS = int(30/time_step)
+    window_VZa = int(40/time_step)
+    delta_CAS_signal = data[CAS].rolling(center = False, window = window_CAS).mean() -  data[CAS].rolling(center = False, window = window_CAS).mean().shift(1)
+    alt_rate_signal = data[VZa].rolling(center = False, window = window_VZa).mean()
 
 
     # Add filtered values to data
@@ -108,13 +110,11 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     data["alt_rate_signal"] = alt_rate_signal.fillna(method="bfill")
 
     # Add hysteresis to data
-    is_taking_off_signal = hysteresis(data["delta_CAS_signal"], .2, -.1)
-    is_landing_signal = hysteresis(-data["delta_CAS_signal"], .2, -.1)
-    # is_descending_signal = hysteresis(-data["alt_rate_signal"], .1, -.5)
+    is_taking_off_signal = hysteresis(data["delta_CAS_signal"], 0, 1)
+    is_landing_signal = hysteresis(-data["delta_CAS_signal"], -1, .1)
     data['is_taking_off'] = is_taking_off_signal
     data['is_landing']    = is_landing_signal
-    # data['is_descending'] = is_descending_signal
-
+   
     # Compute intervals
     on_the_ground = (wow_signal==1) & (CAS_signal < 80) & (Za_signal < 15000)
     not_on_the_ground = ~(on_the_ground)
@@ -127,7 +127,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     if take_off:
         segments["take_off"] = not_on_the_ground & (Za_signal < 6000)  & (CAS_signal > 80) & is_taking_off_signal
     if landing:
-        segments["landing"]  = not_on_the_ground & (Za_signal < 6000)  & (alt_rate_signal > -500) & (CAS_signal < 150) & is_landing_signal
+        segments["landing"]  = not_on_the_ground & (Za_signal < 6000)  & (alt_rate_signal > -500) & (alt_rate_signal < 0) & (CAS_signal < 150) & is_landing_signal
     if climb:
         segments["climb"]    = not_on_the_ground & (Za_signal >= 6000) & (alt_rate_signal > 500)
     if hold:
@@ -160,8 +160,8 @@ def plot_seg(data):
     """
     Plot a pie chart of the percentage of time spent on each segment
 
-    :param weights: dict
-        Dictionnary with segment names as keys and weight as values (see get_weights to compute this dictionnary)
+    :param data: pd.DataFrame
+    
     """
     seg, _, _= segment(data)
     weights = get_weights(seg, data)
@@ -178,6 +178,12 @@ def plot_seg(data):
 
 
 def plot_ports_seg(data):
+    """
+    For each phase, plot one pie chart for each side of the time spent on each port
+    
+    :param data: pd.DataFrame
+    
+    """
     _, ports, _ = segment(data)
     for each_segment, ports_on_segment in ports.items():
         ports[each_segment] = tuples_to_durations(ports_on_segment)
@@ -200,11 +206,13 @@ def plot_ports_seg(data):
 
 
 def plot_ports_sides(data):
+    """
+    Plot one pie chart for each side of the time spent on each port
+    
+    :param data: pd.DataFrame
+    """
     _, _, ports_full_flight = segment(data)
-    #flight_duration = data.Time.iloc[-1] - data.Time.iloc[0]
     ports_durations = tuples_to_durations(ports_full_flight)
-    #for port in ports_durations.keys():
-    #    ports_durations[port] /= flight_duration
     _, axarr = plt.subplots(1, 2, figsize=(20, 10))
     labels = ports_durations.keys()  # pressure ports names
     for side in [1, 2]:
@@ -219,9 +227,6 @@ def plot_ports_sides(data):
 def plot_ports(data):
     """
     Plot a pie chart of the percentage of time spent on each pressure port
-
-    :param ports_full_flight: dict
-        Dictionnary with ports names as keys and listes of tuples (t_start,t_end) as values
 
     :param data
         pandas df
@@ -244,13 +249,25 @@ def plot_ports(data):
 
 
 if __name__ == "__main__":
+    
+    import glob
+    
+    results = {}
+    for filename in glob.iglob('../../Desktop/Articles Liebherr/pie_data/*.txt'):
+        print('\n' + filename)
+        flight_data = txt_parser(filename)
+        intervals, ports, ports_full_flight = segment(flight_data)
+        print('landing : {}'.format(intervals['landing']))
+        print('take_off : {}'.format(intervals['take_off']))
+        print('otg : {}'.format(intervals['otg']))
+        
 
     # Chemin relatif vers le fichier txt de données
-    data_path = '../../Desktop/Articles Liebherr/pie_data/data2.txt'
+    #data_path = '../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt'
 
 
     # data contient un DataFrame pandas
-    flight_data = txt_parser(data_path)
+    #flight_data = txt_parser(data_path)
 
     #for key in seg.keys():
     #    print('Poids du segment {} : {}'.format(key,weights[key]))
@@ -260,7 +277,7 @@ if __name__ == "__main__":
     #weights_ports = get_weights_ports(ports,data)
     #print(weights_ports)
 
-    plot_seg(flight_data)
-    plot_ports_seg(flight_data)
-    plot_ports_sides(flight_data)
-    plot_ports(flight_data)
+    #plot_seg(flight_data)
+    #plot_ports_seg(flight_data)
+    #plot_ports_sides(flight_data)
+    #plot_ports(flight_data)
