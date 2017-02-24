@@ -33,7 +33,7 @@ Sélection et chargement du vol
 * modifier le path relatif si besoin
 """
 
-flight_name = flight_names[10]
+flight_name = flight_names[0]
 path = '../../data/'
 
 whole_flight = load_flight(path+flight_name)
@@ -62,7 +62,7 @@ Extraction des signaux par sliding window
 * vous pouvez aussi fixer manuellement sl_w et sl_s
 """
 
-n_samples = 20
+n_samples = 50
 
 sl_w = len(flight_data.data)//n_samples
 sl_s = sl_w
@@ -221,7 +221,92 @@ ax0.set_title('- Percent time off-regulation -\n'\
           'Data : regulation and target signals\n'\
           'Time window : {} s'.format(flight_name,phase,sl_w))
 
-plt.savefig('../../Resultats/heatmap/{}/hm_regul_percent_time_off_regulation_all.pdf'\
-                .format(flight_name), bbox_inches='tight')
+plt.savefig('../../Resultats/heatmap/{}/hm_regul_percent_time_off_regulation_all_{}.pdf'\
+                .format(flight_name, n_samples), bbox_inches='tight')
+
+plt.show()
+
+#%%
+"""
+Clustering hiérarchique sur les signaux
+"""
+
+from scipy.cluster.hierarchy import dendrogram
+from sklearn.cluster import AgglomerativeClustering
+
+hclust = AgglomerativeClustering(n_clusters=2)
+hclust = hclust.fit(feature_matrix.T)
+
+# Distances between each pair of children
+# Since we don't have this information, we can use a uniform one for plotting
+distance = np.arange(hclust.children_.shape[0])
+
+# The number of observations contained in each cluster level
+no_of_observations = np.arange(2, hclust.children_.shape[0]+2)
+
+# Create linkage matrix
+linkage_matrix = np.column_stack([hclust.children_, distance,
+                                  no_of_observations]).astype(float)
+
+# Get the dendrogram leaves
+leaves = dendrogram(linkage_matrix, no_plot=True)['leaves']
+
+# Re-organize feature matrix and tick labels
+hclust_feature_matrix = feature_matrix[:,leaves]
+sorted_signal_names = sorted(signal_names_regul)
+hclust_ticklabels = [sorted_signal_names[i] for i in leaves]
+
+#########################
+# Création de la figure #
+#########################
+
+fig = plt.figure(figsize=(10*n_samples//20,10))
+gs = gridspec.GridSpec(3, 1, height_ratios=[1, 1, 50])
+
+# Phases
+ax0 = plt.subplot(gs[0])
+ax0.imshow(np.arange(n_samples).reshape(1,-1), cmap=phase_cmap, \
+             interpolation='nearest')
+ax0.set_axis_off()
+ax0.grid(False)
+
+# Ports
+ax1 = plt.subplot(gs[1])
+ax1.imshow(np.arange(n_samples).reshape(1,-1), cmap=port_cmap, \
+             interpolation='nearest')
+ax1.set_axis_off()
+ax1.grid(False)
+
+ax2 = plt.subplot(gs[2])
+sns.heatmap(hclust_feature_matrix.T, xticklabels = time_labels, \
+            yticklabels=hclust_ticklabels, annot=False, \
+            ax=ax2, robust=True)
+
+box0 = ax0.get_position()
+box1 = ax1.get_position()
+box2 = ax2.get_position()
+
+ax0.set_position([box2.x0, box0.y1-0.095, box2.x1-box2.x0, 0.04])
+ax1.set_position([box2.x0, box0.y1-0.125, box2.x1-box2.x0, 0.04])
+
+def create_proxy(c):
+    line = Line2D([0],[0],color=c,marker='s',linestyle='None')
+    return line
+
+phase_proxies = [create_proxy(color) for color in phase_color_dic.values()]
+fig.legend(phase_proxies, phase_color_dic.keys(), numpoints=1, markerscale=2, \
+           loc=(0.89,0.695), ncol=1)
+
+port_proxies = [create_proxy(color) for color in port_color_dic.values()]
+fig.legend(port_proxies, port_color_dic.keys(), numpoints=1, markerscale=2, \
+           loc=(0.89,0.495), ncol=1)
+
+ax0.set_title('- Percent time off-regulation [Clustered signals] -\n'
+          'Flight : {} / Phase : {}\n'
+          'Data : regulation and target signals\n'
+          'Time window : {} s'.format(flight_name,phase,sl_w))
+
+plt.savefig('../../Resultats/heatmap/{}/hm_regul_percent_time_off_regulation_all_clust_{}.pdf'\
+                .format(flight_name, n_samples), bbox_inches='tight')
 
 plt.show()
