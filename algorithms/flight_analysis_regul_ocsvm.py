@@ -327,5 +327,5 @@ report['Anomalous signals'] = \
            for i in range(n_samples)]
 
 pd.DataFrame(report).to_csv('../../Resultats/OCSVM/anomaly_report.csv', \
-        columns = ['Time frame','Phase','Anomaly','Anomalous signals'], \
-        index_label = 'Time Id')
+        columns = ['Time frame', 'Phase', 'Anomaly', 'Anomaly score', \
+        'Anomalous signals'], index_label = 'Time Id')
