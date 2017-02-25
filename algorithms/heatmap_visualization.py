@@ -27,11 +27,11 @@ from matplotlib.lines import Line2D
 import seaborn as sns
 # Flight analysis functions import
 from flight_analysis_fun import (extract_sl_window, extract_sl_window_delta, 
-get_feature_matrix, idx2date, idx2phase)
+get_feature_matrix, idx2date, idx2phase, idx2port)
 from SignalData import SignalData
 
 def heatmap(data=None, feature=None, signal_category=None, signal_list=None, 
-            time_window='auto', n_segments='auto', save=True, 
+            time_window='auto', n_segments='auto', hclust=False, save=True,
             flight_name='undefined', out_dir='.', out_filename='auto', 
             show_plot=True, out_format='pdf', annot=False, robust=True, 
             conf=None):
@@ -200,12 +200,38 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
         # Set ylabels
         ylabels = selected_signals
     
+    # Perform hierarchical clustering on signals
+    if hclust:
+
+        from scipy.cluster.hierarchy import dendrogram
+        from sklearn.cluster import AgglomerativeClustering
+
+        hclust = AgglomerativeClustering()
+        hclust = hclust.fit(feature_matrix.T)
+
+        # Distances between each pair of children
+        # Since we don't have this information, we can use a uniform one for plotting
+        distance = np.arange(hclust.children_.shape[0])
+
+        # The number of observations contained in each cluster level
+        no_of_observations = np.arange(2, hclust.children_.shape[0]+2)
+
+        # Create linkage matrix
+        linkage_matrix = np.column_stack([hclust.children_, distance,
+                                          no_of_observations]).astype(float)
+
+        # Get the dendrogram leaves
+        leaves = dendrogram(linkage_matrix, no_plot=True)['leaves']
+
+        # Re-organize feature matrix and tick labels
+        feature_matrix = feature_matrix[:,leaves]
+        ylabels = [ylabels[i] for i in leaves]
+
     # Create time labels
     origin = flight_data.data.Time.iloc[0]
     end = flight_data.data.Time.iloc[-1]
     xlabels = [idx2date([(origin,end)], idx, sl_w, 
                         sl_s) for idx in range(n_samples)]
-    
     
     # Prepare display of flight phases
     # TODO: use conf
@@ -222,7 +248,7 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
         else:
             phases.append('missing')
 
-    phase_cmap = ListedColormap([phase_color_dic[phases[i]] 
+    phase_cmap = ListedColormap([phase_color_dic[phases[i]]
                                  for i in range(n_samples)])
 
     # Prepare display of ports
@@ -230,16 +256,29 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
     port_color_dic = {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange', \
                  'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}
     
-    ports = []
+    # Side 1
+    ports1 = []
     for i in range(n_samples):
-        p = idx2phase(data.Time.iloc[0], data.Time.iloc[-1], 
+        p = idx2port(data.Time.iloc[0], data.Time.iloc[-1],
                       flight_data.ports, i, sl_w, sl_s)
         if p:
-            ports.append(p[0])
+            ports1.append(p[0][0])
         else:
-            ports.append('missing')
-    
-    port_cmap = ListedColormap([port_color_dic[ports[i]] 
+            ports1.append('missing')
+
+    port1_cmap = ListedColormap([port_color_dic[ports1[i]]
+                                for i in range(n_samples)])
+    # Side 2
+    ports2 = []
+    for i in range(n_samples):
+        p = idx2port(data.Time.iloc[0], data.Time.iloc[-1],
+                      flight_data.ports, i, sl_w, sl_s)
+        if p:
+            ports2.append(p[1][0])
+        else:
+            ports2.append('missing')
+
+    port2_cmap = ListedColormap([port_color_dic[ports2[i]]
                                 for i in range(n_samples)])
     
     # Create heatmap figures
@@ -253,9 +292,9 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
 
         if stop <= start:
             return
-            
+
         fig = plt.figure(figsize=(10*n_samples//20,10))
-        gs = gridspec.GridSpec(3, 1, height_ratios=[1, 1, 50])
+        gs = gridspec.GridSpec(4, 1, height_ratios=[1, 1, 1, 50])
         
         # Phases
         ax0 = plt.subplot(gs[0])
@@ -265,13 +304,21 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
         ax0.grid(False)
         
         # Ports
-        ax1 = plt.subplot(gs[1])
-        ax1.imshow(np.arange(n_samples).reshape(1,-1), cmap=port_cmap, 
+        # Side 1
+        ax11 = plt.subplot(gs[1])
+        ax11.imshow(np.arange(n_samples).reshape(1,-1), cmap=port1_cmap,
                    interpolation='nearest')
-        ax1.set_axis_off()
-        ax1.grid(False)
+        ax11.set_axis_off()
+        ax11.grid(False)
         
-        ax2 = plt.subplot(gs[2])
+        # Side 2
+        ax12 = plt.subplot(gs[2])
+        ax12.imshow(np.arange(n_samples).reshape(1,-1), cmap=port2_cmap,
+                   interpolation='nearest')
+        ax12.set_axis_off()
+        ax12.grid(False)
+
+        ax2 = plt.subplot(gs[3])
         sns.heatmap(feature_matrix.T[start:stop], xticklabels=xlabels, 
                     yticklabels=ylabels[start:stop], annot=annot, ax=ax2, 
                     robust=robust)
@@ -280,7 +327,8 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
         box2 = ax2.get_position()
         
         ax0.set_position([box2.x0, box0.y1-0.095, box2.x1-box2.x0, 0.04])
-        ax1.set_position([box2.x0, box0.y1-0.125, box2.x1-box2.x0, 0.04])
+        ax11.set_position([box2.x0, box0.y1-0.125, box2.x1-box2.x0, 0.04])
+        ax12.set_position([box2.x0, box0.y1-0.150, box2.x1-box2.x0, 0.04])
         
         create_proxy = lambda c: Line2D([0],[0],color=c,marker='s',linestyle='None')
         
@@ -326,7 +374,7 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
     create_heatmap(k+1, (k+1)*n_sig, len(selected_signals))
         
 if __name__ == '__main__':
-    
+    """
     from flight_analysis_fun import load_flight
     from flight_names import flight_names
     from signal_names import *
@@ -337,9 +385,9 @@ if __name__ == '__main__':
     conf = {'target_precisions_path': 'target_precisions.csv', 
             'regulation': signal_names_regul, 'target': target_names_regul,
             'binary': signal_names_bin, 'endogene': signal_names_endogene}
-    
+    """
     heatmap(data=data, feature='percent_time_off_regulation', 
             signal_category='regulation', n_segments=50, 
-            flight_name=flight_name, 
+            flight_name=flight_name, hclust=True, 
             out_dir='../../Resultats/test/', show_plot=False, conf=conf)
     
