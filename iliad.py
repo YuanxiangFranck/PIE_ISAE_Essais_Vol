@@ -5,6 +5,7 @@ import json
 import logging
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
+from dataProcessing.summary import summary
 from dataProcessing import plotter
 from algorithms.SignalData import SignalData
 
@@ -76,8 +77,9 @@ class Iliad:
     # Export HTML Reporting  #
     ##########################
     def export_reporting(self):
-        "export html summary of the flight"
-        pass
+        "export html summary of the flight see summary.summary"
+        summary(self.name, data=self.data,
+                phases_data=(self.phases, self.ports, self.ports_full_flight))
 
 
 class Iliad_n_flight:
