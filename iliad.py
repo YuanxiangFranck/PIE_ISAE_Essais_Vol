@@ -40,6 +40,9 @@ class Iliad:
         self.phases, self.ports, self.ports_full_flight = segment(self.data)
         self._phases_idx = compute_phases_idx(self.phases, self.data.Time)
 
+    ######################
+    # All plot functions #
+    ######################
     def plot(self, *signals):
         "Use plotter to plot signals, see plotter.plot"
         plotter.plot(self.data, self._phases_idx, signals)
@@ -47,6 +50,23 @@ class Iliad:
     def plot_phases(self):
         "Use plotter to plot phases, see plotter.plot"
         plotter.plot_phases(self.data.Time, self._phases_idx)
+
+    def plot_segments_pie(self):
+        "plot phases within a pie"
+        plotter.plot_segments_pie(self.phases, self.data)
+
+    def plot_ports_seg(self):
+        "plot port usage on each segment on a pie chart, see plotter.plot_ports_seg"
+        plotter.plot_ports_seg(self.ports)
+
+    def plot_ports_sides(self):
+        "plot port usage for each side of the plane, see plot_ports_sides"
+        plotter.plot_ports_sides(self.ports_full_flight)
+
+    def plot_ports(self):
+        "plot port usage, see plot_ports"
+        plotter.plot_ports(self.ports_full_flight, self.data)
+
 
 class Iliad_n_flight:
     "class to compare multiple flights"
