@@ -31,7 +31,7 @@ import logging
 
 import numpy as np
 import matplotlib.pyplot as plt
-
+from dataProcessing.segmenter_utils import tuples_to_durations, get_weights
 from data_info.units import units
 
 
@@ -39,6 +39,8 @@ SEGMENTS_COLOR = {'climb': "r", 'cruise': "b", 'landing': 'm', 'descent': 'g',
                   'hold': "c", 'otg': 'y', 'take_off': 'k'}
 SEGMENTS_ORDER = ["otg", "take_off", "landing", "climb", "descent", "hold", "cruise"]
 
+PLOT_COLORS = ['gold', 'yellowgreen', 'orange', 'lightskyblue', 'dodgerblue',
+               'indianred', 'orchid']
 
 def compute_phases_idx(phases, time):
     """
@@ -143,4 +145,97 @@ def plot(data, phases_idx, signals):
     for name in signals:
         plot_data(data, name, fig=host)
     plot_phases(data.Time, phases_idx, par)
+    plt.show()
+
+
+def plot_segments_pie(seg, data):
+    """
+    Plot a pie chart of the percentage of time spent on each segment
+    :param seg: dict
+        dict with list of start, end for each segment
+    :param data: pd.DataFrame
+        the data
+    """
+    weights = get_weights(seg, data)
+    plt.figure(1, figsize=(10, 10))
+    labels = list(weights.keys())
+    fracs = [weights[key] for key in labels]
+    sum_weight = sum(weight for weight in fracs)
+    if sum_weight < 1:
+        fracs.append(1 - sum_weight)
+        labels.append('no segment')
+    plt.pie(fracs, labels=labels, colors=PLOT_COLORS[:len(fracs)], autopct='%1.1f%%')
+    plt.title('Temps passé dans chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
+    plt.draw()
+
+
+def plot_ports_seg(ports):
+    """
+    For each phase, plot one pie chart for each side of the time spent on each port
+
+    :param ports: dict
+        ports usage for each segments
+    """
+    for each_segment, ports_on_segment in ports.items():
+        ports[each_segment] = tuples_to_durations(ports_on_segment)
+    f, axarr = plt.subplots(2, 7, figsize=(23, 7))
+    f.suptitle('Utilisation des ports selon chaque phase', bbox={'facecolor':'0.8', 'pad':5})
+    j = 0
+    for each_segment in ports:
+        labels = ports[each_segment].keys()  # pressure ports names
+        # left pressure ports + apu
+        labels_1 = [l for l in labels if l[-1] == '1'] + ['apu', 'no bleed']
+        # right pressure ports + apu
+        labels_2 = [l for l in labels if l[-1] == '2'] + ['apu', 'no bleed']
+        fracs_1 = [ports[each_segment][key] for key in labels_1]
+        fracs_2 = [ports[each_segment][key] for key in labels_2]
+        colors = PLOT_COLORS[:len(labels)]
+        axarr[0, j].pie(fracs_1, labels=labels_1, colors=colors, autopct='%1.1f%%')
+        axarr[0, j].set_title('{} côté 1'.format(each_segment), bbox={'facecolor':'0.8', 'pad':5})
+        axarr[1, j].pie(fracs_2, labels=labels_2, colors=colors, autopct='%1.1f%%')
+        axarr[1, j].set_title('{} côté 2'.format(each_segment), bbox={'facecolor':'0.8', 'pad':5})
+        j = (j+1)%7
+    plt.show()
+
+
+def plot_ports_sides(ports_full_flight):
+    """
+    Plot one pie chart for each side of the time spent on each port
+
+    :param ports_full_flight: dict
+        port usage on full filght
+    """
+    ports_durations = tuples_to_durations(ports_full_flight)
+    _, axarr = plt.subplots(1, 2, figsize=(20, 10))
+    labels = ports_durations.keys()  # pressure ports names
+    for side in [1, 2]:
+        labels_1 = [l for l in labels if l[-1] == str(side)] + ['apu', 'no bleed']
+        fracs_1 = [ports_durations[key] for key in labels_1]
+        axarr[side-1].pie(fracs_1, labels=labels_1, autopct='%1.1f%%',
+                          colors=PLOT_COLORS[:len(labels)])
+        axarr[side-1].set_title('côté '+str(side), bbox={'facecolor':'0.8', 'pad':5})
+    plt.show()
+
+
+def plot_ports(ports_full_flight, data):
+    """
+    Plot a pie chart of the percentage of time spent on each pressure port
+
+    :param ports_full_flight: dict
+        ports usage for the whole flight
+    :param data: DataFrame
+        data of the flight
+    """
+    flight_duration = data.Time.iloc[-1] - data.Time.iloc[0]
+    ports_durations = tuples_to_durations(ports_full_flight)
+    # Convert durations on each port into percentage of the flight duration
+    for port in ports_durations.keys():
+        ports_durations[port] /= flight_duration
+    plt.figure(1, figsize=(10, 10))
+    labels = ports_durations.keys()
+    fracs = [ports_durations[key] for key in labels]
+    colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue', 'dodgerblue',
+              'indianred', 'orchid'][:len(labels)]
+    plt.pie(fracs, labels=labels, colors=colors, autopct='%1.1f%%')
+    plt.title('Temps passé sur chaque port, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
     plt.show()
