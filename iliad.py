@@ -3,7 +3,7 @@ ILIAD: Isae LIebherr Anomaly Detection
 """
 import json
 import logging
-from dataProcessing.parser import txt_parser, compute_phases_idx
+from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
 from dataProcessing import plotter
 from algorithms.SignalData import SignalData
@@ -15,7 +15,8 @@ class Iliad:
 
     Attributes:
 
-    self.config: dict
+    self.name (str): name of the flight
+    self.config (dict): config of the algorithms
     self.data (DataFrame): flight_data
     self.phases (dict): phases of the plight
     self.ports (dict): port usage per segment
@@ -26,6 +27,10 @@ class Iliad:
     self._phases_idx (dict) index (as bool) of the dataFrame for each segement
     """
     def __init__(self, path, config_path="dataProcessing/config.json", verbose=False):
+        """
+        Constuctor of the class
+        """
+        self.name = path.split("\\")[-1][:-3]
         with open(config_path) as f_config:
             self.config = json.load(f_config)
         if verbose:
@@ -38,7 +43,7 @@ class Iliad:
         self.data = txt_parser(path)
         logging.info("Input file parsed.")
         self.phases, self.ports, self.ports_full_flight = segment(self.data)
-        self._phases_idx = compute_phases_idx(self.phases, self.data.Time)
+        self._phases_idx = plotter.compute_phases_idx(self.phases, self.data.Time)
 
     ######################
     # All plot functions #
@@ -66,6 +71,13 @@ class Iliad:
     def plot_ports(self):
         "plot port usage, see plot_ports"
         plotter.plot_ports(self.ports_full_flight, self.data)
+
+    ##########################
+    # Export HTML Reporting  #
+    ##########################
+    def export_reporting(self):
+        "export html summary of the flight"
+        pass
 
 
 class Iliad_n_flight:
