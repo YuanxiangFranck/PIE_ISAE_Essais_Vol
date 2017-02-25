@@ -9,7 +9,8 @@ Function to return a quick summary of the data
 """
 import numpy as np
 from dataProcessing.parser import txt_parser
-from dataProcessing.segmenter import segment, get_weights, tuples_to_durations
+from dataProcessing.segmenter import segment
+from dataProcessing.segmenter_utils import get_weights, tuples_to_durations
 
 template_path = "dataProcessing/html_page/"
 
