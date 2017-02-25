@@ -128,9 +128,19 @@ def idx2date(dates, idx, sl_w, sl_s):
 def idx2phase(start, stop, flight_segments, idx, sl_w, sl_s):
     for phase in flight_segments.items():
         phase_name, phase_dates = phase
-        #print(phase_name)
         for i,dates in enumerate(phase_dates):
-            #print(dates)
-            #print(idx2date([(start,stop)], idx, sl_w, sl_s)[0])
             if dates[0] <= idx2date([(start,stop)], idx, sl_w, sl_s)[0] <= dates[1]:
                 return phase_name,i
+
+def idx2port(start, stop, ports, idx, sl_w, sl_s):
+    sides = (('apu', 'hp1', 'ip1', 'no bleed'),
+             ('apu', 'hp2', 'ip2', 'no bleed'))
+    res = [None, None]
+    for k,side in enumerate(sides):
+        for port in ports.items():
+            port_name, port_dates = port
+            if port_name in side:
+                for i,dates in enumerate(port_dates):
+                    if dates[0] <= idx2date([(start,stop)], idx, sl_w, sl_s)[0] <= dates[1]:
+                        res[k] = port_name,i
+    return res
