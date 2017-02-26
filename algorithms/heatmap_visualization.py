@@ -10,7 +10,6 @@ Heatmap visualization of features on time segments
 
 TO DO:
     * tests
-    * implement hierarchical clustering
     * docstring
 """
 
@@ -124,6 +123,17 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
 
         # Set features
         features = ['time_over_threshold']
+    elif feature == 'off_regulation_crossings':
+        use_targets = True
+        # Load signal names
+        selected_signals = conf['regulation']
+        target_signals = conf['target']
+
+        # Set ylabels
+        ylabels = sorted(selected_signals)
+
+        # Set features
+        features = ['threshold_crossings']
     else:
         if signal_category == 'custom':
             # Use signal list given in argument
@@ -322,6 +332,9 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
         sns.heatmap(feature_matrix.T[start:stop], xticklabels=xlabels, 
                     yticklabels=ylabels[start:stop], annot=annot, ax=ax2, 
                     robust=robust)
+        # Set tick labels direction
+        plt.yticks(rotation=0)
+        plt.xticks(rotation=90)
         
         box0 = ax0.get_position()
         box2 = ax2.get_position()
@@ -374,7 +387,7 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
     create_heatmap(k+1, (k+1)*n_sig, len(selected_signals))
         
 if __name__ == '__main__':
-    """
+
     from flight_analysis_fun import load_flight
     from flight_names import flight_names
     from signal_names import *
@@ -385,8 +398,8 @@ if __name__ == '__main__':
     conf = {'target_precisions_path': 'target_precisions.csv', 
             'regulation': signal_names_regul, 'target': target_names_regul,
             'binary': signal_names_bin, 'endogene': signal_names_endogene}
-    """
-    heatmap(data=data, feature='percent_time_off_regulation', 
+
+    heatmap(data=data, feature='off_regulation_crossings',
             signal_category='regulation', n_segments=50, 
             flight_name=flight_name, hclust=True, 
             out_dir='../../Resultats/test/', show_plot=False, conf=conf)
