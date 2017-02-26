@@ -245,7 +245,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
 
     phases = []
     for i in range(n_samples):
-        p = idx2phase(data.Time.iloc[0], data.Time.iloc[-1],
+        p = idx2phase(flight_data.data.Time.iloc[0], flight_data.data.Time.iloc[-1],
                       flight_data.flight_segments, i, sl_w, sl_s)
         if p:
             phases.append(p[0])
@@ -263,7 +263,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
     # Side 1
     ports1 = []
     for i in range(n_samples):
-        p = idx2port(data.Time.iloc[0], data.Time.iloc[-1],
+        p = idx2port(flight_data.data.Time.iloc[0], flight_data.data.Time.iloc[-1],
                       flight_data.ports, i, sl_w, sl_s)
         if p:
             ports1.append(p[0][0])
@@ -275,7 +275,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
     # Side 2
     ports2 = []
     for i in range(n_samples):
-        p = idx2port(data.Time.iloc[0], data.Time.iloc[-1],
+        p = idx2port(flight_data.data.Time.iloc[0], flight_data.data.Time.iloc[-1],
                       flight_data.ports, i, sl_w, sl_s)
         if p:
             ports2.append(p[1][0])
@@ -393,7 +393,9 @@ if __name__ == '__main__':
             'regulation': signal_names_regul, 'target': target_names_regul,
             'binary': signal_names_bin, 'endogene': signal_names_endogene}
 
-    heatmap(data=data, feature='off_regulation_crossings',
+    signal_data = SignalData(data)
+    signal_data.compute_flight_segmentation()
+    heatmap(flight_data=signal_data, feature='off_regulation_crossings',
             signal_category='regulation', n_segments=50,
             flight_name=flight_name, hclust=True,
             out_dir='../../Resultats/test/', show_plot=False, conf=conf)
