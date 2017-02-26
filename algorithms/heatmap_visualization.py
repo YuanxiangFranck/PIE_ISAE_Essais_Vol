@@ -55,7 +55,7 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
         Signal categories are defined in the configuration file.""")
     if signal_category == 'custom' and not signal_list:
         logging.warning( 
-        """The signal_categories argument is set to 'custom', but no signal list
+        """The signal_category argument is set to 'custom', but no signal list
         is selected. The signal_list argument must be set to a list of signal 
         names. Signal names are defined in the configuration file.""")
         return 
@@ -380,11 +380,13 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
             plt.clf()
     
     # Generate heatmaps
-    for k in range(n_heatmaps):
-        create_heatmap(k, k*n_sig, (k+1)*n_sig)
-
-    # Make last heatmap if needed
-    create_heatmap(k+1, (k+1)*n_sig, len(selected_signals))
+    if n_heatmaps == 0:
+        create_heatmap(0, 0, len(selected_signals))
+    else:
+        for k in range(n_heatmaps):
+            create_heatmap(k, k*n_sig, (k+1)*n_sig)
+        # Make last heatmap if needed
+        create_heatmap(k+1, (k+1)*n_sig, len(selected_signals))
         
 if __name__ == '__main__':
 
