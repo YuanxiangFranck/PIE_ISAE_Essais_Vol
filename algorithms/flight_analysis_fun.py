@@ -28,14 +28,14 @@ def extract_sl_window(data, signals, sl_w, sl_s):
     # sliding window stride
     sl_s = sl_s
     # number of samples
-    m = (len(data)-sl_w)//sl_s+1 
-    
+    m = (len(data)-sl_w)//sl_s+1
+
     samples = [SignalData(data.loc[i*sl_s:i*sl_s+sl_w, signals]) for i in range(m)]
     return samples
 
 def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
     assert(len(signals1) == len(signals2))
-    
+
     def relative_delta(a_series,b_series):
         res = []
         for a,b in zip(a_series,b_series):
@@ -54,7 +54,7 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
     # sliding window stride
     sl_s = sl_s
     # number of samples
-    m = (len(data)-sl_w)//sl_s+1 
+    m = (len(data)-sl_w)//sl_s+1
     # Compute delta between signal and target values
     dic = {}
     for i,name in enumerate(signals1):
@@ -68,20 +68,20 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
 
     delta_samples = [SignalData(delta.iloc[i*sl_s:i*sl_s+sl_w, :]) for i in range(m)]
     return delta_samples
-    
+
 def get_feature_matrix(samples, features, normalized=True, \
                        n_fft=10, n_dtc=10, threshold=0.1):
-    
+
     n_features = len(features)
     if features.count('fft') > 0:
         n_features += 2*n_fft-1
     if features.count('dtc') > 0:
         n_features += 2*n_dtc-1
-        
+
     n_signals = samples[0].data.shape[1]
-    
+
     feature_matrix = np.zeros((len(samples),n_features*n_signals))
-    
+
     for i,sigData in enumerate(samples):
         sigData.extractFeatures(features, n_fft=n_fft, \
                                 n_dtc=n_dtc, threshold=threshold)
@@ -89,17 +89,17 @@ def get_feature_matrix(samples, features, normalized=True, \
         feature_matrix[i,:] = sigData.X.as_matrix().ravel()
         # Clear
         sigData.clearFeatures()
-    
+
     # Normalize features
     if normalized:
         feature_matrix = normalize(feature_matrix,axis=0,norm='l1')
     return feature_matrix
-    
+
 def idx2date(dates, idx, sl_w, sl_s):
     """
     Get real time segments corresponding to the index of a sample
     in a sliding window decomposition with parameters sl_w, sl_s
-    
+
     Warning : this function takes into consideration the case when the time
     window overlaps on two occurrences of the same flight phase. However, it
     won't work if an occurence of the flight phase is shorter than the time
@@ -124,7 +124,7 @@ def idx2date(dates, idx, sl_w, sl_s):
     else:
         return (dates[i_start][0] + idx * sl_s - elapsed, \
                 dates[i_start][0] + idx * sl_s + sl_w - elapsed)
-        
+
 def idx2phase(start, stop, flight_segments, idx, sl_w, sl_s):
     for phase in flight_segments.items():
         phase_name, phase_dates = phase
