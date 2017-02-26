@@ -7,7 +7,8 @@ from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
 from dataProcessing.summary import summary
 from dataProcessing import plotter
-from algorithms.SignalData import SignalData
+from dataProcessing import utils
+from algorithms.heatmap_visualzation import heatmap
 
 
 class Iliad:
@@ -74,12 +75,24 @@ class Iliad:
         plotter.plot_ports(self.ports_full_flight, self.data)
 
     ##########################
-    # Export HTML Reporting  #
+    # Export Reporting  #
     ##########################
-    def export_reporting(self):
+    def export_reporting(self, out_dir="Resultats/"):
         "export html summary of the flight see summary.summary"
-        summary(self.name, data=self.data,
-                phases_data=(self.phases, self.ports, self.ports_full_flight))
+        utils.check_dir(out_dir)
+        summary(self.name+".txt", data=self.data,
+                phases_data=(self.phases, self.ports, self.ports_full_flight),
+                out_dir=out_dir)
+
+    def export_heatmap(self, out_dir='Resultats/', feature='off_regulation_crossings', signal_category='regulation'):
+        "Export heatmap computation as pdf"
+        # Create out dir if it don't exist
+        utils.check_dir(out_dir)
+        # Build heatmap
+        heatmap(data=self.data, feature=feature,
+                signal_category=signal_category, n_segments=50,
+                flight_name=self.name, hclust=True, conf=self.config,
+                out_dir=out_dir, show_plot=False,)
 
 
 class Iliad_n_flight:
