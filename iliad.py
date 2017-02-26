@@ -8,7 +8,7 @@ from dataProcessing.segmenter import segment
 from dataProcessing.summary import summary
 from dataProcessing import plotter
 from dataProcessing import utils
-from algorithms.heatmap_visualzation import heatmap
+from algorithms.heatmap_visualization import heatmap
 
 
 class Iliad:
@@ -32,7 +32,8 @@ class Iliad:
         """
         Constuctor of the class
         """
-        self.name = path.split("\\")[-1][:-3]
+        self.path = path
+        self.name = path.split("/")[-1][:-4]
         with open(config_path) as f_config:
             self.config = json.load(f_config)
         if verbose:
@@ -80,7 +81,7 @@ class Iliad:
     def export_reporting(self, out_dir="Resultats/"):
         "export html summary of the flight see summary.summary"
         utils.check_dir(out_dir)
-        summary(self.name+".txt", data=self.data,
+        summary(self.path, data=self.data,
                 phases_data=(self.phases, self.ports, self.ports_full_flight),
                 out_dir=out_dir)
 
