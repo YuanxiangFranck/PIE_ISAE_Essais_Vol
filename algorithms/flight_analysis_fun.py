@@ -10,7 +10,7 @@ Flight analysis functions
 import sys,os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
-from SignalData import SignalData
+from algorithms.SignalData import SignalData
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import normalize

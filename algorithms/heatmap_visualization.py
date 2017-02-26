@@ -25,9 +25,9 @@ from matplotlib import gridspec
 from matplotlib.lines import Line2D
 import seaborn as sns
 # Flight analysis functions import
-from flight_analysis_fun import (extract_sl_window, extract_sl_window_delta, 
+from algorithms.flight_analysis_fun import (extract_sl_window, extract_sl_window_delta, 
 get_feature_matrix, idx2date, idx2phase, idx2port)
-from SignalData import SignalData
+from algorithms.SignalData import SignalData
 
 def heatmap(data=None, feature=None, signal_category=None, signal_list=None, 
             time_window='auto', n_segments='auto', hclust=False, save=True,
