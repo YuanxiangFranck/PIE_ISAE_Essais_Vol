@@ -144,7 +144,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
     selected_signals_copy = selected_signals.copy()
     cc = 0
     for s in selected_signals_copy:
-        if s not in data.columns.values:
+        if s not in flight_data.data.columns:
             cc += 1
             selected_signals.remove(s)
     if cc > 0:

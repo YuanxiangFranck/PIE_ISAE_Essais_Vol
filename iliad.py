@@ -45,7 +45,7 @@ class Iliad:
 
         # Parse data and compute signal_data
         logging.info("Start parsing: {}".format(path))
-        self.signal_data = SignalData(txt_parser(path))
+        self.signal_data = SignalData(txt_parser(path, target_names=self.config["target"]))
 
         # Compute flight segmentation
         logging.info("Start computing flight segmentation")

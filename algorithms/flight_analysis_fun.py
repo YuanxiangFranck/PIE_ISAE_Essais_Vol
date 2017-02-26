@@ -8,6 +8,7 @@ Flight analysis functions
 """
 
 import sys,os
+import logging
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.parser import txt_parser
 from algorithms.SignalData import SignalData
@@ -16,10 +17,8 @@ import numpy as np
 from sklearn.preprocessing import normalize
 
 def load_flight(path):
-    print("Processing flight {}...".format(path))
+    logging.info("Processing flight {}...".format(path))
     flight_data = txt_parser(path)
-    # Cas particulier : la target '41psig'
-    flight_data['41psig'] = 41
     return flight_data
 
 def extract_sl_window(data, signals, sl_w, sl_s):
