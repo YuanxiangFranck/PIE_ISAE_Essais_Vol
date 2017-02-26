@@ -17,8 +17,8 @@ TO DO:
 import time
 import logging
 # Modules imports
-import numpy as np
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from matplotlib import gridspec
@@ -29,7 +29,7 @@ from algorithms.flight_analysis_fun import (extract_sl_window, extract_sl_window
 get_feature_matrix, idx2date, idx2phase, idx2port)
 from algorithms.SignalData import SignalData
 
-def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
+def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=None,
             time_window='auto', n_segments='auto', hclust=False, save=True,
             flight_name='undefined', out_dir='.', out_filename='auto',
             show_plot=True, out_format='pdf', annot=False, robust=True,
@@ -38,7 +38,7 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
     TODO: docstring
     """
     # Handle arguments
-    if not isinstance(data, pd.core.frame.DataFrame):
+    if not isinstance(flight_data, SignalData):
         logging.warning(
         """The data argument must be a pandas DataFrame
         containing the flight data.""")
@@ -75,12 +75,6 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
     # Initialize variables
     use_targets = False
     features = []
-
-    # Load data into SignalData object
-    flight_data = SignalData(data)
-
-    # Compute flight phases and ports
-    flight_data.compute_flight_segmentation()
 
     # Set sliding window parameters
     if n_segments != 'auto':
@@ -150,7 +144,7 @@ def heatmap(data=None, feature=None, signal_category=None, signal_list=None,
     selected_signals_copy = selected_signals.copy()
     cc = 0
     for s in selected_signals_copy:
-        if not s in data.columns.values:
+        if s not in data.columns.values:
             cc += 1
             selected_signals.remove(s)
     if cc > 0:

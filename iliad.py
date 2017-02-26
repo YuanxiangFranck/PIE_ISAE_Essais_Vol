@@ -8,6 +8,7 @@ from dataProcessing.segmenter import segment
 from dataProcessing.summary import summary
 from dataProcessing import plotter
 from dataProcessing import utils
+from algorithms.SignalData import SignalData
 from algorithms.heatmap_visualization import heatmap
 
 
@@ -42,11 +43,24 @@ class Iliad:
             level = logging.WARNING
         logging.basicConfig(format='%(levelname)s: %(message)s', level=level)
 
+        # Parse data and compute signal_data
         logging.info("Start parsing: {}".format(path))
-        self.data = txt_parser(path)
-        logging.info("Input file parsed.")
-        self.phases, self.ports, self.ports_full_flight = segment(self.data)
+        self.signal_data = SignalData(txt_parser(path))
+
+        # Compute flight segmentation
+        logging.info("Start computing flight segmentation")
+        self.phases, self.ports, self.ports_full_flight = segment(self.signal_data._raw_data)
         self._phases_idx = plotter.compute_phases_idx(self.phases, self.data.Time)
+        self.signal_data.set_flight_segments(self.phases)
+
+    @property
+    def data(self):
+        """
+        return raw data from self.signal_data
+        this function is built as a property, in order to use it as an attribute
+        and avoid duplicate storage
+        """
+        return self.signal_data._raw_data
 
     ######################
     # All plot functions #
@@ -90,7 +104,7 @@ class Iliad:
         # Create out dir if it don't exist
         utils.check_dir(out_dir)
         # Build heatmap
-        heatmap(data=self.data, feature=feature,
+        heatmap(flight_data=self.signal_data, feature=feature,
                 signal_category=signal_category, n_segments=50,
                 flight_name=self.name, hclust=True, conf=self.config,
                 out_dir=out_dir, show_plot=False,)
