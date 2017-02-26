@@ -89,11 +89,12 @@ class SignalData:
 
     def compute_flight_segmentation(self):
         "Compute flight segments and ports, and set attributes."
-        self.flight_segments, _, _ = flight_segmenter(self.data)
+        self.flight_segments, _, self.ports = flight_segmenter(self.data)
 
-    def set_flight_segments(self, phases):
+    def set_flight_segments(self, phases, ports):
         "Set flight_segments attribute"
         self.flight_segments = phases
+        self.ports = ports
 
     def apply_flight_segmentation(self, segment):
         "Restrict data to a segment of the flight segment"
