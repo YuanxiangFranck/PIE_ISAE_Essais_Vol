@@ -51,6 +51,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <div class="viewcode-block" id="SymmetryTest"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.SymmetryTest">[docs]</a><span class="k">def</span> <span class="nf">SymmetryTest</span><span class="p">(</span><span class="n">signal1</span><span class="p">,</span> <span class="n">signal2</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">name_signal1</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;ok&quot;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -323,6 +324,76 @@
         
     <span class="k">return</span> <span class="n">result_anomaly</span></div>
     
+    
+    <span class="c1">#%%</span>
+    
+<div class="viewcode-block" id="Anomalies_in_Time"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.Anomalies_in_Time">[docs]</a><span class="k">def</span> <span class="nf">Anomalies_in_Time</span><span class="p">(</span><span class="n">result_sym</span><span class="p">,</span> <span class="n">max_time_index</span><span class="p">,</span> <span class="n">window_size</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span> <span class="p">:</span>
+        
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Analyses the correlation of anomalies in time : gives number of anomalies </span>
+<span class="sd">    for some time windows.       </span>
+<span class="sd">    </span>
+<span class="sd">    Inputs : </span>
+
+<span class="sd">    - result_sym : results of a symmetry test which is : an array containing the </span>
+<span class="sd">    names of the signals with anomalies (by pair), and the associated time indexes</span>
+<span class="sd">    of anomaly occurences</span>
+<span class="sd">    </span>
+<span class="sd">    - max_time_index : an integer : the maximal time index of the flight</span>
+<span class="sd">    </span>
+<span class="sd">    - window_size : size in percentage of the flight duration of the window on </span>
+<span class="sd">    which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)</span>
+<span class="sd">    If window_size = 0, then divides the flight with respect to the flight phases.</span>
+<span class="sd">    By default : window_size = 0.1</span>
+
+<span class="sd">    Output :</span>
+<span class="sd">    </span>
+<span class="sd">    - result : a two lignes array : the first ligne is the time indexes of the </span>
+<span class="sd">    begining of the windows, the second ligne is the number of anomalies detected </span>
+<span class="sd">    during the corresponding time window</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>  
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[[],[]]</span>
+    <span class="n">nm_anomaly</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">max_time_index</span> 
+    
+    <span class="n">time_indexes</span> <span class="o">=</span> <span class="p">[</span><span class="n">result_sym</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_sym</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">time_indexes_1D</span> <span class="o">=</span> <span class="p">[]</span>
+   
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_sym</span><span class="p">))</span> <span class="p">:</span>
+        <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+           <span class="n">time_indexes_1D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">time_indexes_1D</span><span class="p">,</span><span class="n">result_sym</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span><span class="mi">0</span><span class="p">)</span>
+    
+    <span class="n">time_indexes_1D</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">time_indexes_1D</span><span class="p">)</span>
+    
+    <span class="k">if</span> <span class="n">window_size</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
+        <span class="n">window_size</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">window_size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">window_size</span> <span class="o">*</span> <span class="n">max_time_index</span><span class="p">)</span>
+        <span class="n">time_window_begining</span> <span class="o">=</span> <span class="p">[</span><span class="nb">min</span><span class="p">(</span><span class="mi">0</span><span class="o">+</span><span class="n">i</span><span class="o">*</span><span class="n">step</span><span class="p">,</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">n</span><span class="o">/</span><span class="n">step</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span><span class="o">*</span><span class="n">step</span> <span class="o">!=</span> <span class="n">n</span><span class="p">]</span>       
+        
+        <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">time_window_begining</span> 
+        
+        <span class="k">for</span> <span class="n">w</span><span class="p">,</span><span class="n">t0</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">time_window_begining</span><span class="p">)</span> <span class="p">:</span>
+            <span class="n">nm_anomaly</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">w</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">time_window_begining</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="p">:</span>          
+                <span class="n">t1</span> <span class="o">=</span> <span class="n">n</span>
+            <span class="k">else</span> <span class="p">:</span>
+                <span class="n">t1</span> <span class="o">=</span> <span class="n">time_window_begining</span><span class="p">[</span><span class="n">w</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">anomaly</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">time_indexes</span><span class="p">))</span> <span class="p">:</span>
+                <span class="k">for</span> <span class="n">time_anomaly</span> <span class="ow">in</span> <span class="n">time_indexes</span><span class="p">[</span><span class="n">anomaly</span><span class="p">]</span> <span class="p">:</span>
+                    <span class="k">if</span> <span class="n">time_anomaly</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">t0</span><span class="p">,</span><span class="n">t1</span><span class="p">)</span> <span class="p">:</span>
+                        <span class="n">nm_anomaly</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="n">nm_anomaly</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+        <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nm_anomaly</span>
+   
+<span class="c1">#***********************************</span>
+<span class="c1">#To do : implement calulation for the flight phases</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+   
 <span class="c1">#%%</span>
     
     
@@ -366,19 +437,19 @@
      <span class="c1">#..............................................</span>
      <span class="c1">## With lateral Symmetry </span>
     
-    <span class="n">result_sym</span> <span class="o">=</span> <span class="n">Symmetry_Lateral_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span><span class="n">error</span><span class="p">)</span>
+    <span class="n">result_lat</span> <span class="o">=</span> <span class="n">Symmetry_Lateral_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span><span class="n">error</span><span class="p">)</span>
     <span class="c1">#names of the couples supposed equal by symmetry but actuelly different</span>
-    <span class="n">anomalies_couples_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">result_sym</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_sym</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il y a &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_couples_names</span><span class="p">))</span> <span class="o">+</span><span class="s2">&quot; anomalies detectees sur la symetrie laterale&quot;</span> <span class="p">)</span>
+    <span class="n">anomalies_lat_couples_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">result_lat</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">result_lat</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il y a &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_lat_couples_names</span><span class="p">))</span> <span class="o">+</span><span class="s2">&quot; anomalies detectees sur la symetrie laterale&quot;</span> <span class="p">)</span>
     
     <span class="c1">#Affichage de l&#39;avant derniere anomalie </span>
-    <span class="n">s1</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
-    <span class="n">s2</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="n">s1</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_lat_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">s2</span> <span class="o">=</span> <span class="n">flight</span><span class="p">[</span><span class="n">anomalies_lat_couples_names</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
     <span class="n">s1</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
     <span class="n">s2</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
     
     <span class="c1">#On peut voir si les anomalies sont des booleans ou des signaux regulés</span>
-    <span class="n">name_anomaly</span> <span class="o">=</span> <span class="p">[</span><span class="n">anomalies_couples_names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_couples_names</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">]</span>
+    <span class="n">name_anomaly</span> <span class="o">=</span> <span class="p">[</span><span class="n">anomalies_lat_couples_names</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">anomalies_lat_couples_names</span><span class="p">))</span> <span class="k">if</span> <span class="n">j</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">]</span>
     <span class="n">is_bool_anomaly</span> <span class="o">=</span> <span class="p">[</span><span class="n">is_bool</span><span class="p">(</span><span class="n">j</span><span class="p">)</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">name_anomaly</span><span class="p">]</span>
     <span class="k">if</span> <span class="kc">False</span> <span class="ow">in</span> <span class="n">is_bool_anomaly</span><span class="p">:</span>
         <span class="k">if</span> <span class="kc">True</span> <span class="ow">in</span> <span class="n">is_bool_anomaly</span><span class="p">:</span>
@@ -388,6 +459,15 @@
     <span class="k">else</span> <span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pour symetrie laterale : Il n&#39;y a que des anomalies sur des booléans&quot;</span><span class="p">)</span>
         
+        
+    <span class="c1">#Plot du nombre d&#39;anomalies en fonction du temps</span>
+    <span class="n">nb_anomaly_time_ch</span> <span class="o">=</span> <span class="n">Anomalies_in_Time</span><span class="p">(</span><span class="n">result_channel</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="mf">0.01</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nb_anomaly_time_ch</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">nb_anomaly_time_ch</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;ro&#39;</span><span class="p">)</span>
+        
+    <span class="n">nb_anomaly_time_lat</span> <span class="o">=</span> <span class="n">Anomalies_in_Time</span><span class="p">(</span><span class="n">result_lat</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">s1</span><span class="p">),</span> <span class="mf">0.1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">nb_anomaly_time_lat</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">nb_anomaly_time_lat</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="s1">&#39;ro&#39;</span><span class="p">)</span>
 </pre></div>
 
           </div>
