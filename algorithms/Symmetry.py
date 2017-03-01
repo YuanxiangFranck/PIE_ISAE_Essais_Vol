@@ -7,6 +7,7 @@ Created on Tue Dec 20 15:51:39 2016
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
 
 def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
     """
@@ -33,10 +34,11 @@ def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
     signals are the same (according to the accepted error)
     the next values are the index of the signal.data where the differences where found
     """
-    
+    n = 6 # truncation of digits in res
     result =[True]
     error = abs(error)
     index = []
+    lin_reg = []
     sig1 = signal1.data
     sig2 = signal2.data   
     
@@ -46,6 +48,8 @@ def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
             if sig2[i] != s :
                 result = [False]
                 index.append(i)
+        lin_reg = ["b","  -","  -","  -"] #boolean signals : no linear regression
+                
     else :
         #The signals are 'reg' 
         for i,s in enumerate(sig1):
@@ -57,6 +61,8 @@ def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
                 if abs(sig2[i]) > error :
                     result = [False]
                     index.append(i)
+        a, b, r_value, p_value, std_err = stats.linregress(sig1,sig2)
+        lin_reg = ["c",str(a)[0:n],str(b)[0:n],str(r_value**2)] #continuous signals : linear regression parameters
                 
     if comment != "none" :
         print("\n")
@@ -68,7 +74,8 @@ def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
             print("\nL'erreur relative entre les signaux est supérieur à error sur ") 
             print("une certaine plage\n " )
 
-    result.append(index)            
+    result.append(index)    
+    result.append(lin_reg)        
     
     return result
     
@@ -156,8 +163,9 @@ def Symmetry_Channels_One_Flight(flight, error):
                 result.append(res[0])
                 
                 if res[0] == False :
-                    result_anomaly.append([name_i, names[i+1]])
-                    result_anomaly.append(res[1][:])
+                    result_anomaly.append([name_i, names[i+1]]) # signals names
+                    result_anomaly.append(res[1][:]) # time indexes of anomalies
+                    result_anomaly.append(res[2][:]) # linear fitting coeff
                     
             
                 #We don't need to test the next signal
@@ -222,8 +230,9 @@ def Symmetry_Lateral_One_Flight(flight, error):
         result.append(res[0])
         
         if res[0] == False :
-            result_anomaly.append([name_AMSC1, name_AMSC2])
-            result_anomaly.append(res[1][:])
+            result_anomaly.append([name_AMSC1, name_AMSC2]) # signals names
+            result_anomaly.append(res[1][:]) # time indexes of anomalies
+            result_anomaly.append(res[2][:]) # linear fitting coeff
                                 
         
     return result_anomaly
@@ -262,7 +271,7 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1) :
     nm_anomaly = []
     n = max_time_index 
     
-    time_indexes = [result_sym[j] for j in range(len(result_sym)) if j%2 == 1]
+    time_indexes = [result_sym[j] for j in range(len(result_sym)) if j%3 == 1]
     time_indexes_1D = []
    
     for j in range(len(result_sym)) :
@@ -322,10 +331,13 @@ def Analyze_results(result_sym, str_type) :
     - long_sorted : number of time indexes where there is an anomaly, corresponding
     to the anomalies_couple_names_sorted
     
+    - anomalies_lin_reg_coef_sorted : linear regression coefficients, sorted by the duration
+    of the detected anomalies
+    
     
     """  
-    anomalies_couples_names = [result_sym[j] for j in range(len(result_sym)) if j%2 == 0]
-    
+    anomalies_couples_names = [result_sym[j] for j in range(len(result_sym)) if j%3 == 0]
+    anomalies_lin_reg_coef = [result_sym[j] for j in range(len(result_sym)) if j%3 == 2]
     
     # On peut voir si les anomalies sont des booleans ou des signaux regulés
     name_anomaly = [anomalies_couples_names[j][0] for j in range(len(anomalies_couples_names))]
@@ -357,7 +369,7 @@ def Analyze_results(result_sym, str_type) :
             
             
     #Statistiques anomalies
-    ind = [result_sym[j] for j in range(len(result_sym)) if j%2 == 1]
+    ind = [result_sym[j] for j in range(len(result_sym)) if j%3 == 1] # time indexes
     long = [len(ind[i]) for i in range(len(ind))]
     long_np = np.array(long);
     
@@ -368,11 +380,12 @@ def Analyze_results(result_sym, str_type) :
     long_sorted = long_np[sorted_ind]
     
     anomalies_couples_names_sorted = [anomalies_couples_names[i] for i in sorted_ind]   
-        
-    return anomalies_couples_names_sorted, long_sorted
+    anomalies_lin_reg_coef_sorted = [anomalies_lin_reg_coef[i] for i in sorted_ind]  
+    
+    return anomalies_couples_names_sorted, long_sorted, anomalies_lin_reg_coef_sorted
    
 #%%
-def write_in_file(path, name_flight, list_anomaly, duration_anomaly, is_channel) :
+def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef, error, is_channel) :
         
     """
     Writes the anomaly names into a txt file      
@@ -387,6 +400,10 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, is_channel)
     
     - duration_anomaly : list of the duration of detected anomaly
     
+    - lin_reg_coef : list of the linear regression coefficients
+    
+    - error : relative error used for the anomaly detection
+    
     - is_channel : bool to know whether the anomalies are from channel or lateral
     
     """  
@@ -399,22 +416,23 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, is_channel)
     if is_channel == 1 :
        
        fichier.write("\n Résultats de symmétrie du vol : " + name_flight+ "\n\n") 
-       fichier.write("\n (le lateral est plus bas) \n\n ")
-       fichier.write("\n Résultats asymetrie CHANNEL : "+str(len(list_anomaly))+" paires de signaux anormaux.\n ")
-       
-       fichier.write("\n Format : [ Anomalie 1/2 ; Anomalie 2/2] : temps de vol anormal (en pourcentage du temps de vol total) \n \n")
+       fichier.write("\n Erreur relative utilisée : " + str(error)+"\n") 
+       fichier.write("\n Résultats asymetrie CHANNEL : "+str(len(list_anomaly))+" paires de signaux anormaux. ")
+       fichier.write("\n (le lateral est plus bas) \n\n\n ")
+       fichier.write("\n Format : [ Anomalie 1/2 ; Anomalie 2/2] : temps de vol anormal (en pourcentage du temps de vol total) | Coefficients de regression linéaire : y = ax+b ['b'(bool) or 'c' (continu),a, b, r^2] \n \n")
        for i in range(len(list_anomaly)):
-           fichier.write("\n [\t" + list_anomaly[i][0].ljust(taille_max) + " ; \t" + list_anomaly[i][1].ljust(taille_max) + "\t]  :  "+ str(100*duration_anomaly[i]) )
-
+           fichier.write("\n [\t" + list_anomaly[i][0].ljust(taille_max) + " ; \t" + list_anomaly[i][1].ljust(taille_max) + "\t]  :  "+ str(100*duration_anomaly[i])[0:5] )
+           fichier.write(" | \t[ '"+ lin_reg_coef[i][0]+" ', "+lin_reg_coef[i][1].ljust(8)+", "+lin_reg_coef[i][2].ljust(8)+", "+lin_reg_coef[i][3].ljust(12)+"\t]")
         
     else:
-        fichier.write("\n ----------------------------------------------------------------------------------------------------------------------------------------------------------\n \n")
+        fichier.write("\n ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n \n")
         fichier.write("\n Résultats asymetrie LATERAL : "+str(len(list_anomaly))+" paires de signaux anormaux.\n ")
        
-        fichier.write("\n Format : [ Anomalie 1/2 ; Anomalie 2/2] : temps de vol anormal (en pourcentage du temps de vol total) \n \n")
+        fichier.write("\n Format : [ Anomalie 1/2 ; Anomalie 2/2] : temps de vol anormal (en pourcentage du temps de vol total) | Coefficients de regression linéaire : y = ax+b ['b'(bool) or 'c' (continu),a, b, r^2] \n \n")
         for i in range(len(list_anomaly)):
-            fichier.write("\n [\t" + list_anomaly[i][0].ljust(taille_max) + " ; \t " + list_anomaly[i][1].ljust(taille_max) + "\t] : "+ str(100*duration_anomaly[i]) )
-
+            fichier.write("\n [\t" + list_anomaly[i][0].ljust(taille_max) + " ; \t" + list_anomaly[i][1].ljust(taille_max) + "\t]  :  "+ str(100*duration_anomaly[i])[0:5] )
+            fichier.write(" | \t[ '"+ lin_reg_coef[i][0]+" ', "+lin_reg_coef[i][1].ljust(8)+", "+lin_reg_coef[i][2].ljust(8)+", "+lin_reg_coef[i][3].ljust(12)+"\t]")
+        
      
     fichier.close()
         
@@ -440,7 +458,7 @@ if __name__ == "__main__":
 
     
     #names of the couples supposed equal by symmetry but actuelly different
-    anomalies_couples_names = [result_channel[j] for j in range(len(result_channel)) if j%2 == 0]
+    anomalies_couples_names = [result_channel[j] for j in range(len(result_channel)) if j%3 == 0]
     print("Il y a " + str(len(anomalies_couples_names)) +" anomalies detectees entre channels" )
     
     #Affichage de l'avant derniere anomalie 
@@ -465,7 +483,7 @@ if __name__ == "__main__":
     
     result_lat = Symmetry_Lateral_One_Flight(raw_flight,error)
     #names of the couples supposed equal by symmetry but actuelly different
-    anomalies_lat_couples_names = [result_lat[j] for j in range(len(result_lat)) if j%2 == 0]
+    anomalies_lat_couples_names = [result_lat[j] for j in range(len(result_lat)) if j%3 == 0]
     print("Il y a " + str(len(anomalies_lat_couples_names)) +" anomalies detectees sur la symetrie laterale" )
     
     #Affichage de l'avant derniere anomalie 
@@ -475,7 +493,7 @@ if __name__ == "__main__":
     s2.plot()
     
     #On peut voir si les anomalies sont des booleans ou des signaux regulés
-    name_anomaly = [anomalies_lat_couples_names[j] for j in range(len(anomalies_lat_couples_names)) if j%2 == 0 ]
+    name_anomaly = [anomalies_lat_couples_names[j] for j in range(len(anomalies_lat_couples_names)) if j%3 == 0 ]
     is_bool_anomaly = [is_bool(j) for j in name_anomaly]
     if False in is_bool_anomaly:
         if True in is_bool_anomaly:
@@ -497,7 +515,7 @@ if __name__ == "__main__":
     
     
     #Statistiques anomalies
-    ind_lat = [result_lat[j] for j in range(len(result_lat)) if j%2 == 1]
+    ind_lat = [result_lat[j] for j in range(len(result_lat)) if j%3 == 1]
     long = [len(ind_lat[i]) for i in range(len(ind_lat))]
     longr = [i/len(s1) for i in long] # r pour relatif (en pourcentage de temps de vol)
     np.std(longr)  # STD des temps d'anomalies en pourcentage de temps de vol
