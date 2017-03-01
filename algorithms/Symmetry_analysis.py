@@ -114,6 +114,8 @@ result_channel = Symmetry_Channels_One_Flight(flight_data.data,error)
 res_ch_analyzed = Analyze_results(result_channel, 'channel')
 anomalies_channel_couples_names = res_ch_analyzed[0];
 anomalies_length_channel_couples = res_ch_analyzed[1];
+anomalies_channel_reg_coef = res_ch_analyzed[2];
+
 anomalies_relative_length_channel_couples = anomalies_length_channel_couples/len(flight_data.data)
 
 #..............................................
@@ -124,6 +126,8 @@ result_lat = Symmetry_Lateral_One_Flight(flight_data.data,error)
 res_lat_analyzed = Analyze_results(result_lat, 'lat')
 anomalies_lat_couples_names = res_lat_analyzed[0];
 anomalies_length_lat_couples = res_lat_analyzed[1];
+anomalies_lat_reg_coef = res_lat_analyzed[2];
+
 anomalies_relative_length_lat_couples = anomalies_length_lat_couples/len(flight_data.data)
     
     
@@ -140,5 +144,5 @@ s4.plot()
 
 # ecriture du fichier
 file_path = "../analyse/1_vol_Matthieu/resultats_symetrie/Resultat1.txt"
-write_in_file(file_path, flight_name, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, 1)    
-write_in_file(file_path, flight_name, anomalies_lat_couples_names, anomalies_relative_length_lat_couples, 0) 
+write_in_file(file_path, flight_name, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, anomalies_channel_reg_coef,error, 1)    
+write_in_file(file_path, flight_name, anomalies_lat_couples_names, anomalies_relative_length_lat_couples, anomalies_lat_reg_coef,error, 0) 
