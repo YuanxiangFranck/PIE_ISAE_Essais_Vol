@@ -30,7 +30,7 @@ from sklearn.svm import OneClassSVM
 # Flight analysis functions import
 from flight_analysis_fun import (extract_sl_window, get_feature_matrix,
                                  idx2date, idx2phase, idx2port)
-from SignalData import SignalData
+import SignalData
 
 def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
                     signal_list=None, gamma=0.1, nu=0.3, time_window='auto',
@@ -41,7 +41,7 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
     TODO: docstring
     """
     # Handle arguments
-    if not isinstance(flight_data, SignalData):
+    if not isinstance(flight_data, SignalData.SignalData):
         logging.warning( 
         """The data argument must be a SignalData object containing the flight
         data.""")
@@ -152,9 +152,11 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
                                                normalized=False)
         # Scale features
         ps_feature_matrix = scale(ps_feature_matrix)
-    
-        ocsvm.fit(ps_feature_matrix)
-        ps_predictions = ocsvm.predict(ps_feature_matrix)
+
+        # Apply OCSVM
+        ps_ocsvm = OneClassSVM(nu=nu, kernel="rbf", gamma=gamma)
+        ps_ocsvm.fit(ps_feature_matrix)
+        ps_predictions = ps_ocsvm.predict(ps_feature_matrix)
     
         anomalies[prefix] = (ps_predictions == -1)
     
@@ -354,10 +356,12 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
         report = {}
         report['Time frame'] = xlabels
         report['Phase'] = phases
+        report['Port 1'] = ports1
+        report['Port 2'] = ports2
         report['Anomaly'] = anomalies['global']
         # TODO: anomaly score
-        #report['Anomaly score'] = [sum(anomalies[s][i] for s in signal_prefix) \
-        #                           for i in range(n_samples)]
+        report['Distance to hyperplane'] = \
+        ocsvm.decision_function(feature_matrix).ravel()
         report['Anomalous signals'] = \
         [', '.join([s for s in signal_prefix if anomalies[s][i]]) 
         for i in range(n_samples)]
@@ -374,23 +378,28 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
             out_path += out_filename + '.csv'
     
         pd.DataFrame(report).to_csv(out_path,
-        columns = ['Time frame', 'Phase', 'Anomaly', 'Anomaly score',
-        'Anomalous signals'], index_label = 'Time Id')
+        columns = ['Time frame', 'Phase', 'Port 1', 'Port 2', 'Anomaly',
+        'Distance to hyperplane', 'Anomalous signals'], index_label = 'Time Id')
         
 if __name__ == '__main__':
 
     from flight_analysis_fun import load_flight
     from flight_names import flight_names
     from signal_names import *
-    flight_name = flight_names[0]
+    flight_name = flight_names[1]
     path = '../../data/'
-    data = load_flight(path+flight_name)
+    data = SignalData.SignalData(load_flight(path+flight_name))
     
     conf = {'target_precisions_path': 'target_precisions.csv', 
             'regulation': signal_names_regul, 'target': target_names_regul,
-            'binary': signal_names_bin, 'endogene': signal_names_endogene}
+            'binary': signal_names_bin, 'endogene': signal_names_endogene,
+            'phases_colors': {'climb': 'r', 'cruise': 'b', 'landing': 'm',
+                    'descent': 'g', 'hold': 'c', 'otg': 'y',
+                    'take_off': 'k', 'missing': 'white'},
+            'ports_colors': {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange',
+             'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}}
 
-    ocsvm_detection(data=data, features=['mean', 'std', 'amplitude'],
+    ocsvm_detection(flight_data=data, features=['mean', 'std', 'amplitude'],
             signal_categories=['regulation','endogene'], n_segments=100, 
             flight_name=flight_name, hclust=True, save=True, report=True,
             out_dir='../../Resultats/test/', show_plot=False, conf=conf)
