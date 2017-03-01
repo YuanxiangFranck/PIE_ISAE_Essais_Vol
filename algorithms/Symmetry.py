@@ -7,6 +7,7 @@ Created on Tue Dec 20 15:51:39 2016
 
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from scipy import stats
 
 def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
@@ -53,14 +54,14 @@ def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
     else :
         #The signals are 'reg' 
         for i,s in enumerate(sig1):
-            if (s != 0):
-                if abs((s-sig2[i])/s) > error :
+            if (s != 0 or sig2[i] !=0):
+                if abs(2*(s-sig2[i])/(abs(s)+abs(sig2[i]))) > error :
                     result = [False]
                     index.append(i)
-            else:
-                if abs(sig2[i]) > error :
-                    result = [False]
-                    index.append(i)
+            #else:
+             #   if abs(sig2[i]) > error :
+               #     result = [False]
+                #    index.append(i)
         a, b, r_value, p_value, std_err = stats.linregress(sig1,sig2)
         lin_reg = ["c",str(a)[0:n],str(b)[0:n],str(r_value**2)] #continuous signals : linear regression parameters
                 
@@ -388,7 +389,7 @@ def Analyze_results(result_sym, str_type) :
 def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef, error, is_channel) :
         
     """
-    Writes the anomaly names into a txt file      
+    Writes the anomaly results into a txt file      
     
     Inputs : 
 
@@ -435,6 +436,44 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
         
      
     fichier.close()
+        
+    return 
+    #%%
+def write_in_csv(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef) :
+        
+    """
+    Writes the anomaly results into a csv file     
+    
+    Inputs : 
+
+    - path : string, the path of the file 
+    
+    - name_flight : string, name of the flight
+    
+    - list_anomaly : list of the names of anomalies
+    
+    - duration_anomaly : list of the duration of detected anomaly
+    
+    - lin_reg_coef : list of the linear regression coefficients
+    
+    
+    """  
+
+    
+    
+    rapport_anomalie = {}
+    rapport_anomalie["Signal A"] = [a[0] for a in list_anomaly]
+    rapport_anomalie["Signal B"] = [a[1] for a in list_anomaly]
+    rapport_anomalie["anomaly duration (%)"] = duration_anomaly
+    rapport_anomalie["Type"] = [a[0] for a in lin_reg_coef]
+    rapport_anomalie["Lin Reg Slope"] = [a[1] for a in lin_reg_coef]
+    rapport_anomalie["Lin Reg Intercept"] = [a[2] for a in lin_reg_coef]
+    rapport_anomalie["Lin Reg R2"] = [a[3] for a in lin_reg_coef]
+    
+    pd.DataFrame(rapport_anomalie).to_csv(path,columns = ["Type", "Signal A",
+    "Signal B", "anomaly duration (%)", "Lin Reg Slope", "Lin Reg Intercept", 
+    "Lin Reg R2"], index_label = "Id")
+    
         
     return 
    
