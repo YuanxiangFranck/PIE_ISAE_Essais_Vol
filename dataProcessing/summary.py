@@ -39,6 +39,40 @@ def compute_phases_index(phases, time):
     out_phases["index"] = time.tolist()
     return out_phases
 
+def compute_ports_idx(ports_full_flight, time):
+    """
+    Processe ports to compute idx for js plot
+    :param ports_full_flight : dict
+        dict with list of tuple of start end of each port
+    :param time: Series
+        pd.series with time of the data
+    """
+    data1 = []
+    data2 = []
+    for i, port_name in enumerate(["ip", "hp", "apu", "no bleed"]):
+        exts = ["1", "2"]
+        if port_name in ("apu", "no bleed"):
+            exts = [""]
+        for ext in exts:
+            # Compute index for the phases
+            name = port_name + ext
+            idx = np.zeros(time.size).astype(bool)
+            for start, end in ports_full_flight[name]:
+                idx = idx | ( (start <= time) & (time <= end ) )
+            idx = time.index[idx]
+            plot_data = np.zeros(time.size)
+            plot_data[idx] = i+1
+            # Add x in js
+            data = {"y": plot_data.tolist(), "name": name, "line": {"shape": 'hv'},
+                    "fill": 'tozeroy', "type": "scatter"}
+            # If ext == "", need to add apu and no bleed to both
+            if ext == "1" or ext == "":
+                data1.append(data)
+            if ext == "2" or ext == "":
+                data2.append(data)
+    return data1, data2
+
+
 
 def process_ports(ports, ports_full_flight):
     """
@@ -124,7 +158,10 @@ def summary(path, out_path=None, out_dir="", data=None, phases_data=None):
     plot_phases = compute_phases_index(phases, data.Time)
     template_data["phases"] = plot_phases
     template_data["stats"] = {k:int(v*100) for k, v in get_weights(phases, data).items()}
-
+    # Comput data to plot ports
+    port_side1, port_side2 = compute_ports_idx(ports_full_flight, data.Time)
+    template_data["ports_plot_data_1"] = port_side1
+    template_data["ports_plot_data_2"] = port_side2
     # Add css to template
     css_txt = ""
     css_lib = ["bootstrap/dist/css/bootstrap.min.css"]

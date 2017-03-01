@@ -27,10 +27,25 @@ function plot_phases(){
         });
     }
     let layout = {height: 400, title: "Flight phases",
-              xaxis: {title: "Time (s)"},
-              yaxis: {title: "Phase", range:[0,8]}
-             };
+                  xaxis: {title: "Time (s)"},
+                  yaxis: {title: "Phase", range:[0,8]}
+                 };
     Plotly.newPlot('plot_phases', data, layout);
+}
+
+function plot_ports(){
+    let index = phases["index"];
+    for (let data of port_plot_data_1) data.x = index;
+    for (let data of port_plot_data_2) data.x = index;
+
+    let layout = {height: 400, title: "Flight ports usage side 1",
+                  xaxis: {title: "Time (s)"},
+                  yaxis: {title: "Ports", range:[0,8]}
+                 };
+    Plotly.newPlot("plot_ports_side_1", port_plot_data_1, layout);
+    layout.title = "Flight ports usage side 2";
+    Plotly.newPlot("plot_ports_side_2", port_plot_data_2, layout);
+    console.log("0", 0);
 }
 
 function plot_ratio_pie_chart(){
@@ -78,4 +93,5 @@ function plot_port_usage_per_phases(){
 
 plot_ratio_pie_chart();
 plot_phases();
+plot_ports();
 plot_port_usage_per_phases();
