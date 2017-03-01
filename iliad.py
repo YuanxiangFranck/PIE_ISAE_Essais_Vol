@@ -71,23 +71,25 @@ class Iliad:
 
     def plot_phases(self):
         "Use plotter to plot phases, see plotter.plot"
-        plotter.plot_phases(self.data.Time, self._phases_idx)
+        plotter.plot_phases(self.data.Time, self._phases_idx,
+                            self.config["phases_colors"])
 
     def plot_segments_pie(self):
         "plot phases within a pie"
-        plotter.plot_segments_pie(self.phases, self.data)
+        plotter.plot_segments_pie(self.phases, self.data,
+                            self.config["phases_colors"])
 
     def plot_ports_seg(self):
         "plot port usage on each segment on a pie chart, see plotter.plot_ports_seg"
-        plotter.plot_ports_seg(self.ports)
+        plotter.plot_ports_seg(self.ports, self.config["ports_colors"])
 
     def plot_ports_sides(self):
         "plot port usage for each side of the plane, see plot_ports_sides"
-        plotter.plot_ports_sides(self.ports_full_flight)
+        plotter.plot_ports_sides(self.ports_full_flight, self.config["ports_colors"])
 
     def plot_ports(self):
         "plot port usage, see plot_ports"
-        plotter.plot_ports(self.ports_full_flight, self.data)
+        plotter.plot_ports(self.ports_full_flight, self.data, self.config["ports_colors"])
 
     ##########################
     # Export Reporting  #
@@ -99,7 +101,7 @@ class Iliad:
                 phases_data=(self.phases, self.ports, self.ports_full_flight),
                 out_dir=out_dir)
 
-    def export_heatmap(self, out_dir='Resultats/', feature='off_regulation_crossings', signal_category='regulation'):
+    def export_heatmap(self, out_dir='Resultats/', feature='percent_time_off_regulation', signal_category='regulation'):
         "Export heatmap computation as pdf"
         # Create out dir if it don't exist
         utils.check_dir(out_dir)
