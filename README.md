@@ -1,4 +1,52 @@
-# Documentation
+# Utilisation
+
+Les algorithmes de détection et les fonctions pour exporté les visualisations sont groupé au sein de la classe `Iliad`.
+
+Exemple d'utilisation
+
+```python
+from iliad import Iliad
+
+path = "../data/data.txt"
+
+anomaly_detector = Iliad(path, verbose=True) # ou verbose=False
+
+########
+# Plot #
+########
+
+# Plot signaux
+anomaly_detector.plot("WOW_FBK_AMSC1_CHA", "ADSP1 Altitude Rate (ft/min)") # La fonction accepte autant d'argument que de signaux à tracer
+
+# Plot phases de vol (courbes)
+anomaly_detector.plot_phases()
+
+# Plot pourcentage des phases de vol (camembert)
+anomaly_detector.plot_segments_pie()
+
+# Plot l'utilisation des ports sur le vol (camembert)
+anomaly_detector.plot_ports()
+
+# Plot l'utilisation des ports par coté (2 camemberts)
+anomaly_detector.plot_ports_sides()
+
+# Plot l'utilisation des ports par segment et coté (14 camemberts)
+anomaly_detector.plot_ports_seg()
+
+####################
+# Export résultats #
+####################
+
+# Export de la page HTML qui résume le vol
+anomaly_detector.export_reporting(out_dir="Resultas/")
+
+# Export des heatmaps
+anomaly_detector.export_heatmap(out_dir='Resultats/',
+                                feature='off_regulation_crossings',
+                                signal_category='regulation')
+```
+
+# Documentation code
 
 La documentation est directement généré à partir du code (docstring) et disponible à l'adresse : https://yuanxiangfranck.github.io/PIE_ISAE_Essais_Vol/
 

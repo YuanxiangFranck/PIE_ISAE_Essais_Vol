@@ -28,7 +28,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="dataProcessing package" href="dataProcessing.html" />
-    <link rel="prev" title="code" href="modules.html" />
+    <link rel="prev" title="Isae LIebherr Anomaly Detector" href="modules.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -127,7 +127,7 @@ keep:</p>
 <dl class="method">
 <dt id="algorithms.SignalData.SignalData.compute_flight_segmentation">
 <code class="descname">compute_flight_segmentation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.compute_flight_segmentation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.compute_flight_segmentation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute flight segmentation and set current data to</p>
+<dd><p>Compute flight segments and ports, and set attributes.</p>
 </dd></dl>
 
 <dl class="method">
@@ -151,7 +151,17 @@ binary_transitions, fft, dtc (discrete cosine transform)</p>
 <dl class="method">
 <dt id="algorithms.SignalData.SignalData.normalizeFeatures">
 <code class="descname">normalizeFeatures</code><span class="sig-paren">(</span><em>keep_dataFrame=False</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.normalizeFeatures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.normalizeFeatures" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Normalize the feature matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong></strong><strong>[</strong><strong>keep_dataFrame=False</strong><strong>]</strong><strong></strong> &#8211; bool
+return data as a pandas dataframe to keep index and columns</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <dl class="method">
 <dt id="algorithms.SignalData.SignalData.reset_data">
@@ -169,7 +179,7 @@ w : window size</p>
 
 <dl class="method">
 <dt id="algorithms.SignalData.SignalData.set_flight_segments">
-<code class="descname">set_flight_segments</code><span class="sig-paren">(</span><em>phases</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.set_flight_segments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.set_flight_segments" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_flight_segments</code><span class="sig-paren">(</span><em>phases</em>, <em>ports</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/SignalData.html#SignalData.set_flight_segments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.SignalData.SignalData.set_flight_segments" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set flight_segments attribute</p>
 </dd></dl>
 
@@ -189,6 +199,32 @@ pour certains algorithmes !</p>
 <span id="algorithms-symmetry-module"></span><h2>algorithms.Symmetry module<a class="headerlink" href="#module-algorithms.Symmetry" title="Permalink to this headline">¶</a></h2>
 <p>Created on Tue Dec 20 15:51:39 2016</p>
 <p>&#64;author: Matthieu</p>
+<dl class="function">
+<dt id="algorithms.Symmetry.Anomalies_in_Time">
+<code class="descclassname">algorithms.Symmetry.</code><code class="descname">Anomalies_in_Time</code><span class="sig-paren">(</span><em>result_sym</em>, <em>max_time_index</em>, <em>window_size=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#Anomalies_in_Time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.Anomalies_in_Time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Analyses the correlation of anomalies in time : gives number of anomalies 
+for some time windows.</p>
+<p>Inputs :</p>
+<ul class="simple">
+<li>result_sym : results of a symmetry test which is : an array containing the</li>
+</ul>
+<p>names of the signals with anomalies (by pair), and the associated time indexes
+of anomaly occurences</p>
+<ul class="simple">
+<li>max_time_index : an integer : the maximal time index of the flight</li>
+<li>window_size : size in percentage of the flight duration of the window on</li>
+</ul>
+<p>which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)
+If window_size = 0, then divides the flight with respect to the flight phases.
+By default : window_size = 0.1</p>
+<p>Output :</p>
+<ul class="simple">
+<li>result : a two lignes array : the first ligne is the time indexes of the</li>
+</ul>
+<p>begining of the windows, the second ligne is the number of anomalies detected 
+during the corresponding time window</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="algorithms.Symmetry.SymmetryTest">
 <code class="descclassname">algorithms.Symmetry.</code><code class="descname">SymmetryTest</code><span class="sig-paren">(</span><em>signal1</em>, <em>signal2</em>, <em>error</em>, <em>name_signal1=''</em>, <em>comment='ok'</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#SymmetryTest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.SymmetryTest" title="Permalink to this definition">¶</a></dt>
@@ -283,8 +319,52 @@ with i &lt;= 0</p>
 <div class="section" id="algorithms-flight-analysis-bin-heatmap-module">
 <h2>algorithms.flight_analysis_bin_heatmap module<a class="headerlink" href="#algorithms-flight-analysis-bin-heatmap-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="algorithms-flight-analysis-fun-module">
-<h2>algorithms.flight_analysis_fun module<a class="headerlink" href="#algorithms-flight-analysis-fun-module" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-algorithms.flight_analysis_fun">
+<span id="algorithms-flight-analysis-fun-module"></span><h2>algorithms.flight_analysis_fun module<a class="headerlink" href="#module-algorithms.flight_analysis_fun" title="Permalink to this headline">¶</a></h2>
+<p>Created on Thu Jan  5 19:08:35 2017</p>
+<p>&#64;author: Florent</p>
+<p>Flight analysis functions</p>
+<dl class="function">
+<dt id="algorithms.flight_analysis_fun.extract_sl_window">
+<code class="descclassname">algorithms.flight_analysis_fun.</code><code class="descname">extract_sl_window</code><span class="sig-paren">(</span><em>data</em>, <em>signals</em>, <em>sl_w</em>, <em>sl_s</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/flight_analysis_fun.html#extract_sl_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.flight_analysis_fun.extract_sl_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.flight_analysis_fun.extract_sl_window_delta">
+<code class="descclassname">algorithms.flight_analysis_fun.</code><code class="descname">extract_sl_window_delta</code><span class="sig-paren">(</span><em>data</em>, <em>signals1</em>, <em>signals2</em>, <em>sl_w</em>, <em>sl_s</em>, <em>delta_type</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/flight_analysis_fun.html#extract_sl_window_delta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.flight_analysis_fun.extract_sl_window_delta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.flight_analysis_fun.get_feature_matrix">
+<code class="descclassname">algorithms.flight_analysis_fun.</code><code class="descname">get_feature_matrix</code><span class="sig-paren">(</span><em>samples</em>, <em>features</em>, <em>normalized=True</em>, <em>n_fft=10</em>, <em>n_dtc=10</em>, <em>threshold=0.1</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/flight_analysis_fun.html#get_feature_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.flight_analysis_fun.get_feature_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.flight_analysis_fun.idx2date">
+<code class="descclassname">algorithms.flight_analysis_fun.</code><code class="descname">idx2date</code><span class="sig-paren">(</span><em>dates</em>, <em>idx</em>, <em>sl_w</em>, <em>sl_s</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/flight_analysis_fun.html#idx2date"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.flight_analysis_fun.idx2date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get real time segments corresponding to the index of a sample
+in a sliding window decomposition with parameters sl_w, sl_s</p>
+<p>Warning : this function takes into consideration the case when the time
+window overlaps on two occurrences of the same flight phase. However, it
+won&#8217;t work if an occurence of the flight phase is shorter than the time
+window sl_w itself !</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="algorithms.flight_analysis_fun.idx2phase">
+<code class="descclassname">algorithms.flight_analysis_fun.</code><code class="descname">idx2phase</code><span class="sig-paren">(</span><em>start</em>, <em>stop</em>, <em>flight_segments</em>, <em>idx</em>, <em>sl_w</em>, <em>sl_s</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/flight_analysis_fun.html#idx2phase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.flight_analysis_fun.idx2phase" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.flight_analysis_fun.idx2port">
+<code class="descclassname">algorithms.flight_analysis_fun.</code><code class="descname">idx2port</code><span class="sig-paren">(</span><em>start</em>, <em>stop</em>, <em>ports</em>, <em>idx</em>, <em>sl_w</em>, <em>sl_s</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/flight_analysis_fun.html#idx2port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.flight_analysis_fun.idx2port" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="algorithms.flight_analysis_fun.load_flight">
+<code class="descclassname">algorithms.flight_analysis_fun.</code><code class="descname">load_flight</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/flight_analysis_fun.html#load_flight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.flight_analysis_fun.load_flight" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </div>
 <div class="section" id="algorithms-flight-analysis-regul-heatmap-module">
 <h2>algorithms.flight_analysis_regul_heatmap module<a class="headerlink" href="#algorithms-flight-analysis-regul-heatmap-module" title="Permalink to this headline">¶</a></h2>
@@ -300,6 +380,27 @@ with i &lt;= 0</p>
 <p>Created on Thu Jan  5 19:11:55 2017</p>
 <p>&#64;author: Florent</p>
 <p>Flight Names</p>
+</div>
+<div class="section" id="module-algorithms.heatmap_visualization">
+<span id="algorithms-heatmap-visualization-module"></span><h2>algorithms.heatmap_visualization module<a class="headerlink" href="#module-algorithms.heatmap_visualization" title="Permalink to this headline">¶</a></h2>
+<p>Created on Fri Feb 24 14:01:52 2017</p>
+<p>&#64;author: Florent Forest</p>
+<p>ILIAD</p>
+<p>Heatmap visualization of features on time segments</p>
+<dl class="docutils">
+<dt>TO DO:</dt>
+<dd><ul class="first last simple">
+<li>tests</li>
+<li>docstring</li>
+</ul>
+</dd>
+</dl>
+<dl class="function">
+<dt id="algorithms.heatmap_visualization.heatmap">
+<code class="descclassname">algorithms.heatmap_visualization.</code><code class="descname">heatmap</code><span class="sig-paren">(</span><em>flight_data=None</em>, <em>feature=None</em>, <em>signal_category=None</em>, <em>signal_list=None</em>, <em>time_window='auto'</em>, <em>n_segments='auto'</em>, <em>hclust=False</em>, <em>save=True</em>, <em>flight_name='undefined'</em>, <em>out_dir='.'</em>, <em>out_filename='auto'</em>, <em>show_plot=True</em>, <em>out_format='pdf'</em>, <em>annot=False</em>, <em>robust=True</em>, <em>conf=None</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/heatmap_visualization.html#heatmap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.heatmap_visualization.heatmap" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO: docstring</p>
+</dd></dl>
+
 </div>
 <div class="section" id="algorithms-n-flights-cluster-module">
 <h2>algorithms.n_flights_cluster module<a class="headerlink" href="#algorithms-n-flights-cluster-module" title="Permalink to this headline">¶</a></h2>
@@ -332,6 +433,9 @@ with i &lt;= 0</p>
 <dd><p>plot computed data</p>
 </dd></dl>
 
+</div>
+<div class="section" id="algorithms-ocsvm-anomaly-detection-module">
+<h2>algorithms.ocsvm_anomaly_detection module<a class="headerlink" href="#algorithms-ocsvm-anomaly-detection-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-algorithms.signal_data_features">
 <span id="algorithms-signal-data-features-module"></span><h2>algorithms.signal_data_features module<a class="headerlink" href="#module-algorithms.signal_data_features" title="Permalink to this headline">¶</a></h2>
@@ -399,6 +503,14 @@ abs(x) est supérieur à un certain seuil val</p>
 <dd></dd></dl>
 
 <dl class="function">
+<dt id="algorithms.signal_data_features.get_threshold_crossings">
+<code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_threshold_crossings</code><span class="sig-paren">(</span><em>x</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/signal_data_features.html#get_threshold_crossings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.signal_data_features.get_threshold_crossings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renvoie le nombre de fois qua abs(x) passe au-dessus
+d&#8217;un seuil (sert à détecter des oscillations)
+* val doit avoir la même dimension que le nb de colonnes de x</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="algorithms.signal_data_features.get_time_over_threshold">
 <code class="descclassname">algorithms.signal_data_features.</code><code class="descname">get_time_over_threshold</code><span class="sig-paren">(</span><em>x</em>, <em>val</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/signal_data_features.html#get_time_over_threshold"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.signal_data_features.get_time_over_threshold" title="Permalink to this definition">¶</a></dt>
 <dd><p>Renvoie le nombre de pas de temps durant lesquels
@@ -438,15 +550,17 @@ abs(x) est supérieur à un certain seuil val</p>
 <li><a class="reference internal" href="#module-algorithms.SignalData">algorithms.SignalData module</a></li>
 <li><a class="reference internal" href="#module-algorithms.Symmetry">algorithms.Symmetry module</a></li>
 <li><a class="reference internal" href="#algorithms-flight-analysis-bin-heatmap-module">algorithms.flight_analysis_bin_heatmap module</a></li>
-<li><a class="reference internal" href="#algorithms-flight-analysis-fun-module">algorithms.flight_analysis_fun module</a></li>
+<li><a class="reference internal" href="#module-algorithms.flight_analysis_fun">algorithms.flight_analysis_fun module</a></li>
 <li><a class="reference internal" href="#algorithms-flight-analysis-regul-heatmap-module">algorithms.flight_analysis_regul_heatmap module</a></li>
 <li><a class="reference internal" href="#algorithms-flight-analysis-regul-ocsvm-module">algorithms.flight_analysis_regul_ocsvm module</a></li>
 <li><a class="reference internal" href="#algorithms-flight-analysis-template-module">algorithms.flight_analysis_template module</a></li>
 <li><a class="reference internal" href="#module-algorithms.flight_names">algorithms.flight_names module</a></li>
+<li><a class="reference internal" href="#module-algorithms.heatmap_visualization">algorithms.heatmap_visualization module</a></li>
 <li><a class="reference internal" href="#algorithms-n-flights-cluster-module">algorithms.n_flights_cluster module</a></li>
 <li><a class="reference internal" href="#algorithms-n-flights-pca-module">algorithms.n_flights_pca module</a></li>
 <li><a class="reference internal" href="#algorithms-n-flights-pca-fft-module">algorithms.n_flights_pca_fft module</a></li>
 <li><a class="reference internal" href="#module-algorithms.n_flights_segements">algorithms.n_flights_segements module</a></li>
+<li><a class="reference internal" href="#algorithms-ocsvm-anomaly-detection-module">algorithms.ocsvm_anomaly_detection module</a></li>
 <li><a class="reference internal" href="#module-algorithms.signal_data_features">algorithms.signal_data_features module</a></li>
 <li><a class="reference internal" href="#module-algorithms.signal_names">algorithms.signal_names module</a></li>
 <li><a class="reference internal" href="#module-algorithms">Module contents</a></li>
@@ -457,8 +571,8 @@ abs(x) est supérieur à un certain seuil val</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="modules.html">code</a><ul>
-      <li>Previous: <a href="modules.html" title="previous chapter">code</a></li>
+  <li><a href="modules.html">Isae LIebherr Anomaly Detector</a><ul>
+      <li>Previous: <a href="modules.html" title="previous chapter">Isae LIebherr Anomaly Detector</a></li>
       <li>Next: <a href="dataProcessing.html" title="next chapter">dataProcessing package</a></li>
   </ul></li>
   </ul></li>

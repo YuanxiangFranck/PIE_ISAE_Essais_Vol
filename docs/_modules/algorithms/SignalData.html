@@ -88,6 +88,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">X</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="n">sl_window</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="SignalData.load"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signals</span><span class="p">):</span>
         <span class="s2">&quot;Reload a signal see init&quot;</span>
@@ -132,15 +133,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">sl_window</span> <span class="o">=</span> <span class="n">w</span></div>
 
 <div class="viewcode-block" id="SignalData.compute_flight_segmentation"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.compute_flight_segmentation">[docs]</a>    <span class="k">def</span> <span class="nf">compute_flight_segmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s2">&quot;Compute flight segmentation and set current data to &quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="n">flight_segmenter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="c1"># filtering is adding new columns</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+        <span class="s2">&quot;Compute flight segments and ports, and set attributes.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="n">flight_segmenter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="SignalData.set_flight_segments"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.set_flight_segments">[docs]</a>    <span class="k">def</span> <span class="nf">set_flight_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalData.set_flight_segments"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.set_flight_segments">[docs]</a>    <span class="k">def</span> <span class="nf">set_flight_segments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phases</span><span class="p">,</span> <span class="n">ports</span><span class="p">):</span>
         <span class="s2">&quot;Set flight_segments attribute&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="n">phases</span></div>
-        
+        <span class="bp">self</span><span class="o">.</span><span class="n">flight_segments</span> <span class="o">=</span> <span class="n">phases</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ports</span> <span class="o">=</span> <span class="n">ports</span></div>
+
 <div class="viewcode-block" id="SignalData.apply_flight_segmentation"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.apply_flight_segmentation">[docs]</a>    <span class="k">def</span> <span class="nf">apply_flight_segmentation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">segment</span><span class="p">):</span>
         <span class="s2">&quot;Restrict data to a segment of the flight segment&quot;</span>
         <span class="c1"># Compute flight segmentation if it&#39;s not done</span>
@@ -192,6 +192,8 @@
                 <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_time_over_threshold</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;percent_time_over_threshold&#39;</span><span class="p">:</span>
                 <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_percent_time_over_threshold</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">f</span> <span class="o">==</span> <span class="s1">&#39;threshold_crossings&#39;</span><span class="p">:</span>
+                <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">signal_data_features</span><span class="o">.</span><span class="n">get_threshold_crossings</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">fun</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">signal_data_features</span><span class="p">,</span> <span class="s2">&quot;get_&quot;</span><span class="o">+</span><span class="n">f</span><span class="p">)</span>
             <span class="n">agg</span><span class="p">[</span><span class="n">f</span><span class="p">]</span> <span class="o">=</span> <span class="n">fun</span>
@@ -226,7 +228,12 @@
 
 
 <div class="viewcode-block" id="SignalData.normalizeFeatures"><a class="viewcode-back" href="../algorithms.html#algorithms.SignalData.SignalData.normalizeFeatures">[docs]</a>    <span class="k">def</span> <span class="nf">normalizeFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keep_dataFrame</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-        
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Normalize the feature matrix</span>
+
+<span class="sd">        :param [keep_dataFrame=False]: bool</span>
+<span class="sd">            return data as a pandas dataframe to keep index and columns</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="s1">&#39;l1&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">keep_dataFrame</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">X</span><span class="o">.</span><span class="n">index</span>
