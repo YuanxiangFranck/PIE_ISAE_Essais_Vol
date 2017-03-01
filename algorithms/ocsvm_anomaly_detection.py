@@ -9,8 +9,8 @@ ILIAD
 OCSVM anomaly detection on time segments
 
 TO DO:
-    * everything
-    * tests
+    * add ports on anomaly report
+    * add anomaly score
     * docstring
 """
 
@@ -25,12 +25,14 @@ from matplotlib.colors import ListedColormap
 from matplotlib import gridspec
 from matplotlib.lines import Line2D
 import seaborn as sns
+from sklearn.preprocessing import scale
+from sklearn.svm import OneClassSVM
 # Flight analysis functions import
-from flight_analysis_fun import (extract_sl_window, extract_sl_window_delta, 
-get_feature_matrix, idx2date, idx2phase, idx2port)
+from flight_analysis_fun import (extract_sl_window, get_feature_matrix,
+                                 idx2date, idx2phase, idx2port)
 from SignalData import SignalData
 
-def ocsvm_detection(data=None, features=None, signal_categories=None,
+def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
                     signal_list=None, gamma=0.1, nu=0.3, time_window='auto',
                     n_segments='auto', hclust=False, save=True, report=True,
                     flight_name='undefined', out_dir='.', out_filename='auto',
@@ -39,10 +41,10 @@ def ocsvm_detection(data=None, features=None, signal_categories=None,
     TODO: docstring
     """
     # Handle arguments
-    if not isinstance(data, pd.core.frame.DataFrame):
+    if not isinstance(flight_data, SignalData):
         logging.warning( 
-        """The data argument must be a pandas DataFrame 
-        containing the flight data.""")
+        """The data argument must be a SignalData object containing the flight
+        data.""")
         return 
     if not features:
         logging.warning( 
@@ -75,9 +77,6 @@ def ocsvm_detection(data=None, features=None, signal_categories=None,
     
     # Initialize variables
     anomalies = {}
-    
-    # Load data into SignalData object
-    flight_data = SignalData(data)
     
     # Compute flight phases and ports
     flight_data.compute_flight_segmentation()
@@ -112,7 +111,7 @@ def ocsvm_detection(data=None, features=None, signal_categories=None,
     selected_signals_copy = selected_signals.copy()
     cc = 0
     for s in selected_signals_copy:
-        if not s in data.columns.values:
+        if not s in flight_data.data.columns.values:
             cc += 1
             selected_signals.remove(s)
     if cc > 0:
@@ -128,12 +127,10 @@ def ocsvm_detection(data=None, features=None, signal_categories=None,
                                         normalized=False)
     
     # Scale features
-    from sklearn.preprocessing import scale
     feature_matrix = scale(feature_matrix)
     
     # Apply OCSVM
-    from sklearn import svm
-    ocsvm = svm.OneClassSVM(nu=nu, kernel="rbf", gamma=gamma)
+    ocsvm = OneClassSVM(nu=nu, kernel="rbf", gamma=gamma)
     
     # ...on all signals
     ocsvm.fit(feature_matrix)
@@ -209,14 +206,12 @@ def ocsvm_detection(data=None, features=None, signal_categories=None,
                         sl_s) for idx in range(n_samples)]
     
     # Prepare display of flight phases
-    # TODO: use conf
-    phase_color_dic = {'climb': 'r', 'cruise': 'b', 'landing': 'm', \
-                        'descent': 'g', 'hold': 'c', 'otg': 'y', \
-                        'take_off': 'k', 'missing': 'white'}
+    phase_color_dic = conf['phases_colors']
     
     phases = []
     for i in range(n_samples):
-        p = idx2phase(data.Time.iloc[0], data.Time.iloc[-1], 
+        p = idx2phase(flight_data.data.Time.iloc[0],
+                      flight_data.data.Time.iloc[-1],
                       flight_data.flight_segments, i, sl_w, sl_s)
         if p:
             phases.append(p[0])
@@ -227,15 +222,14 @@ def ocsvm_detection(data=None, features=None, signal_categories=None,
                                  for i in range(n_samples)])
 
     # Prepare display of ports
-    # TODO: use conf
-    port_color_dic = {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange', \
-                 'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}
+    port_color_dic = conf['ports_colors']
     
     # Side 1
     ports1 = []
     for i in range(n_samples):
-        p = idx2port(data.Time.iloc[0], data.Time.iloc[-1],
-                      flight_data.ports, i, sl_w, sl_s)
+        p = idx2port(flight_data.data.Time.iloc[0],
+                     flight_data.data.Time.iloc[-1],
+                     flight_data.ports, i, sl_w, sl_s)
         if p:
             ports1.append(p[0][0])
         else:
@@ -246,8 +240,9 @@ def ocsvm_detection(data=None, features=None, signal_categories=None,
     # Side 2
     ports2 = []
     for i in range(n_samples):
-        p = idx2port(data.Time.iloc[0], data.Time.iloc[-1],
-                      flight_data.ports, i, sl_w, sl_s)
+        p = idx2port(flight_data.data.Time.iloc[0],
+                     flight_data.data.Time.iloc[-1],
+                     flight_data.ports, i, sl_w, sl_s)
         if p:
             ports2.append(p[1][0])
         else:

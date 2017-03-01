@@ -9,7 +9,6 @@ ILIAD
 Heatmap visualization of features on time segments
 
 TO DO:
-    * tests
     * docstring
 """
 
@@ -25,9 +24,10 @@ from matplotlib import gridspec
 from matplotlib.lines import Line2D
 import seaborn as sns
 # Flight analysis functions import
-from algorithms.flight_analysis_fun import (extract_sl_window, extract_sl_window_delta,
-get_feature_matrix, idx2date, idx2phase, idx2port)
-from algorithms.SignalData import SignalData
+from flight_analysis_fun import (extract_sl_window, extract_sl_window_delta,
+                                 get_feature_matrix, idx2date, idx2phase,
+                                 idx2port)
+from SignalData import SignalData
 
 def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=None,
             time_window='auto', n_segments='auto', hclust=False, save=True,
@@ -251,14 +251,12 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
                         sl_s) for idx in range(n_samples)]
 
     # Prepare display of flight phases
-    # TODO: use conf
-    phase_color_dic = {'climb': 'r', 'cruise': 'b', 'landing': 'm', \
-                        'descent': 'g', 'hold': 'c', 'otg': 'y', \
-                        'take_off': 'k', 'missing': 'white'}
+    phase_color_dic = conf['phases_colors']
 
     phases = []
     for i in range(n_samples):
-        p = idx2phase(flight_data.data.Time.iloc[0], flight_data.data.Time.iloc[-1],
+        p = idx2phase(flight_data.data.Time.iloc[0],
+                      flight_data.data.Time.iloc[-1],
                       flight_data.flight_segments, i, sl_w, sl_s)
         if p:
             phases.append(p[0])
@@ -269,15 +267,14 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
                                  for i in range(n_samples)])
 
     # Prepare display of ports
-    # TODO: use conf
-    port_color_dic = {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange', \
-                 'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}
+    port_color_dic = conf['ports_colors']
 
     # Side 1
     ports1 = []
     for i in range(n_samples):
-        p = idx2port(flight_data.data.Time.iloc[0], flight_data.data.Time.iloc[-1],
-                      flight_data.ports, i, sl_w, sl_s)
+        p = idx2port(flight_data.data.Time.iloc[0],
+                     flight_data.data.Time.iloc[-1],
+                     flight_data.ports, i, sl_w, sl_s)
         if p:
             ports1.append(p[0][0])
         else:
