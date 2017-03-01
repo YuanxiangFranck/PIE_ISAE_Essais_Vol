@@ -87,64 +87,13 @@ def is_bool(signal_name) :
     - Result : a boolean, is True if the input signal is known as a boolean, 
     and returns False if the name is contained in the list of regulated signals (non boolean)
     """
+    # import list of the names of binary signals (booleans)
+    from signal_names import signal_names_bin
     
-    result = True
+    result = False
     
-    # list of the names of regulated signals (continuous)
-    reg_signal_names = \
-    ['CPCS_CABIN_PRESS_AMSC1_CHA',
-    'CPCS_CABIN_PRESS_AMSC1_CHB',
-    'CPCS_CABIN_PRESS_AMSC2_CHA',
-    'CPCS_CABIN_PRESS_AMSC2_CHB',
-    'ACS_PACK_INLET_MASS_FLOW_CALC_AMSC1_CHA',
-    'ACS_PACK_INLET_MASS_FLOW_CALC_AMSC1_CHB',
-    'ACS_PACK_INLET_MASS_FLOW_CALC_AMSC2_CHA',
-    'ACS_PACK_INLET_MASS_FLOW_CALC_AMSC2_CHB',
-    'ACS_MIX_TEMP_AMSC1_CHA',
-    'ACS_MIX_TEMP_AMSC1_CHB',
-    'ACS_MIX_TEMP_AMSC2_CHA',
-    'ACS_MIX_TEMP_AMSC2_CHB',
-    'ACS_ZONE1_DUCT_TEMP_AMSC1_CHA',
-    'ACS_ZONE1_DUCT_TEMP_AMSC1_CHB',
-    'ACS_ZONE1_DUCT_TEMP_AMSC2_CHA',
-    'ACS_ZONE1_DUCT_TEMP_AMSC2_CHB',
-    'ACS_ZONE2_DUCT_TEMP_AMSC1_CHA',
-    'ACS_ZONE2_DUCT_TEMP_AMSC1_CHB',
-    'ACS_ZONE2_DUCT_TEMP_AMSC2_CHA',
-    'ACS_ZONE2_DUCT_TEMP_AMSC2_CHB',
-    'ACS_ZONE1_TEMP_AMSC1_CHA',
-    'ACS_ZONE1_TEMP_AMSC1_CHB',
-    'ACS_ZONE1_TEMP_AMSC2_CHA',
-    'ACS_ZONE1_TEMP_AMSC2_CHB',
-    'ACS_ZONE2_TEMP_AMSC2_CHA',
-    'ACS_ZONE2_TEMP_AMSC2_CHB',
-    'BLEED_OUT_PRESS_AMSC1_CHA',
-    'BLEED_OUT_PRESS_AMSC1_CHB',
-    'BLEED_OUT_PRESS_AMSC2_CHA',
-    'BLEED_OUT_PRESS_AMSC2_CHB',
-    'BLEED_OUT_TEMP_AMSC1_CHA',
-    'BLEED_OUT_TEMP_AMSC1_CHB',
-    'BLEED_OUT_TEMP_AMSC2_CHA',
-    'BLEED_OUT_TEMP_AMSC2_CHB',
-    'APS_OUT_PRESS_AMSC1_CHA',
-    'APS_OUT_PRESS_AMSC1_CHB',
-    'APS_OUT_PRESS_AMSC2_CHA',
-    'APS_OUT_PRESS_AMSC2_CHB',
-    'APS_OUT_TEMP_AMSC1_CHA',
-    'APS_OUT_TEMP_AMSC1_CHB',
-    'APS_OUT_TEMP_AMSC2_CHA',
-    'APS_OUT_TEMP_AMSC2_CHB',
-    'WAI_CONTROLLING_PRESS_AMSC1_CHA',
-    'WAI_CONTROLLING_PRESS_AMSC1_CHB',
-    'WAI_CONTROLLING_PRESS_AMSC2_CHA',
-    'WAI_CONTROLLING_PRESS_AMSC2_CHB',
-    'WAI_OPP_CONTROLLING_PRESS_AMSC1_CHA',
-    'WAI_OPP_CONTROLLING_PRESS_AMSC1_CHB',
-    'WAI_OPP_CONTROLLING_PRESS_AMSC2_CHA',
-    'WAI_OPP_CONTROLLING_PRESS_AMSC2_CHB']
-    
-    if signal_name in reg_signal_names :
-        result = False
+    if signal_name in signal_names_bin :
+        result = True
     
     return result
     
@@ -285,7 +234,7 @@ def Symmetry_Lateral_One_Flight(flight, error):
 def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1) :
         
     """
-    Analyses the correlation of anomalies in time : gives number of anomalies 
+    Analyzes the correlation of anomalies in time : gives number of anomalies 
     for some time windows.       
     
     Inputs : 
@@ -349,15 +298,137 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1) :
 
     return result
    
-#%%
+   
+   
+       #%%
     
+def Analyze_results(result_sym, str_type) :
+        
+    """
+    Analyzes the results given by the symmetry test (disps number of anomalies,
+    if they are bool)      
+    
+    Inputs : 
+
+    - result_sym : results of a symmetry test which is : an array containing the 
+    names of the signals with anomalies (by pair), and the associated time indexes
+    of anomaly occurences
+    
+    Outputs : 
+    
+    - anomalies_couples_names_sorted : list of the names of anomalies (by couple) sorted 
+    by their weight (number of time indexes where there is an anomaly)
+    
+    - long_sorted : number of time indexes where there is an anomaly, corresponding
+    to the anomalies_couple_names_sorted
+    
+    
+    """  
+    anomalies_couples_names = [result_sym[j] for j in range(len(result_sym)) if j%2 == 0]
+    
+    
+    # On peut voir si les anomalies sont des booleans ou des signaux regulés
+    name_anomaly = [anomalies_couples_names[j][0] for j in range(len(anomalies_couples_names))]
+    is_bool_anomaly = [is_bool(j) for j in name_anomaly]
+    
+    
+    if str_type == 'channel' :
+        
+        print("Il y a " + str(len(anomalies_couples_names)) +" anomalies detectees entre channels" )
+    
+        if False in is_bool_anomaly:
+            if True in is_bool_anomaly:
+                print("Pour channels A/B : Les anomalies sont réparties entre booléans et signaux régulés")
+            else :
+                print("Pour channels A/B : Il n'y a que des anomalies sur des non booleans (signaux regulés)")
+        else :
+            print("Pour channels A/B : Il n'y a que des anomalies sur des booléans")
+    else:
+        
+        print("Il y a " + str(len(anomalies_couples_names)) +" anomalies detectees sur la symetrie laterale" )
+        
+        if False in is_bool_anomaly:
+            if True in is_bool_anomaly:
+                print("Pour symetrie laterale : Les anomalies sont réparties entre booléans et signaux régulés")
+            else :
+                print("Pour symetrie laterale : Il n'y a que des anomalies sur des non booleans (signaux regulés)")
+        else :
+            print("Pour symetrie laterale : Il n'y a que des anomalies sur des booléans")
+            
+            
+    #Statistiques anomalies
+    ind = [result_sym[j] for j in range(len(result_sym)) if j%2 == 1]
+    long = [len(ind[i]) for i in range(len(ind))]
+    long_np = np.array(long);
+    
+    
+    # Ordonner les anomalies dans l'ordre decroissant
+    sorted_ind = np.argsort(-long_np)
+    
+    long_sorted = long_np[sorted_ind]
+    
+    anomalies_couples_names_sorted = [anomalies_couples_names[i] for i in sorted_ind]   
+        
+    return anomalies_couples_names_sorted, long_sorted
+   
+#%%
+def write_in_file(path, name_flight, list_anomaly, duration_anomaly, is_channel) :
+        
+    """
+    Writes the anomaly names into a txt file      
+    
+    Inputs : 
+
+    - path : string, the path of the file 
+    
+    - name_flight : string, name of the flight
+    
+    - list_anomaly : list of the names of anomalies
+    
+    - duration_anomaly : list of the duration of detected anomaly
+    
+    - is_channel : bool to know whether the anomalies are from channel or lateral
+    
+    """  
+    
+    longs = [len(list_anomaly[i][0]) for i in range(len(list_anomaly)) ];
+    taille_max = max(longs)+2
+    
+    fichier = open(path, "a")
+    
+    if is_channel == 1 :
+       
+       fichier.write("\n Résultats de symmétrie du vol : " + name_flight+ "\n\n") 
+       fichier.write("\n (le lateral est plus bas) \n\n ")
+       fichier.write("\n Résultats asymetrie CHANNEL : "+str(len(list_anomaly))+" paires de signaux anormaux.\n ")
+       
+       fichier.write("\n Format : [ Anomalie 1/2 ; Anomalie 2/2] : temps de vol anormal (en pourcentage du temps de vol total) \n \n")
+       for i in range(len(list_anomaly)):
+           fichier.write("\n [\t" + list_anomaly[i][0].ljust(taille_max) + " ; \t" + list_anomaly[i][1].ljust(taille_max) + "\t]  :  "+ str(100*duration_anomaly[i]) )
+
+        
+    else:
+        fichier.write("\n ----------------------------------------------------------------------------------------------------------------------------------------------------------\n \n")
+        fichier.write("\n Résultats asymetrie LATERAL : "+str(len(list_anomaly))+" paires de signaux anormaux.\n ")
+       
+        fichier.write("\n Format : [ Anomalie 1/2 ; Anomalie 2/2] : temps de vol anormal (en pourcentage du temps de vol total) \n \n")
+        for i in range(len(list_anomaly)):
+            fichier.write("\n [\t" + list_anomaly[i][0].ljust(taille_max) + " ; \t " + list_anomaly[i][1].ljust(taille_max) + "\t] : "+ str(100*duration_anomaly[i]) )
+
+     
+    fichier.close()
+        
+    return 
+   
+#%%
     
 if __name__ == "__main__":
     import sys,os
     sys.path.append(os.path.abspath('..'))
     from dataProcessing.parser import txt_parser
     path = '../pie_data/'
-    flight = txt_parser(path+"data1.txt")
+    #raw_flight = txt_parser(path+"data1.txt")
+    raw_flight = txt_parser(path+"E190-E2_20001_0090_29867_54229_request.txt")
         
     error = 0.01 # marge d'erreur relative acceptee (0.01 correspond à 1% de marge)
     
@@ -365,7 +436,7 @@ if __name__ == "__main__":
     ### How to use this result ? -> example
     #..............................................
     ## With Channels     
-    result_channel = Symmetry_Channels_One_Flight(flight,error)
+    result_channel = Symmetry_Channels_One_Flight(raw_flight,error)
 
     
     #names of the couples supposed equal by symmetry but actuelly different
@@ -373,13 +444,13 @@ if __name__ == "__main__":
     print("Il y a " + str(len(anomalies_couples_names)) +" anomalies detectees entre channels" )
     
     #Affichage de l'avant derniere anomalie 
-    s1 = flight[anomalies_couples_names[-2][0]]
-    s2 = flight[anomalies_couples_names[-2][1]]
+    s1 = raw_flight[anomalies_couples_names[-2][0]]
+    s2 = raw_flight[anomalies_couples_names[-2][1]]
     s1.plot()
     s2.plot()
     
     #On peut voir si les anomalies sont des booleans ou des signaux regulés
-    name_anomaly = [anomalies_couples_names[j] for j in range(len(anomalies_couples_names)) if j%2 == 0 ]
+    name_anomaly = [anomalies_couples_names[j][0] for j in range(len(anomalies_couples_names))]
     is_bool_anomaly = [is_bool(j) for j in name_anomaly]
     if False in is_bool_anomaly:
         if True in is_bool_anomaly:
@@ -389,17 +460,17 @@ if __name__ == "__main__":
     else :
         print("Pour channels A/B : Il n'y a que des anomalies sur des booléans")
         
-     #..............................................
-     ## With lateral Symmetry 
+    #..............................................
+    ## With lateral Symmetry 
     
-    result_lat = Symmetry_Lateral_One_Flight(flight,error)
+    result_lat = Symmetry_Lateral_One_Flight(raw_flight,error)
     #names of the couples supposed equal by symmetry but actuelly different
     anomalies_lat_couples_names = [result_lat[j] for j in range(len(result_lat)) if j%2 == 0]
     print("Il y a " + str(len(anomalies_lat_couples_names)) +" anomalies detectees sur la symetrie laterale" )
     
     #Affichage de l'avant derniere anomalie 
-    s1 = flight[anomalies_lat_couples_names[-2][0]]
-    s2 = flight[anomalies_lat_couples_names[-2][1]]
+    s1 = raw_flight[anomalies_lat_couples_names[-2][0]]
+    s2 = raw_flight[anomalies_lat_couples_names[-2][1]]
     s1.plot()
     s2.plot()
     
@@ -423,3 +494,20 @@ if __name__ == "__main__":
     nb_anomaly_time_lat = Anomalies_in_Time(result_lat, len(s1), 0.1)
     plt.figure(1)
     plt.plot(nb_anomaly_time_lat[0],nb_anomaly_time_lat[1],'ro')
+    
+    
+    #Statistiques anomalies
+    ind_lat = [result_lat[j] for j in range(len(result_lat)) if j%2 == 1]
+    long = [len(ind_lat[i]) for i in range(len(ind_lat))]
+    longr = [i/len(s1) for i in long] # r pour relatif (en pourcentage de temps de vol)
+    np.std(longr)  # STD des temps d'anomalies en pourcentage de temps de vol
+    np.mean(longr) # Moyenne des temps d'anomalies en pourcentage de temps de vol
+    longr_95 = [i for i in longr if i > 0.95]
+    len(longr_95) # Nombre de signaux anormaux pendant au moins 95% du vol
+    
+    if 0 :
+        from dataProcessing.plotter import Plotter
+        p = Plotter()
+        flight2 = txt_parser(path+"E190-E2_20001_0090_29867_54229_request.txt")
+        p.set_data(flight2)
+        p.plot(['ACS_PBIT_ENABLED_AMSC1_CHA', 'ACS_PBIT_ENABLED_AMSC2_CHA'])
