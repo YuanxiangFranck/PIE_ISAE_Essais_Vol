@@ -106,7 +106,6 @@ from algorithms.Symmetry import *
 
 error = 0.01 # marge d'erreur relative acceptee (0.01 correspond à 1% de marge)
 
-
 ## With Channels     
 result_channel = Symmetry_Channels_One_Flight(flight_data.data,error)
 
@@ -146,3 +145,6 @@ s4.plot()
 file_path = "../analyse/1_vol_Matthieu/resultats_symetrie/Resultat1.txt"
 write_in_file(file_path, flight_name, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, anomalies_channel_reg_coef,error, 1)    
 write_in_file(file_path, flight_name, anomalies_lat_couples_names, anomalies_relative_length_lat_couples, anomalies_lat_reg_coef,error, 0) 
+
+file_path_csv_channel = "../analyse/1_vol_Matthieu/resultats_symetrie/Channel"+flight_name+"error"+str(error)
+write_in_csv(file_path_csv_channel, flight_name, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, anomalies_channel_reg_coef)    
