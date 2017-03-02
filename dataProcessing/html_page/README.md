@@ -45,7 +45,29 @@ la stucture de la page et ajouter un peu de style à la page.
 
 ## JavaScript
 
+Le code pour gérér la page est à ajouter dans [dataProcessing/html_pages/index.js](https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/blob/master/dataProcessing/html_pages/index.js).
 ### Libraires utilisées:
 
 Utilisation de npm pour gérer la partie JavaScript
 Pour la liste des dépendance: [dataProcessing/html_pages/package.json](https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/blob/master/dataProcessing/html_pages/package.json)
+
+### Npm 
+
+Npm + browserify permet de grouper tous le code javascript écrit et les libraires pour l'exporter dans un fichier.
+Dans notre cas: 
+```     
+index.js
+   V
+[npm + browserify] ajout des autres libraires js
+   V
+[babel] ajout support des vieux navigateurs
+   V
+[UglifyJS] minification du code
+   V
+template.js (le code final à ajouter au html)
+```
+
+Pour compiler template.js, il suffit de lancer: `npm run build`
+
+Pour tester le JavaScript, `npm run watch` permet de recompiler le JS a chaque modification du fichier
+
