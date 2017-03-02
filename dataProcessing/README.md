@@ -1,0 +1,33 @@
+# html_pages
+
+Fichier html, css et JavaScript pour générer la page html qui résume un vol.
+
+# config.json
+
+Fichier de conifguration par défaut de la classe Iliad
+
+# parser.py
+
+Contient la fonction pour parser les fichiers de données
+
+# plotter.py
+
+Contient les fonctions pour plotter les données
+
+# segmenter.py
+
+Continent la fonctions pour calculer la ségmentation d'un vol
+
+# segmenter_utils.py
+
+Contient des fonctions pour aider le calcul de la segmentation de vol
+
+# summary.py
+
+Contient la fonction qui permet d'expoter la page html des données
+cf : html_pages
+
+# utils.py
+
+fonctions utilitaires 
+* verifier l'existance d'un path + création du path si besoin
