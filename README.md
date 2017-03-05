@@ -86,6 +86,12 @@ Pour installer les paquets définis dans le fichier `requierement.txt`: `pip ins
 Pensez à ajouter le paquet installé dans le fichier `requierement.txt`.
 Pour retrouver la version du paquet (et la syntaxe du requierement.txt): `pip freeze`
 
+En cas de problème avec Matplotlib du type:
+```
+ImportError: No module named '_tkinter', please install the python3-tk package
+```
+
+Il suffit d'installer avec apt:  `sudo apt install python3-tk`
 #### Virtual env
 
 Installer virtualenv: `pip install --user virtualenv`
