@@ -403,4 +403,4 @@ if __name__ == '__main__':
     ocsvm_detection(flight_data=data, features=['mean', 'std', 'amplitude'],
             signal_categories=['regulation','endogene'], n_segments=100,
             flight_name=flight_name, hclust=True, save=True, report=True,
-            out_dir='../../Resultats/test/', show_plot=False, conf=conf)
+            out_dir='./', show_plot=False, conf=conf)

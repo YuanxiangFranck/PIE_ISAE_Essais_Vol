@@ -126,7 +126,48 @@ class Iliad:
                 time_window=time_window, out_filename=out_filename,
                 out_format=out_format, annot=annot, robust=robust)
 
+    def export_ocsvm(self,
+                     features=['mean', 'std', 'amplitude'],
+                     signal_categories=['regulation','endogene'],
+                     signal_list=None,
+                     gamma=0.1,
+                     nu=0.3,
+                     time_window='auto',
+                     n_segments=100,
+                     hclust=False,
+                     save=True,
+                     report=True,
+                     out_dir='.',
+                     out_filename='auto',
+                     show_plot=True,
+                     out_format='pdf'):
+        "TODO DOCSTRING"
+        ocsvm_detection(flight_data=self.signal_data, features=features,
+                        signal_categories=signal_categories,
+                        signal_list=signal_list, gamma=gamma, nu=nu,
+                        time_window=time_window, n_segments=n_segments,
+                        hclust=hclust, save=save, report=report,
+                        flight_name=self.name, out_dir=out_dir,
+                        out_filename=out_filename, show_plot=show_plot,
+                        out_format=out_format, conf=self.config)
 
+    def export_pca(self, features=['mean', 'std', 'amplitude'],
+                   signal_categories=['regulation','endogene'],
+                   signal_list=None,
+                   time_window='auto',
+                   n_segments=100,
+                   save=True,
+                   out_dir='.',
+                   out_filename='auto',
+                   show_plot=True,
+                   out_format='png'):
+        pca_visualization(flight_data=self.signal_data, features=features,
+                          signal_categories=signal_categories,
+                          signal_list=signal_list, time_window=time_window,
+                          n_segments=n_segments, save=save,
+                          flight_name=self.name, out_dir=out_dir,
+                          out_filename=out_filename, show_plot=show_plot,
+                          out_format=out_format, conf=self.config)
 class Iliad_n_flight:
     "class to compare multiple flights"
     pass
