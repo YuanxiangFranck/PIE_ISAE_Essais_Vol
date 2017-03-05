@@ -101,15 +101,29 @@ class Iliad:
                 phases_data=(self.phases, self.ports, self.ports_full_flight),
                 out_dir=out_dir)
 
-    def export_heatmap(self, out_dir='Resultats/', feature='percent_time_off_regulation', signal_category='regulation'):
+    def export_heatmap(self, feature='percent_time_off_regulation',
+                       signal_category='regulation',
+                       signal_list=None,
+                       time_window='auto',
+                       n_segments='auto',
+                       hclust=False,
+                       save=True,
+                       out_filename='auto',
+                       out_dir='Resultats/',
+                       show_plot=True,
+                       out_format='pdf',
+                       annot=False,
+                       robust=True):
         "Export heatmap computation as pdf"
         # Create out dir if it don't exist
         utils.check_dir(out_dir)
         # Build heatmap
-        heatmap(flight_data=self.signal_data, feature=feature,
-                signal_category=signal_category, n_segments=50,
-                flight_name=self.name, hclust=True, conf=self.config,
-                out_dir=out_dir, show_plot=False,)
+        heatmap(flight_data=self.signal_data, conf=self.config,flight_name=self.name,
+                feature=feature, save=save, signal_category=signal_category,
+                n_segments=n_segments, hclust=hclust, out_dir=out_dir,
+                show_plot=show_plot, signal_list=signal_list,
+                time_window=time_window, out_filename=out_filename,
+                out_format=out_format, annot=annot, robust=robust)
 
 
 class Iliad_n_flight:
