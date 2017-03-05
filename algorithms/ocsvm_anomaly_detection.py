@@ -28,9 +28,9 @@ import seaborn as sns
 from sklearn.preprocessing import scale
 from sklearn.svm import OneClassSVM
 # Flight analysis functions import
-from flight_analysis_fun import (extract_sl_window, get_feature_matrix,
-                                 idx2date, idx2phase, idx2port)
-import SignalData
+from algorithms.flight_analysis_fun import (extract_sl_window, get_feature_matrix,
+                                            idx2date, idx2phase, idx2port)
+from algorithms import SignalData
 
 def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
                     signal_list=None, gamma=0.1, nu=0.3, time_window='auto',
@@ -39,6 +39,7 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
                     show_plot=True, out_format='pdf', conf=None):
     """
     TODO: docstring
+    TODO CAS n_segments=auto et time_window=auto!
     """
     # Handle arguments
     if not isinstance(flight_data, SignalData.SignalData):

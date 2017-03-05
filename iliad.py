@@ -10,7 +10,8 @@ from dataProcessing import plotter
 from dataProcessing import utils
 from algorithms.SignalData import SignalData
 from algorithms.heatmap_visualization import heatmap
-
+from algorithms.ocsvm_anomaly_detection import ocsvm_detection
+from algorithms.pca_visualization import pca_visualization
 
 class Iliad:
     """

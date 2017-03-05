@@ -24,9 +24,9 @@ import seaborn as sns
 from sklearn.preprocessing import scale
 from sklearn.decomposition import PCA
 # Flight analysis functions import
-from flight_analysis_fun import (extract_sl_window, get_feature_matrix,
+from algorithms.flight_analysis_fun import (extract_sl_window, get_feature_matrix,
                                  idx2date, idx2phase, idx2port)
-import SignalData
+import algorithms.SignalData
 
 def pca_visualization(flight_data=None, features=None, signal_categories=None,
                       signal_list=None, time_window='auto', n_segments='auto',
