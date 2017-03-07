@@ -439,7 +439,7 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
         
     return 
     #%%
-def write_in_csv(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef) :
+def write_in_csv(path, list_anomaly, duration_anomaly, lin_reg_coef) :
         
     """
     Writes the anomaly results into a csv file     
@@ -447,8 +447,6 @@ def write_in_csv(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef
     Inputs : 
 
     - path : string, the path of the file 
-    
-    - name_flight : string, name of the flight
     
     - list_anomaly : list of the names of anomalies
     
@@ -460,18 +458,17 @@ def write_in_csv(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef
     """  
 
     
-    
     rapport_anomalie = {}
     rapport_anomalie["Signal A"] = [a[0] for a in list_anomaly]
     rapport_anomalie["Signal B"] = [a[1] for a in list_anomaly]
-    rapport_anomalie["anomaly duration (%)"] = duration_anomaly
+    rapport_anomalie["Anomaly duration (%)"] = [str(100*a)[0:5] for a in duration_anomaly]
     rapport_anomalie["Type"] = [a[0] for a in lin_reg_coef]
     rapport_anomalie["Lin Reg Slope"] = [a[1] for a in lin_reg_coef]
     rapport_anomalie["Lin Reg Intercept"] = [a[2] for a in lin_reg_coef]
     rapport_anomalie["Lin Reg R2"] = [a[3] for a in lin_reg_coef]
     
     pd.DataFrame(rapport_anomalie).to_csv(path,columns = ["Type", "Signal A",
-    "Signal B", "anomaly duration (%)", "Lin Reg Slope", "Lin Reg Intercept", 
+    "Signal B", "Anomaly duration (%)", "Lin Reg Slope", "Lin Reg Intercept", 
     "Lin Reg R2"], index_label = "Id")
     
         
