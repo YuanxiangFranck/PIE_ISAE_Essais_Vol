@@ -14,6 +14,7 @@ Outil pour l'analyse de la symmetrie d'un vol
 Import des fonctions utiles à l'analyse
 """
 from flight_analysis_fun import *
+import SignalData
 
 #%%
 """
@@ -40,7 +41,7 @@ path = '../pie_data/'
 
 whole_flight = load_flight(path+flight_name)
 
-flight_data = SignalData(whole_flight)
+flight_data = SignalData.SignalData(whole_flight)
 
 #%%
 """
@@ -102,7 +103,9 @@ feature_matrix = get_feature_matrix(samples, features, normalized=False, \
 """
 Symmetry
 """
-from algorithms.Symmetry import *
+# Flight analysis functions import
+from Symmetry import ( Symmetry_Channels_One_Flight, Symmetry_Lateral_One_Flight,
+                         Analyze_results, write_in_file, write_in_csv)
 
 error = 0.01 # marge d'erreur relative acceptee (0.01 correspond à 1% de marge)
 
@@ -142,9 +145,13 @@ s4.plot()
     
 
 # ecriture du fichier
-file_path = "../analyse/1_vol_Matthieu/resultats_symetrie/Resultat1.txt"
+file_path = "../analyse/1_vol_Matthieu/resultats_symetrie/vol_"+flight_name[0:-4]+"/vol_"+flight_name[0:-4]+"_error_"+str(error)[2:]+".txt"
 write_in_file(file_path, flight_name, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, anomalies_channel_reg_coef,error, 1)    
 write_in_file(file_path, flight_name, anomalies_lat_couples_names, anomalies_relative_length_lat_couples, anomalies_lat_reg_coef,error, 0) 
 
-file_path_csv_channel = "../analyse/1_vol_Matthieu/resultats_symetrie/Channel"+flight_name+"error"+str(error)
-write_in_csv(file_path_csv_channel, flight_name, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, anomalies_channel_reg_coef)    
+file_path_csv_channel = "../analyse/1_vol_Matthieu/resultats_symetrie/vol_"+flight_name[0:-4]+"/Channel_"+flight_name[0:-4]+"_error_"+str(error)[2:]
+write_in_csv(file_path_csv_channel, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, anomalies_channel_reg_coef)    
+
+file_path_csv_lat = "../analyse/1_vol_Matthieu/resultats_symetrie/vol_"+flight_name[0:-4]+"/Lateral_"+flight_name[0:-4]+"_error_"+str(error)[2:]
+write_in_csv(file_path_csv_lat, anomalies_channel_couples_names, anomalies_relative_length_channel_couples, anomalies_channel_reg_coef)    
+
