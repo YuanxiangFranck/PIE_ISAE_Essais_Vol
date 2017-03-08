@@ -213,8 +213,7 @@ def Symmetry_Lateral_One_Flight(flight, error):
 
 #%%
 
-def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1):
-
+def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
     """
     Analyzes the correlation of anomalies in time : gives number of anomalies
     for some time windows.
@@ -240,49 +239,49 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1):
 
 
     """
-    result = [[],[]]
+    result = [[], []]
     nm_anomaly = []
     n = max_time_index
 
     time_indexes = [result_sym[j] for j in range(len(result_sym)) if j%3 == 1]
     time_indexes_1D = []
 
-    for j in range(len(result_sym)) :
-        if j%2 == 1:
-           time_indexes_1D = np.concatenate((time_indexes_1D,result_sym[j]),0)
+    for j in range(1, len(result_sym), 2):
+        time_indexes_1D = np.concatenate((time_indexes_1D, result_sym[j]), 0)
 
     time_indexes_1D = np.sort(time_indexes_1D)
 
-    if window_size > 1 :
+    if window_size > 1:
         window_size = 1
 
-    if window_size > 0 :
+    if window_size > 0:
         step = np.int(window_size * max_time_index)
-        time_window_begining = [min(0+i*step,n) for i in range(np.int(n/step)+1) if i*step != n]
+        time_window_begining = [min(0+i*step, n) for i in range(np.int(n/step)+1)
+                                if i*step != n]
 
         result[0] = time_window_begining
 
-        for w,t0 in enumerate(time_window_begining) :
+        for w, t0 in enumerate(time_window_begining):
             nm_anomaly.append(0)
-            if w == len(time_window_begining)-1 :
+            if w == len(time_window_begining)-1:
                 t1 = n
-            else :
+            else:
                 t1 = time_window_begining[w+1]
-            for anomaly in range(len(time_indexes)) :
-                for time_anomaly in time_indexes[anomaly] :
-                    if time_anomaly in range(t0,t1) :
+            for anomaly in range(len(time_indexes)):
+                for time_anomaly in time_indexes[anomaly]:
+                    if time_anomaly in range(t0, t1):
                         nm_anomaly[w] = nm_anomaly[w] + 1
                         break
         result[1] = nm_anomaly
 
-#***********************************
-#To do : implement calulation for the flight phases
+    #***********************************
+    #To do : implement calulation for the flight phases
 
     return result
 
 
 
-       #%%
+#%%
 
 def Analyze_results(result_sym, str_type, binary_names) :
 
