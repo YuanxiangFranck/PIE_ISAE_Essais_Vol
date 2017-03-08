@@ -12,6 +12,7 @@ from algorithms.SignalData import SignalData
 from algorithms.heatmap_visualization import heatmap
 from algorithms.ocsvm_anomaly_detection import ocsvm_detection
 from algorithms.pca_visualization import pca_visualization
+from algorithms.symmetry_anomaly_detection import asymmetry_detection
 
 class Iliad:
     """
@@ -168,6 +169,18 @@ class Iliad:
                           flight_name=self.name, out_dir=out_dir,
                           out_filename=out_filename, show_plot=show_plot,
                           out_format=out_format, conf=self.config)
+
+    def export_asymmetry_detection(self, error=0.01,
+                                   save_csv=True,
+                                   save_txt=True,
+                                   out_dir='.',
+                                   out_filename='auto'):
+        "TODO!!!!"
+        asymmetry_detection(flight_data=self.signal_data, error=error, save_csv=save_csv,
+                            out_filename=out_filename, flight_name=self.name,
+                            out_dir=out_dir, save_txt=save_txt, conf=self.config)
+
+
 class Iliad_n_flight:
     "class to compare multiple flights"
     pass
