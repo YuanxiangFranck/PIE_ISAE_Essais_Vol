@@ -70,10 +70,11 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
 
     ###Run symetry algorithm
     ## With Channels
-    result_channel = Symmetry_Channels_One_Flight(flight_data.data,error)
+    binary_names = conf["binary"]
+    result_channel = Symmetry_Channels_One_Flight(flight_data.data, error, binary_names)
 
     # Analyzes the results
-    res_ch_analyzed = Analyze_results(result_channel, 'channel')
+    res_ch_analyzed = Analyze_results(result_channel, 'channel', binary_names)
     anomalies_channel_couples_names = res_ch_analyzed[0]
     anomalies_length_channel_couples = res_ch_analyzed[1]
     anomalies_channel_reg_coef = res_ch_analyzed[2]
@@ -85,7 +86,7 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     result_lat = Symmetry_Lateral_One_Flight(flight_data.data, error)
 
     # Analyzes the results (disp number, and if booleans)
-    res_lat_analyzed = Analyze_results(result_lat, 'lat')
+    res_lat_analyzed = Analyze_results(result_lat, 'lat', binary_names)
     anomalies_lat_couples_names = res_lat_analyzed[0]
     anomalies_length_lat_couples = res_lat_analyzed[1]
     anomalies_lat_reg_coef = res_lat_analyzed[2]
@@ -139,6 +140,7 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
 
 if __name__ == '__main__':
     from algorithms.flight_analysis_fun import load_flight
+    from algorithms.signal_names import signal_names_bin
 
     flight_name = 'E190-E2_20001_0090_29867_54230_request.txt'
 
@@ -148,7 +150,6 @@ if __name__ == '__main__':
     flight_data = SignalData.SignalData(whole_flight)
 
 
-    conf = {}
-
+    conf = {"binary": signal_names_bin}
     asymmetry_detection(flight_data=flight_data, error=0.01, flight_name=flight_name, save_csv=True, save_txt=True,
             out_dir='./', conf=conf)

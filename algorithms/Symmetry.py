@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import stats
 
-def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
+def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comment="ok"):
     """
     
     
@@ -43,7 +43,7 @@ def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
     sig1 = signal1.data
     sig2 = signal2.data   
     
-    if is_bool(name_signal1) :
+    if is_bool(name_signal1, binary_names) :
         #The signals are categorized as boolean : we test if they are different
         for i,s in enumerate(sig1):
             if sig2[i] != s :
@@ -82,7 +82,7 @@ def SymmetryTest(signal1, signal2, error, name_signal1 = "", comment="ok"):
     
 #%%
     
-def is_bool(signal_name) :
+def is_bool(signal_name, signal_names_bin) :
         
     """
     
@@ -95,9 +95,6 @@ def is_bool(signal_name) :
     - Result : a boolean, is True if the input signal is known as a boolean, 
     and returns False if the name is contained in the list of regulated signals (non boolean)
     """
-    # import list of the names of binary signals (booleans)
-    from signal_names import signal_names_bin
-    
     result = False
     
     if signal_name in signal_names_bin :
@@ -107,7 +104,7 @@ def is_bool(signal_name) :
     
     #%%
     
-def Symmetry_Channels_One_Flight(flight, error):
+def Symmetry_Channels_One_Flight(flight, error, binary_names):
         
     """
     Find the symmetry problems in a flight by comparing both channels A 
@@ -312,7 +309,7 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1) :
    
        #%%
     
-def Analyze_results(result_sym, str_type) :
+def Analyze_results(result_sym, str_type, binary_names) :
         
     """
     Analyzes the results given by the symmetry test (disps number of anomalies,
@@ -342,7 +339,7 @@ def Analyze_results(result_sym, str_type) :
     
     # On peut voir si les anomalies sont des booleans ou des signaux regulés
     name_anomaly = [anomalies_couples_names[j][0] for j in range(len(anomalies_couples_names))]
-    is_bool_anomaly = [is_bool(j) for j in name_anomaly]
+    is_bool_anomaly = [is_bool(j, binary_names) for j in name_anomaly]
     
     
     if str_type == 'channel' :
@@ -505,7 +502,7 @@ if __name__ == "__main__":
     
     #On peut voir si les anomalies sont des booleans ou des signaux regulés
     name_anomaly = [anomalies_couples_names[j][0] for j in range(len(anomalies_couples_names))]
-    is_bool_anomaly = [is_bool(j) for j in name_anomaly]
+    is_bool_anomaly = [is_bool(j, binary_names) for j in name_anomaly]
     if False in is_bool_anomaly:
         if True in is_bool_anomaly:
             print("Pour channels A/B : Les anomalies sont réparties entre booléans et signaux régulés")
@@ -530,7 +527,7 @@ if __name__ == "__main__":
     
     #On peut voir si les anomalies sont des booleans ou des signaux regulés
     name_anomaly = [anomalies_lat_couples_names[j] for j in range(len(anomalies_lat_couples_names)) if j%3 == 0 ]
-    is_bool_anomaly = [is_bool(j) for j in name_anomaly]
+    is_bool_anomaly = [is_bool(j, binary_names) for j in name_anomaly]
     if False in is_bool_anomaly:
         if True in is_bool_anomaly:
             print("Pour symetrie laterale : Les anomalies sont réparties entre booléans et signaux régulés")
