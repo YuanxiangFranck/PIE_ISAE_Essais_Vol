@@ -36,56 +36,51 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
     the next values are the index of the signal.data where the differences where found
     """
     n = 6 # truncation of digits in res
-    result =[True]
+    result =True
     error = abs(error)
     index = []
     lin_reg = []
     sig1 = signal1.data
     sig2 = signal2.data
 
-    if is_bool(name_signal1, binary_names) :
+    if is_bool(name_signal1, binary_names):
         #The signals are categorized as boolean : we test if they are different
-        for i,s in enumerate(sig1):
+        for i, s in enumerate(sig1):
             if sig2[i] != s :
-                result = [False]
+                result = False
                 index.append(i)
         lin_reg = ["b","  -","  -","  -"] #boolean signals : no linear regression
 
     else :
         #The signals are 'reg'
-        for i,s in enumerate(sig1):
-            if (s != 0 or sig2[i] !=0):
-                if abs(2*(s-sig2[i])/(abs(s)+abs(sig2[i]))) > error :
-                    result = [False]
+        for i, s in enumerate(sig1):
+            if s or sig2[i]: # avoid division by 0
+                if abs(2*(s-sig2[i])/(abs(s)+abs(sig2[i]))) > error:
+                    result = False
                     index.append(i)
             #else:
              #   if abs(sig2[i]) > error :
                #     result = [False]
                 #    index.append(i)
         a, b, r_value, p_value, std_err = stats.linregress(sig1,sig2)
-        lin_reg = ["c",str(a)[0:n],str(b)[0:n],str(r_value**2)] #continuous signals : linear regression parameters
+        lin_reg = ["c", str(a)[0:n], str(b)[0:n], str(r_value**2)] #continuous signals : linear regression parameters
 
-    if comment != "none" :
+    if comment != "none":
         print("\n")
         print(result)
 
-        if result[0] == True:
+        if result:
             print("\nLes signaux sont identiques (à l'erreur error près)\n" )
         else:
             print("\nL'erreur relative entre les signaux est supérieur à error sur ")
             print("une certaine plage\n " )
 
-    result.append(index)
-    result.append(lin_reg)
-
-    return result
+    return result, index, lin_reg
 
 #%%
 
-def is_bool(signal_name, signal_names_bin) :
-
+def is_bool(signal_name, signal_names_bin):
     """
-
     Input :
 
     - signal_name : a string, the name of the signal to test.
@@ -95,16 +90,11 @@ def is_bool(signal_name, signal_names_bin) :
     - Result : a boolean, is True if the input signal is known as a boolean,
     and returns False if the name is contained in the list of regulated signals (non boolean)
     """
-    result = False
+    return signal_name in signal_names_bin
 
-    if signal_name in signal_names_bin :
-        result = True
+#%%
 
-    return result
-
-    #%%
-
-def Symmetry_Channels_One_Flight(flight, error, binary_names):
+def Symmetry_Channels_One_Flight(flight, error):
 
     """
     Find the symmetry problems in a flight by comparing both channels A
@@ -131,56 +121,46 @@ def Symmetry_Channels_One_Flight(flight, error, binary_names):
     #flight = txt_parser(path+str_flight)
 
     # Extract names of signals and sort them
-    names = flight.columns.values
-    names.sort()
+    names = sorted(flight.columns.values)
 
     result = []
     result_anomaly = []
-    next = 1
+    skip_next = False
 
+    for i, name_i in enumerate(names[:-1]):
+        if skip_next:
+            skip_next = False
+            # next loop, continue reduce code indent
+            continue
+        #Test if the current and next measures are from a different chanel
+        #but equal otherwise
+        next_name = names[i+1]
+        if name_i[:-1] == next_name[:-1] and name_i[-1] == "A" and next_name[-1] == "B":
 
-    for i,name_i in enumerate(names[:-1]):
-        if next == 0 :
-            next = 1
-        else :
-            #Test if the current and next measures are from a different chanel
-            #but equal otherwise
-            if (name_i[0:-1] == names[i+1][0:-1]) and (name_i[-1] == "A") and (names[i+1][-1] == "B"):
+            signal1 = flight[name_i].iloc[:]
 
-                signal1 = flight[name_i].iloc[:]
+            signal2 = flight[next_name].iloc[:]
 
-                signal2 = flight[names[i+1]].iloc[:]
+            #Test if anomaly between these two supposed equal signals
+            res = SymmetryTest(signal1, signal2, error, name_i, "none")
 
+            #save the main result
+            result.append([name_i, next_name])
+            result.append(res[0])
 
-                #Test if anomaly between these two supposed equal signals
-                res = SymmetryTest(signal1, signal2, error, name_i, "none")
+            if not res[0]:
+                result_anomaly.append([name_i, next_name]) # signals names
+                result_anomaly.append(res[1][:]) # time indexes of anomalies
+                result_anomaly.append(res[2][:]) # linear fitting coeff
 
-
-                #save the main result
-                result.append([name_i, names[i+1]])
-                result.append(res[0])
-
-                if res[0] == False :
-                    result_anomaly.append([name_i, names[i+1]]) # signals names
-                    result_anomaly.append(res[1][:]) # time indexes of anomalies
-                    result_anomaly.append(res[2][:]) # linear fitting coeff
-
-
-                #We don't need to test the next signal
-                next = 0
-
-            else:
-                next = 1
-
+            #We don't need to test the next signal
+            skip_next = True
 
     return result_anomaly
-
-
 
 #%%
 
 def Symmetry_Lateral_One_Flight(flight, error):
-
     """
     Find the symmetry problems in a flight by comparing the right and left side for each measure of a flight.
 
@@ -200,13 +180,10 @@ def Symmetry_Lateral_One_Flight(flight, error):
     found
     The names are in result_anomaly[2*i] and the indexes in result_anomaly[2*i+1]
     with i <= 0
-        """
-
-    #flight = txt_parser(path+str_flight)
+    """
 
     # Extract names of signals and sort them
-    names = flight.columns.values
-    names.sort()
+    names = sorted(flight.columns.values)
 
     result = []
     result_anomaly = []
@@ -215,7 +192,7 @@ def Symmetry_Lateral_One_Flight(flight, error):
     signals_with_AMSC1 = [st for st in names if 'AMSC1' in st]
     signals_with_AMSC2 = [str2.replace("AMSC1","AMSC2") for str2 in signals_with_AMSC1]
 
-    for i,name_AMSC1 in enumerate(signals_with_AMSC1) :
+    for i, name_AMSC1 in enumerate(signals_with_AMSC1) :
         signal1 = flight[name_AMSC1].iloc[:]
         name_AMSC2 = signals_with_AMSC2[i]
         signal2 = flight[name_AMSC2].iloc[:]
@@ -227,18 +204,16 @@ def Symmetry_Lateral_One_Flight(flight, error):
         result.append([name_AMSC1, name_AMSC2])
         result.append(res[0])
 
-        if res[0] == False :
+        if not res[0]:
             result_anomaly.append([name_AMSC1, name_AMSC2]) # signals names
             result_anomaly.append(res[1][:]) # time indexes of anomalies
             result_anomaly.append(res[2][:]) # linear fitting coeff
 
-
     return result_anomaly
 
+#%%
 
-    #%%
-
-def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1) :
+def Anomalies_in_Time(result_sym, max_time_index, window_size = 0.1):
 
     """
     Analyzes the correlation of anomalies in time : gives number of anomalies
