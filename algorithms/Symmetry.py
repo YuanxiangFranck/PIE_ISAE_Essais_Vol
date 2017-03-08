@@ -283,8 +283,7 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
 
 #%%
 
-def Analyze_results(result_sym, str_type, binary_names) :
-
+def Analyze_results(result_sym, str_type, binary_names):
     """
     Analyzes the results given by the symmetry test (disps number of anomalies,
     if they are bool)
@@ -308,40 +307,41 @@ def Analyze_results(result_sym, str_type, binary_names) :
 
 
     """
-    anomalies_couples_names = [result_sym[j] for j in range(len(result_sym)) if j%3 == 0]
-    anomalies_lin_reg_coef = [result_sym[j] for j in range(len(result_sym)) if j%3 == 2]
+    anomalies_couples_names = [result_sym[j] for j in range(0, len(result_sym), 3)]
+    anomalies_lin_reg_coef = [result_sym[j] for j in range(2, len(result_sym), 3)]
 
     # On peut voir si les anomalies sont des booleans ou des signaux regulés
     name_anomaly = [anomalies_couples_names[j][0] for j in range(len(anomalies_couples_names))]
     is_bool_anomaly = [is_bool(j, binary_names) for j in name_anomaly]
 
 
-    if str_type == 'channel' :
-
-        print("Il y a " + str(len(anomalies_couples_names)) +" anomalies detectees entre channels" )
+    if str_type == 'channel':
+        print("Il y a {} anomalies detectees entre channels"
+              .format(len(anomalies_couples_names)))
 
         if False in is_bool_anomaly:
             if True in is_bool_anomaly:
                 print("Pour channels A/B : Les anomalies sont réparties entre booléans et signaux régulés")
-            else :
+            else:
                 print("Pour channels A/B : Il n'y a que des anomalies sur des non booleans (signaux regulés)")
-        else :
+        else:
             print("Pour channels A/B : Il n'y a que des anomalies sur des booléans")
     else:
 
-        print("Il y a " + str(len(anomalies_couples_names)) +" anomalies detectees sur la symetrie laterale" )
+        print("Il y a {} anomalies detectees sur la symetrie laterale"
+              .format(len(anomalies_couples_names)))
 
         if False in is_bool_anomaly:
             if True in is_bool_anomaly:
                 print("Pour symetrie laterale : Les anomalies sont réparties entre booléans et signaux régulés")
-            else :
+            else:
                 print("Pour symetrie laterale : Il n'y a que des anomalies sur des non booleans (signaux regulés)")
-        else :
+        else:
             print("Pour symetrie laterale : Il n'y a que des anomalies sur des booléans")
 
 
     #Statistiques anomalies
-    ind = [result_sym[j] for j in range(len(result_sym)) if j%3 == 1] # time indexes
+    ind = [result_sym[j] for j in range(1, len(result_sym), 3)] # time indexes
     long = [len(ind[i]) for i in range(len(ind))]
     long_np = np.array(long);
 
@@ -380,7 +380,7 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
 
     """
 
-    longs = [len(list_anomaly[i][0]) for i in range(len(list_anomaly)) ];
+    longs = [len(list_anomaly[i][0]) for i in range(len(list_anomaly))]
     taille_max = max(longs)+2
 
     fichier = open(path, "a")
