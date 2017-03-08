@@ -408,8 +408,8 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
 
     fichier.close()
 
-    return
-    #%%
+#%%
+
 def write_in_csv(path, list_anomaly, duration_anomaly, lin_reg_coef) :
 
     """
@@ -427,8 +427,6 @@ def write_in_csv(path, list_anomaly, duration_anomaly, lin_reg_coef) :
 
 
     """
-
-
     rapport_anomalie = {}
     rapport_anomalie["Signal A"] = [a[0] for a in list_anomaly]
     rapport_anomalie["Signal B"] = [a[1] for a in list_anomaly]
@@ -437,13 +435,10 @@ def write_in_csv(path, list_anomaly, duration_anomaly, lin_reg_coef) :
     rapport_anomalie["Lin Reg Slope"] = [a[1] for a in lin_reg_coef]
     rapport_anomalie["Lin Reg Intercept"] = [a[2] for a in lin_reg_coef]
     rapport_anomalie["Lin Reg R2"] = [a[3] for a in lin_reg_coef]
-
-    pd.DataFrame(rapport_anomalie).to_csv(path,columns = ["Type", "Signal A",
-    "Signal B", "Anomaly duration (%)", "Lin Reg Slope", "Lin Reg Intercept",
-    "Lin Reg R2"], index_label = "Id")
-
-
-    return
+    columns = ["Type", "Signal A", "Signal B", "Anomaly duration (%)",
+               "Lin Reg Slope", "Lin Reg Intercept", "Lin Reg R2"]
+    pd.DataFrame(rapport_anomalie).to_csv(path+".csv", columns=columns,
+                                          index_label="Id")
 
 #%%
 
