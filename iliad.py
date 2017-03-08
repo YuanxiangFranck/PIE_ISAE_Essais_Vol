@@ -1,18 +1,20 @@
 """
 ILIAD: Isae LIebherr Anomaly Detection
 """
-import json
 import logging
+import json
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
 from dataProcessing.summary import summary
 from dataProcessing import plotter
 from dataProcessing import utils
+from dataProcessing.utils import logger
 from algorithms.SignalData import SignalData
 from algorithms.heatmap_visualization import heatmap
 from algorithms.ocsvm_anomaly_detection import ocsvm_detection
 from algorithms.pca_visualization import pca_visualization
 from algorithms.symmetry_anomaly_detection import asymmetry_detection
+
 
 class Iliad:
     """
@@ -39,18 +41,20 @@ class Iliad:
         self.name = path.split("/")[-1][:-4]
         with open(config_path) as f_config:
             self.config = json.load(f_config)
+        # Set logger (iliad)
         if verbose:
             level = logging.INFO
         else:
             level = logging.WARNING
-        logging.basicConfig(format='%(levelname)s: %(message)s', level=level)
+        # Create logger
+        logger.setLevel(level)
 
         # Parse data and compute signal_data
-        logging.info("Start parsing: {}".format(path))
+        logger.info("Start parsing: {}".format(path))
         self.signal_data = SignalData(txt_parser(path, target_names=self.config["target"]))
 
         # Compute flight segmentation
-        logging.info("Start computing flight segmentation")
+        logger.info("Start computing flight segmentation")
         self.phases, self.ports, self.ports_full_flight = segment(self.signal_data._raw_data)
         self._phases_idx = plotter.compute_phases_idx(self.phases, self.data.Time)
         self.signal_data.set_flight_segments(self.phases, self.ports_full_flight)

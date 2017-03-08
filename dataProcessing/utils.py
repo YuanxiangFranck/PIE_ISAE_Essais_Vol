@@ -1,6 +1,8 @@
 from pathlib import Path
 import logging
 
+logger = logging.getLogger("iliad")
+
 def check_dir(out_dir):
     "Check if directory exist before exporting"
     out_path = out_dir.split()

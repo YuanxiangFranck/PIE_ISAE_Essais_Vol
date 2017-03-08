@@ -4,6 +4,7 @@ Created on Tue Dec 20 15:51:39 2016
 
 @author: Matthieu
 """
+import logging
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,7 +43,7 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
     lin_reg = []
     sig1 = signal1.data
     sig2 = signal2.data
-
+    logger = logging.getLogger("iliad")
     if is_bool(name_signal1, binary_names):
         #The signals are categorized as boolean : we test if they are different
         for i, s in enumerate(sig1):
@@ -62,18 +63,13 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
              #   if abs(sig2[i]) > error :
                #     result = [False]
                 #    index.append(i)
-        a, b, r_value, p_value, std_err = stats.linregress(sig1,sig2)
+        a, b, r_value, p_value, std_err = stats.linregress(sig1, sig2)
         lin_reg = ["c", str(a)[0:n], str(b)[0:n], str(r_value**2)] #continuous signals : linear regression parameters
-
-    if comment != "none":
-        print("\n")
-        print(result)
-
-        if result:
-            print("\nLes signaux sont identiques (à l'erreur error près)\n" )
-        else:
-            print("\nL'erreur relative entre les signaux est supérieur à error sur ")
-            print("une certaine plage\n " )
+    logger.info(result)
+    if result:
+        logger.info("Les signaux ", signal1.name, signal2.name, "sont identiques (à l'erreur error près)\n")
+    else:
+        logger.info("L'erreur relative entre les signaux est supérieur à error sur une certaine plage\n")
 
     return result, index, lin_reg
 

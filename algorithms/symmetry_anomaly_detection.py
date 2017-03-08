@@ -17,7 +17,7 @@ TO DO:
 
 # Standard imports
 import time
-import logging
+from dataProcessing.utils import logger as logging
 
 #Signal Data class import
 from algorithms import SignalData
