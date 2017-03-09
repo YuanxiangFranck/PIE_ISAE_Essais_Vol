@@ -38,45 +38,38 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
     TODO: docstring
     """
 
-    from time import time as tt; t0 = tt();
-    print(tt() - t0);t0 = tt();
-
     # Handle arguments
     if not isinstance(flight_data, SignalData):
-        logging.warning(
-        """The signal_data argument must be a instance of the SignalData class
-        containing the flight data.""")
+        logger.error(
+        "The signal_data argument must be a instance of the SignalData class containing the flight data.")
         return
     if not feature:
-        logging.warning(
-        """No feature selected. The feature argument must be a string.
-        Refer to documentation for a list of available features.""")
+        logger.error(
+        "No feature selected. The feature argument must be a string. Refer to documentation for a list of available features.")
         return
     if not signal_category:
-        logging.warning(
-        """No signal category selected. The signal_category argument must
-        be either a string corresponding to a signal category, or 'custom'.
-        Signal categories are defined in the configuration file.""")
+        logger.error(
+        "No signal category selected. The signal_category argument must be either a string corresponding to a signal category, or 'custom'. Signal categories are defined in the configuration file.")
+        return
     if signal_category == 'custom' and not signal_list:
-        logging.warning(
-        """The signal_category argument is set to 'custom', but no signal list
-        is selected. The signal_list argument must be set to a list of signal
-        names. Signal names are defined in the configuration file.""")
+        logger.error(
+        "The signal_category argument is set to 'custom', but no signal list"
+        "is selected. The signal_list argument must be set to a list of signal"
+        "names. Signal names are defined in the configuration file.")
         return
     if time_window == 'auto' and n_segments == 'auto':
-        logging.warning(
-        """The arguments time_window and n_segments cannot both be set to
-        'auto'. One of them must be specified.""")
+        logger.error(
+        "The arguments time_window and n_segments cannot both be set to 'auto'. One of them must be specified.")
+        return
     if time_window != 'auto' and n_segments != 'auto':
-        logging.warning(
-        """The arguments time_window and n_segments cannot both be set to a
-        value. One of them must be left to 'auto'.""")
+        logger.error(
+        "The arguments time_window and n_segments cannot both be set to a value. One of them must be left to 'auto'.")
+        return
     if not conf:
-        logging.warning(
-        """No configuration specified ! The conf argument must be set to the
-        current configuration object.""")
+        logger.error(
+        "No configuration specified ! The conf argument must be set to the current configuration object.")
+        return
 
-    print("end check args", tt() - t0);t0 = tt();
     # Initialize variables
     use_targets = False
     features = []
@@ -145,7 +138,6 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
         # Set features
         features = [feature]
 
-    print("end init", tt() - t0);t0 = tt();
     # Remove signals which are not present in the flight data
     selected_signals_copy = selected_signals.copy()
     cc = 0
@@ -158,7 +150,6 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
                     .format(cc, len(selected_signals_copy)))
     del selected_signals_copy
 
-    print("end remove data", tt() - t0);t0 = tt();
     if use_targets:
         # Load target precisions
         target_precisions = pd.read_csv(conf['target_precisions_path'],
@@ -167,18 +158,15 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
         thresholds = target_precisions['Precision'].as_matrix()
         delta_type = target_precisions['Type'].as_matrix()
 
-        print("  load csv", tt() - t0);t0 = tt();
         # Compute deltas and cut signal into samples with a sliding window
         samples = extract_sl_window_delta(flight_data.data, selected_signals,
                                           target_signals, sl_w, sl_s,
                                           delta_type)
 
-        print("  compute deltas", tt() - t0);t0 = tt();
         # Extract features
         feature_matrix = get_feature_matrix(samples, features,
                                             normalized=False,
                                             threshold=thresholds)
-        print("  extract features", tt() - t0);t0 = tt();
 
     else:
         # Cut signal into samples with a sliding window
@@ -188,7 +176,6 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
         feature_matrix = get_feature_matrix(samples, features,
                                             normalized=False)
 
-    print("end use target", tt() - t0);t0 = tt();
     # Preprocessing for binary transitions heatmap
     if feature == 'nb_transitions':
         non_zero_signal_idx = []
@@ -215,7 +202,6 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
         # Set ylabels
         ylabels = selected_signals
 
-    print("end if feature == nbtran", tt() - t0);t0 = tt();
     # Perform hierarchical clustering on signals
     if hclust:
 
@@ -243,7 +229,6 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
         feature_matrix = feature_matrix[:,leaves]
         ylabels = [ylabels[i] for i in leaves]
 
-    print("end if hclust", tt() - t0);t0 = tt();
     # Create time labels
     origin = flight_data.data.Time.iloc[0]
     end = flight_data.data.Time.iloc[-1]
@@ -295,7 +280,6 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
     port2_cmap = ListedColormap([port_color_dic[ports2[i]]
                                 for i in range(n_samples)])
 
-    print("end phases port", tt() - t0);t0 = tt();
     # Create heatmap figures
 
     # Number of signals per heatmap
@@ -390,7 +374,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
 
     # Make last heatmap if needed
     create_heatmap(k+1, (k+1)*n_sig, len(selected_signals))
-    print("end heatmap creation", tt() - t0);t0 = tt();
+
 
 if __name__ == '__main__':
 

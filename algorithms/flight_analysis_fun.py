@@ -56,21 +56,23 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
     m = (len(data)-sl_w)//sl_s+1
     # Compute delta between signal and target values
     dic = {}
-    for i,name in enumerate(signals1):
+    for i, name in enumerate(signals1):
         dat1 = data.loc[:, signals1]
         dat2 = data.loc[:, signals2]
         if delta_type[i] == 'rel':
-            dic[signals1[i]+'_DELTA'] = relative_delta(dat1.iloc[:,i],dat2.iloc[:,i])
+            dic[name+'_DELTA'] = relative_delta(dat1.iloc[:, i], dat2.iloc[:, i])
         else:
-            dic[signals1[i]+'_DELTA'] = absolute_delta(dat1.iloc[:,i],dat2.iloc[:,i])
+            dic[name+'_DELTA'] = absolute_delta(dat1.iloc[:, i], dat2.iloc[:, i])
     delta = pd.DataFrame(dic)
 
     delta_samples = [SignalData(delta.iloc[i*sl_s:i*sl_s+sl_w, :]) for i in range(m)]
     return delta_samples
 
-def get_feature_matrix(samples, features, normalized=True, \
+def get_feature_matrix(samples, features, normalized=False,
                        n_fft=10, n_dtc=10, threshold=0.1):
-
+    """
+    TODO DOCSTRING
+    """
     n_features = len(features)
     if features.count('fft') > 0:
         n_features += 2*n_fft-1
@@ -81,17 +83,17 @@ def get_feature_matrix(samples, features, normalized=True, \
 
     feature_matrix = np.zeros((len(samples),n_features*n_signals))
 
-    for i,sigData in enumerate(samples):
-        sigData.extractFeatures(features, n_fft=n_fft, \
+    for i, sigData in enumerate(samples):
+        sigData.extractFeatures(features, n_fft=n_fft,
                                 n_dtc=n_dtc, threshold=threshold)
         # Store featurs as a row in feature matrix
-        feature_matrix[i,:] = sigData.X.as_matrix().ravel()
+        feature_matrix[i, :] = sigData.X.as_matrix().ravel()
         # Clear
         sigData.clearFeatures()
 
     # Normalize features
     if normalized:
-        feature_matrix = normalize(feature_matrix,axis=0,norm='l1')
+        feature_matrix = normalize(feature_matrix, axis=0, norm='l1')
     return feature_matrix
 
 def idx2date(dates, idx, sl_w, sl_s):
