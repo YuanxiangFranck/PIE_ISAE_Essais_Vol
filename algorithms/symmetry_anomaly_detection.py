@@ -8,15 +8,14 @@ ILIAD
 
 Symmetry
 
-TO DO:
-    * tests
-    * regler les pb de paths
-    * pb il trouve + d'erreurs que dans symmetry_analysis ?
+TO DO:    
     * adds-on
 """
 
 # Standard imports
 import time
+import sys,os
+sys.path.append(os.path.abspath('..'))
 from dataProcessing.utils import logger as logging
 
 #Signal Data class import
@@ -32,12 +31,13 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     """
     Runs the symmetry test for both lateral and channels symmetries : finds the
     signals which are expected equal but actually are different, gives the duration
-    of anomaly of each pair and calculates the linear regression coefficients.
+    of anomaly of each pair and calculates the linear regression coefficients for 
+    regulation signals.
 
     Inputs :
 
     - flight_data : must be an instance of SignalData. Contains all the data
-    for the flight to analyse
+    for the flight to analyse.
 
     - error : relative error used to compare a pair of continuous signals and
     detect anomalies. Is set to 0.01 (1%) by default.
@@ -142,7 +142,7 @@ if __name__ == '__main__':
     from algorithms.flight_analysis_fun import load_flight
     from algorithms.signal_names import signal_names_bin
 
-    flight_name = 'E190-E2_20001_0090_29867_54230_request.txt'
+    flight_name = 'E190-E2_20001_0090_29867_54229_request.txt'
 
 
     path = '../data/'
@@ -152,4 +152,4 @@ if __name__ == '__main__':
 
     conf = {"binary": signal_names_bin}
     asymmetry_detection(flight_data=flight_data, error=0.01, flight_name=flight_name, save_csv=True, save_txt=True,
-            out_dir='./', conf=conf)
+            out_dir='../analyse/1_vol_matthieu/resultats_symetrie/integration/', conf=conf)
