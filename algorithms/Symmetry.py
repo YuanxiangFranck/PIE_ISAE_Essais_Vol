@@ -52,7 +52,7 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
                 index.append(i)
         lin_reg = ["b","  -","  -","  -"] #boolean signals : no linear regression
 
-    else :
+    else:
         #The signals are 'reg'
         for i, s in enumerate(sig1):
             if s or sig2[i]: # avoid division by 0
@@ -239,7 +239,7 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
     nm_anomaly = []
     n = max_time_index
 
-    time_indexes = [result_sym[j] for j in range(len(result_sym)) if j%3 == 1]
+    time_indexes = [result_sym[j] for j in range(1, len(result_sym), 3)]
     time_indexes_1D = []
 
     for j in range(1, len(result_sym), 2):
@@ -442,6 +442,7 @@ if __name__ == "__main__":
     import sys,os
     sys.path.append(os.path.abspath('..'))
     from dataProcessing.parser import txt_parser
+    from algorithms.signal_names import signal_names_bin
     path = '../pie_data/'
     #raw_flight = txt_parser(path+"data1.txt")
     raw_flight = txt_parser(path+"E190-E2_20001_0090_29867_54229_request.txt")
@@ -467,7 +468,7 @@ if __name__ == "__main__":
 
     #On peut voir si les anomalies sont des booleans ou des signaux regulés
     name_anomaly = [anomalies_couples_names[j][0] for j in range(len(anomalies_couples_names))]
-    is_bool_anomaly = [is_bool(j, binary_names) for j in name_anomaly]
+    is_bool_anomaly = [is_bool(j, signal_names_bin) for j in name_anomaly]
     if False in is_bool_anomaly:
         if True in is_bool_anomaly:
             print("Pour channels A/B : Les anomalies sont réparties entre booléans et signaux régulés")
@@ -492,7 +493,7 @@ if __name__ == "__main__":
 
     #On peut voir si les anomalies sont des booleans ou des signaux regulés
     name_anomaly = [anomalies_lat_couples_names[j] for j in range(len(anomalies_lat_couples_names)) if j%3 == 0 ]
-    is_bool_anomaly = [is_bool(j, binary_names) for j in name_anomaly]
+    is_bool_anomaly = [is_bool(j, signal_names_bin) for j in name_anomaly]
     if False in is_bool_anomaly:
         if True in is_bool_anomaly:
             print("Pour symetrie laterale : Les anomalies sont réparties entre booléans et signaux régulés")
