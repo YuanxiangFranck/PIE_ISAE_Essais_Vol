@@ -5,7 +5,7 @@ Created on Sat Nov  12 13:25:24 2016
 @author: Quentin
 
 Tool to create flight segmentation
-
+"""
 
 import sys,os
 import json
