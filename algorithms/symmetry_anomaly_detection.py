@@ -16,7 +16,7 @@ TO DO:
 import time
 import sys,os
 sys.path.append(os.path.abspath('..'))
-from dataProcessing.utils import logger as logging
+from dataProcessing.utils import logger
 
 #Signal Data class import
 from algorithms import SignalData
@@ -63,7 +63,7 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     """
     # Handle arguments
     if not isinstance(flight_data, SignalData.SignalData):
-        logging.warning(
+        logger.warning(
         """The data argument must be a SignalData object containing the flight
         data.""")
         return

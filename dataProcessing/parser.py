@@ -3,7 +3,7 @@ Script to parse the data file
 """
 import re
 import pandas as pd
-from dataProcessing.utils import logger as logging
+from dataProcessing.utils import logger
 
 
 def arguments_parser():
@@ -14,7 +14,7 @@ def arguments_parser():
     parser.add_argument('txt_file', help='path to the text file (*.txt)')
     # Parse the arguments
     arguments = parser.parse_args(sys.argv[1:])
-    logging.debug('args : '+str(arguments))
+    logger.debug('args : '+str(arguments))
     return arguments
 
 

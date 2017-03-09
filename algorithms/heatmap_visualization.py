@@ -14,7 +14,6 @@ TO DO:
 
 # Standard imports
 import time
-import logging
 # Modules imports
 import pandas as pd
 import numpy as np
@@ -28,6 +27,7 @@ from algorithms.flight_analysis_fun import (extract_sl_window, extract_sl_window
                                  get_feature_matrix, idx2date, idx2phase,
                                  idx2port)
 from algorithms.SignalData import SignalData
+from dataProcessing.utils import logger
 
 def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=None,
             time_window='auto', n_segments='auto', hclust=False, save=True,
@@ -146,7 +146,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
             cc += 1
             selected_signals.remove(s)
     if cc > 0:
-        logging.warning('Removed {}/{} signals not present in flight data.'
+        logger.warning('Removed {}/{} signals not present in flight data.'
                     .format(cc, len(selected_signals_copy)))
     del selected_signals_copy
 
