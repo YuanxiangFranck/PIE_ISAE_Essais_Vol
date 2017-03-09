@@ -74,7 +74,7 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     result_channel = Symmetry_Channels_One_Flight(flight_data.data, error)
 
     # Analyzes the results
-    res_ch_analyzed = Analyze_results(result_channel, 'channel', binary_names)
+    res_ch_analyzed = Analyze_results(result_channel, binary_names, str_type='channel')
     anomalies_channel_couples_names = res_ch_analyzed[0]
     anomalies_length_channel_couples = res_ch_analyzed[1]
     anomalies_channel_reg_coef = res_ch_analyzed[2]

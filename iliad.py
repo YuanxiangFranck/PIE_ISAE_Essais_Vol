@@ -55,7 +55,7 @@ class Iliad:
 
         # Compute flight segmentation
         logger.info("Start computing flight segmentation")
-        self.phases, self.ports, self.ports_full_flight = segment(self.signal_data._raw_data)
+        self.phases, self.ports, self.ports_full_flight = segment(self.signal_data._raw_data, self.config)
         self._phases_idx = plotter.compute_phases_idx(self.phases, self.data.Time)
         self.signal_data.set_flight_segments(self.phases, self.ports_full_flight)
 

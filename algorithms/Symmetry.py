@@ -284,7 +284,7 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
 
 #%%
 
-def Analyze_results(result_sym, str_type="", binary_names):
+def Analyze_results(result_sym, binary_names, str_type=""):
     """
     Analyzes the results given by the symmetry test (disps number of anomalies,
     if they are bool)
