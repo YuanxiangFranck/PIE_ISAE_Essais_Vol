@@ -18,23 +18,32 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
     Inputs :
 
     - signal1, signal2 : two signals of the class SignalData to compare
-    (generally signal1 -> "...CHA", and signal2 -> "...CHB"  )
+    (generally signal1 -> "...CHA", and signal2 -> "...CHB" or "..AMSC1" and "..AMSC2"  )
 
     - error : the result will be False if there is at least one value which is
     out of the relative error box
 
+    - binary_names : list of binary files names
+    
     - [name_signal1] : optional, a string, the name of the first input. Allows
     the algorithm to check if the inputs are boolean or not (from specifications)
     By defaut, consider the signal as non boolean.
 
     - [comment] : otpional, a string, if equals 'none' then don't print any result,
-    prints the result if nothing is specified
+    prints the result if nothing is specified. The print is done through logger.info
 
-    Output :
+    Outputs :
+    
+    - result : a bool, indicates if the two imput signals are the same 
+    (according to the accepted error)
+    
+    - index : time indexes of the signal.data where the differences where found
 
-    - Result : an array, wich first value is boolean, indicates if the two imput
-    signals are the same (according to the accepted error)
-    the next values are the index of the signal.data where the differences where found
+
+    - lin_reg : an array which contains first the type of the signals ('b' for 
+    boolean and 'c' for continuous), then the slope, the intercept and finally the R2 value
+    of linear regression between the two signals.
+    
     """
     n = 6 # truncation of digits in res
     result =True
@@ -53,16 +62,13 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
         lin_reg = ["b","  -","  -","  -"] #boolean signals : no linear regression
 
     else:
-        #The signals are 'reg'
+        #The signals are 'reg' (continuous)
         for i, s in enumerate(sig1):
             if s or sig2[i]: # avoid division by 0
                 if abs(2*(s-sig2[i])/(abs(s)+abs(sig2[i]))) > error:
                     result = False
                     index.append(i)
-            #else:
-             #   if abs(sig2[i]) > error :
-               #     result = [False]
-                #    index.append(i)
+                    
         a, b, r_value, p_value, std_err = stats.linregress(sig1, sig2)
         lin_reg = ["c", str(a)[0:n], str(b)[0:n], str(r_value**2)] #continuous signals : linear regression parameters
     logger.info(result)
@@ -80,6 +86,8 @@ def is_bool(signal_name, signal_names_bin):
     Input :
 
     - signal_name : a string, the name of the signal to test.
+    
+    -signal_names_bin : list of the binary files names
 
     Output :
 
@@ -109,8 +117,9 @@ def Symmetry_Channels_One_Flight(flight, error):
 
     - result_anomaly : Contains the names of the supposed equal signals wich are
     actually different. Contains as well the indexes where the differences were
-    found
-    The names are in result_anomaly[2*i] and the indexes in result_anomaly[2*i+1]
+    found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
+    The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and
+    the linear regression coefficients in result_anomaly[3*i+2]
     with i <= 0
         """
 
@@ -119,7 +128,6 @@ def Symmetry_Channels_One_Flight(flight, error):
     # Extract names of signals and sort them
     names = sorted(flight.columns.values)
 
-    result = []
     result_anomaly = []
     skip_next = False
 
@@ -139,10 +147,6 @@ def Symmetry_Channels_One_Flight(flight, error):
 
             #Test if anomaly between these two supposed equal signals
             res = SymmetryTest(signal1, signal2, error, name_i, "none")
-
-            #save the main result
-            result.append([name_i, next_name])
-            result.append(res[0])
 
             if not res[0]:
                 result_anomaly.append([name_i, next_name]) # signals names
@@ -173,8 +177,9 @@ def Symmetry_Lateral_One_Flight(flight, error):
 
     - result_anomaly : Contains the names of the supposed equal signals wich are
     actually different. Contains as well the indexes where the differences were
-    found
-    The names are in result_anomaly[2*i] and the indexes in result_anomaly[2*i+1]
+    found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
+    The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and
+    the linear regression coefficients in result_anomaly[3*i+2]
     with i <= 0
     """
 
@@ -271,7 +276,7 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
         result[1] = nm_anomaly
 
     #***********************************
-    #To do : implement calulation for the flight phases
+    #Optional : implement calulation for the flight phases
 
     return result
 
@@ -279,7 +284,7 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
 
 #%%
 
-def Analyze_results(result_sym, str_type, binary_names):
+def Analyze_results(result_sym, str_type="", binary_names):
     """
     Analyzes the results given by the symmetry test (disps number of anomalies,
     if they are bool)
@@ -289,6 +294,12 @@ def Analyze_results(result_sym, str_type, binary_names):
     - result_sym : results of a symmetry test which is : an array containing the
     names of the signals with anomalies (by pair), and the associated time indexes
     of anomaly occurences
+    
+    - str_type : type of the results given ("Channel", "Lateral" or other). By defaut
+    is set to "". 
+    
+    
+    - binary_names : list of binary files names
 
     Outputs :
 
