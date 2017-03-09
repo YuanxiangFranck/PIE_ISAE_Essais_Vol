@@ -21,18 +21,12 @@ def load_flight(path):
     flight_data = txt_parser(path)
     return flight_data
 
-def extract_sl_window(data, signals, sl_w, sl_s):
-    # sliding window width
-    sl_w = sl_w
-    # sliding window stride
-    sl_s = sl_s
-    # number of samples
-    m = (len(data)-sl_w)//sl_s+1
+def extract_sl_window(data, signals, sl_w, sl_s, n_samples):
+    return [SignalData(data.loc[i*sl_s:i*sl_s+sl_w, signals])
+            for i in range(n_samples)]
 
-    samples = [SignalData(data.loc[i*sl_s:i*sl_s+sl_w, signals]) for i in range(m)]
-    return samples
-
-def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
+def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s,
+                            n_samples, delta_type):
     assert(len(signals1) == len(signals2))
 
     def relative_delta(a_series,b_series):
@@ -48,12 +42,6 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
             res.append(np.abs(a-b))
         return res
 
-    # sliding window width
-    sl_w = sl_w
-    # sliding window stride
-    sl_s = sl_s
-    # number of samples
-    m = (len(data)-sl_w)//sl_s+1
     # Compute delta between signal and target values
     dic = {}
     for i, name in enumerate(signals1):
@@ -65,7 +53,7 @@ def extract_sl_window_delta(data, signals1, signals2, sl_w, sl_s, delta_type):
             dic[name+'_DELTA'] = absolute_delta(dat1.iloc[:, i], dat2.iloc[:, i])
     delta = pd.DataFrame(dic)
 
-    delta_samples = [SignalData(delta.iloc[i*sl_s:i*sl_s+sl_w, :]) for i in range(m)]
+    delta_samples = [SignalData(delta.iloc[i*sl_s:i*sl_s+sl_w, :]) for i in range(n_samples)]
     return delta_samples
 
 def get_feature_matrix(samples, features, normalized=False,

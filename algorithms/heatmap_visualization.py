@@ -160,7 +160,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
 
         # Compute deltas and cut signal into samples with a sliding window
         samples = extract_sl_window_delta(flight_data.data, selected_signals,
-                                          target_signals, sl_w, sl_s,
+                                          target_signals, sl_w, sl_s, n_samples,
                                           delta_type)
 
         # Extract features
@@ -171,7 +171,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
     else:
         # Cut signal into samples with a sliding window
         samples = extract_sl_window(flight_data.data, selected_signals,
-                                    sl_w, sl_s)
+                                    sl_w, sl_s, n_samples)
         # Extract features
         feature_matrix = get_feature_matrix(samples, features,
                                             normalized=False)

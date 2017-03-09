@@ -114,7 +114,7 @@ def pca_visualization(flight_data=None, features=None, signal_categories=None,
 
     # Cut signal into samples with a sliding window
     samples = extract_sl_window(flight_data.data, selected_signals,
-                                sl_w, sl_s)
+                                sl_w, sl_s, n_samples)
     # Extract features
     feature_matrix = get_feature_matrix(samples, features,
                                         normalized=False)
