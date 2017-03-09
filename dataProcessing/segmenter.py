@@ -6,14 +6,10 @@ Created on Sat Nov  12 13:25:24 2016
 
 Tool to create flight segmentation
 
-TODO : Fichier de configuration, améliorer les filtres
-TODO: ajouter des "constantes" en début de fichier au lieu de coder les valeurs en dur
-"""
-
 
 import sys,os
+import json
 sys.path.append(os.path.abspath('..'))
-import matplotlib.pyplot as plt
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter_utils import hysteresis, cut
 
@@ -55,24 +51,28 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
         keys represent names of segments and values are dictionnaries with pressure ports as keys and lists of tuples (time start,time end) as values
     """
 
-    # Relevant signal names
-    wow = 'WOW_FBK_AMSC1_CHA'
-    Za = 'ADSP1 Pressure Altitude (feet)'
-    VZa = 'ADSP1 Altitude Rate (ft/min)'
-    CAS = 'ADSP1 Calibrated Airspeed (knots)'
-    HP_controller1_chA_cmd = 'HPRSOV_CMD_STATUS_AMSC1_CHA'
-    HP_controller2_chA_cmd = 'HPRSOV_CMD_STATUS_AMSC2_CHA'
-    HP_controller1_chB_cmd = 'HPRSOV_CMD_STATUS_AMSC1_CHB'
-    HP_controller2_chB_cmd = 'HPRSOV_CMD_STATUS_AMSC2_CHB'
-    APU_controller1_chA_cmd = 'APU_BLEED_REQUEST_AMSC1_CHA'
-    APU_controller1_chB_cmd = 'APU_BLEED_REQUEST_AMSC1_CHB'
-    APU_controller2_chA_cmd = 'APU_BLEED_REQUEST_AMSC2_CHA'
-    APU_controller_2_chB_cmd = 'APU_BLEED_REQUEST_AMSC2_CHB'
-    PRSOV_controller1_chA_cmd = 'PRSOV ACTIVATED_AMSC1_CHA'
-    PRSOV_controller1_chB_cmd = 'PRSOV ACTIVATED_AMSC1_CHB'
-    PRSOV_controller2_chA_cmd = 'PRSOV ACTIVATED_AMSC2_CHA'
-    PRSOV_controller2_chB_cmd = 'PRSOV ACTIVATED_AMSC2_CHB'
+    # Config file parsing
+    with open('config.json') as json_data:
+        d = json.load(json_data)
+        time_step = d['time_step']
+        wow = d['signal_names']['wow']
+        Za = d['signal_names']['Za'][0]
+        VZa = d['signal_names']['VZa'][0]
+        CAS = d['signal_names']['CAS'][0]
+        HP_controller1_chA_cmd = d['signal_names']['HP_controller1_chA_cmd']
+        HP_controller2_chA_cmd = d['signal_names']['HP_controller2_chA_cmd']
+        HP_controller1_chB_cmd = d['signal_names']['HP_controller1_chB_cmd']
+        HP_controller2_chB_cmd = d['signal_names']['HP_controller2_chB_cmd']
+        APU_controller1_chA_cmd = d['signal_names']['APU_controller1_chA_cmd']
+        APU_controller1_chB_cmd = d['signal_names']['APU_controller1_chB_cmd']
+        APU_controller2_chA_cmd = d['signal_names']['APU_controller2_chA_cmd']
+        APU_controller2_chB_cmd = d['signal_names']['APU_controller2_chB_cmd']
+        PRSOV_controller1_chA_cmd = d['signal_names']['PRSOV_controller1_chA_cmd']
+        PRSOV_controller1_chB_cmd = d['signal_names']['PRSOV_controller1_chB_cmd']
+        PRSOV_controller2_chA_cmd = d['signal_names']['PRSOV_controller2_chA_cmd']
+        PRSOV_controller2_chB_cmd = d['signal_names']['PRSOV_controller2_chB_cmd']
 
+ 
     # Extraction of relevant signals
     HP_controller1_chA_cmd_signal = data[HP_controller1_chA_cmd]
     HP_controller2_chA_cmd_signal = data[HP_controller2_chA_cmd]
@@ -81,7 +81,7 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     APU_controller1_chA_cmd_signal = data[APU_controller1_chA_cmd]
     APU_controller1_chB_cmd_signal = data[APU_controller1_chB_cmd]
     APU_controller2_chA_cmd_signal = data[APU_controller2_chA_cmd]
-    APU_controller_2_chB_cmd_signal = data[APU_controller_2_chB_cmd]
+    APU_controller2_chB_cmd_signal = data[APU_controller2_chB_cmd]
     PRSOV_controller1_chA_cmd_signal = data[PRSOV_controller1_chA_cmd]
     PRSOV_controller1_chB_cmd_signal = data[PRSOV_controller1_chB_cmd]
     PRSOV_controller2_chA_cmd_signal = data[PRSOV_controller2_chA_cmd]
@@ -89,11 +89,11 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
 
     hp1 = (HP_controller1_chA_cmd_signal==1) | (HP_controller1_chB_cmd_signal==1)
     hp2 = (HP_controller2_chA_cmd_signal==1) | (HP_controller2_chB_cmd_signal==1)
-    apu = (APU_controller1_chA_cmd_signal==1) | (APU_controller1_chB_cmd_signal==1) | (APU_controller2_chA_cmd_signal==1) | (APU_controller_2_chB_cmd_signal==1)
+    apu = (APU_controller1_chA_cmd_signal==1) | (APU_controller1_chB_cmd_signal==1) | (APU_controller2_chA_cmd_signal==1) | (APU_controller2_chB_cmd_signal==1)
     ip1 = (hp1==0) & (apu==0) & ((PRSOV_controller1_chA_cmd_signal==1) | (PRSOV_controller1_chB_cmd_signal==1))
     ip2 = (hp2==0) & (apu==0) & ((PRSOV_controller2_chA_cmd_signal==1) | (PRSOV_controller2_chB_cmd_signal==1))
     no_bleed = ~(hp1|hp2|ip1|ip2|apu)
-    time_step = 1 
+
 
 
     wow_signal = data[wow]
@@ -157,34 +157,27 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
 
 if __name__ == "__main__":
     
-    import glob
+    # import glob
     
-    results = {}
-    for filename in glob.iglob('../../Desktop/Articles Liebherr/pie_data/*.txt'):
-        print('\n' + filename)
-        flight_data = txt_parser(filename)
-        intervals, ports, ports_full_flight = segment(flight_data)
-        print('landing : {}'.format(intervals['landing']))
-        print('take_off : {}'.format(intervals['take_off']))
-        print('otg : {}'.format(intervals['otg']))
+    # results = {}
+    # for filename in glob.iglob('../../Desktop/Articles Liebherr/pie_data/*.txt'):
+    #     print('\n' + filename)
+    #     flight_data = txt_parser(filename)
+    #     intervals, ports, ports_full_flight = segment(flight_data)
+    #     print('landing : {}'.format(intervals['landing']))
+    #     print('take_off : {}'.format(intervals['take_off']))
+    #     print('otg : {}'.format(intervals['otg']))
         
-
+    import plotter
     # Chemin relatif vers le fichier txt de données
-    #data_path = '../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt'
+    data_path = '../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt'
 
 
     # data contient un DataFrame pandas
-    #flight_data = txt_parser(data_path)
+    flight_data = txt_parser(data_path)
+    intervals, ports, ports_full_flight = segment(flight_data)
 
-    #for key in seg.keys():
-    #    print('Poids du segment {} : {}'.format(key,weights[key]))
-    #    print(seg[key])
-    #    print('#########')
-    #print(ports['otg'])
-    #weights_ports = get_weights_ports(ports,data)
-    #print(weights_ports)
-
-    #plot_seg(flight_data)
-    #plot_ports_seg(flight_data)
-    #plot_ports_sides(flight_data)
-    #plot_ports(flight_data)
+    plotter.plot_segments_pie(intervals, flight_data)
+    plotter.plot_ports_seg(ports)
+    plotter.plot_ports_sides(ports_full_flight)
+    plotter.plot_ports(ports_full_flight, flight_data)
