@@ -1,9 +1,9 @@
 """
 Script to parse the data file
 """
-import logging
 import re
 import pandas as pd
+from dataProcessing.utils import logger
 
 
 def arguments_parser():
@@ -12,19 +12,9 @@ def arguments_parser():
     # Arguments
     parser = argparse.ArgumentParser(description=decription, formatter_class=RawTextHelpFormatter)
     parser.add_argument('txt_file', help='path to the text file (*.txt)')
-    # Options
-    parser.add_argument('-v', '--verbose', default=False, action="count",
-                        help='Be more verbose\nNo option : warning level\n-v : info level\n -vv debug level')
     # Parse the arguments
     arguments = parser.parse_args(sys.argv[1:])
-    logging.debug('args : '+str(arguments))
-    # Basic arguments handling: Verbose / out path
-    level = logging.INFO
-    if arguments.verbose == 1:
-        level = logging.INFO
-    elif arguments.verbose >= 2:
-        level = logging.DEBUG
-    logging.basicConfig(format='%(levelname)s: %(message)s', level=level)
+    logger.debug('args : '+str(arguments))
     return arguments
 
 
@@ -62,7 +52,7 @@ def txt_parser(file_name, name_line=8, nb_lines_to_skip=11, target_names=[]):
             df[c_name] = int(m.group(0))
         # Check again if target is in data
         if c_name not in df.columns:
-            logging.warn("target {}: not in Data".format(c_name))
+            logger.warning("target {}: not in Data".format(c_name))
     return df
 
 
@@ -75,5 +65,5 @@ Script to parse the data file
     # Parse arguments
     args = arguments_parser()
     # Parse the data
-    logging.info("Read: "+ args.txt_file+"\n")
+    logger.info("Read: "+ args.txt_file+"\n")
     data = txt_parser(args.txt_file)

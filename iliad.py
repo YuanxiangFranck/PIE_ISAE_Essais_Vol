@@ -1,17 +1,20 @@
 """
 ILIAD: Isae LIebherr Anomaly Detection
 """
-import json
 import logging
+import json
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
 from dataProcessing.summary import summary
 from dataProcessing import plotter
 from dataProcessing import utils
+from dataProcessing.utils import logger
 from algorithms.SignalData import SignalData
 from algorithms.heatmap_visualization import heatmap
 from algorithms.ocsvm_anomaly_detection import ocsvm_detection
 from algorithms.pca_visualization import pca_visualization
+from algorithms.symmetry_anomaly_detection import asymmetry_detection
+
 
 class Iliad:
     """
@@ -38,18 +41,20 @@ class Iliad:
         self.name = path.split("/")[-1][:-4]
         with open(config_path) as f_config:
             self.config = json.load(f_config)
+        # Set logger (iliad)
         if verbose:
             level = logging.INFO
         else:
             level = logging.WARNING
-        logging.basicConfig(format='%(levelname)s: %(message)s', level=level)
+        # Create logger
+        logger.setLevel(level)
 
         # Parse data and compute signal_data
-        logging.info("Start parsing: {}".format(path))
+        logger.info("Start parsing: {}".format(path))
         self.signal_data = SignalData(txt_parser(path, target_names=self.config["target"]))
 
         # Compute flight segmentation
-        logging.info("Start computing flight segmentation")
+        logger.info("Start computing flight segmentation")
         self.phases, self.ports, self.ports_full_flight = segment(self.signal_data._raw_data)
         self._phases_idx = plotter.compute_phases_idx(self.phases, self.data.Time)
         self.signal_data.set_flight_segments(self.phases, self.ports_full_flight)
@@ -106,11 +111,11 @@ class Iliad:
                        signal_category='regulation',
                        signal_list=None,
                        time_window='auto',
-                       n_segments='auto',
+                       n_segments=100,
                        hclust=False,
                        save=True,
                        out_filename='auto',
-                       out_dir='Resultats/',
+                       out_dir='./',
                        show_plot=True,
                        out_format='pdf',
                        annot=False,
@@ -161,6 +166,7 @@ class Iliad:
                    out_filename='auto',
                    show_plot=True,
                    out_format='png'):
+        "TODO"
         pca_visualization(flight_data=self.signal_data, features=features,
                           signal_categories=signal_categories,
                           signal_list=signal_list, time_window=time_window,
@@ -168,6 +174,18 @@ class Iliad:
                           flight_name=self.name, out_dir=out_dir,
                           out_filename=out_filename, show_plot=show_plot,
                           out_format=out_format, conf=self.config)
+
+    def export_asymmetry_detection(self, error=0.01,
+                                   save_csv=True,
+                                   save_txt=True,
+                                   out_dir='.',
+                                   out_filename='auto'):
+        "TODO!!!!"
+        asymmetry_detection(flight_data=self.signal_data, error=error, save_csv=save_csv,
+                            out_filename=out_filename, flight_name=self.name,
+                            out_dir=out_dir, save_txt=save_txt, conf=self.config)
+
+
 class Iliad_n_flight:
     "class to compare multiple flights"
     pass
