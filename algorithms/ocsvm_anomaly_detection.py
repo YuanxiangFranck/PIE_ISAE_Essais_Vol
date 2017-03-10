@@ -79,9 +79,6 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
     # Initialize variables
     anomalies = {}
 
-    # Compute flight phases and ports
-    flight_data.compute_flight_segmentation()
-
     # Set sliding window parameters
     if n_segments != 'auto':
         # Assert that the number of segments is positive

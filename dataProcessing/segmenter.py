@@ -16,12 +16,15 @@ from dataProcessing.segmenter_utils import hysteresis, cut
 plot_colors = ['gold', 'yellowgreen', 'orange', 'lightskyblue', 'dodgerblue',
               'indianred', 'orchid']
 
-def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, cruise=True, descent=True):
+def segment(data, config, otg=True, take_off=True, landing=True, climb=True, hold=True, cruise=True, descent=True):
     """
     Extract flight segments and corresponding pressure ports from a dataframe
 
     :param data: pd.DataFrame
         flight data
+
+    :param config: dict
+        flight data config
 
     :param otg: boolean
         True to get otg segments
@@ -52,27 +55,25 @@ def segment(data, otg=True, take_off=True, landing=True, climb=True, hold=True, 
     """
 
     # Config file parsing
-    with open('config.json') as json_data:
-        d = json.load(json_data)
-        time_step = d['time_step']
-        wow = d['signal_names']['wow']
-        Za = d['signal_names']['Za'][0]
-        VZa = d['signal_names']['VZa'][0]
-        CAS = d['signal_names']['CAS'][0]
-        HP_controller1_chA_cmd = d['signal_names']['HP_controller1_chA_cmd']
-        HP_controller2_chA_cmd = d['signal_names']['HP_controller2_chA_cmd']
-        HP_controller1_chB_cmd = d['signal_names']['HP_controller1_chB_cmd']
-        HP_controller2_chB_cmd = d['signal_names']['HP_controller2_chB_cmd']
-        APU_controller1_chA_cmd = d['signal_names']['APU_controller1_chA_cmd']
-        APU_controller1_chB_cmd = d['signal_names']['APU_controller1_chB_cmd']
-        APU_controller2_chA_cmd = d['signal_names']['APU_controller2_chA_cmd']
-        APU_controller2_chB_cmd = d['signal_names']['APU_controller2_chB_cmd']
-        PRSOV_controller1_chA_cmd = d['signal_names']['PRSOV_controller1_chA_cmd']
-        PRSOV_controller1_chB_cmd = d['signal_names']['PRSOV_controller1_chB_cmd']
-        PRSOV_controller2_chA_cmd = d['signal_names']['PRSOV_controller2_chA_cmd']
-        PRSOV_controller2_chB_cmd = d['signal_names']['PRSOV_controller2_chB_cmd']
+    time_step = config['time_step']
+    wow = config['signal_names']['wow']
+    Za = config['signal_names']['Za'][0]
+    VZa = config['signal_names']['VZa'][0]
+    CAS = config['signal_names']['CAS'][0]
+    HP_controller1_chA_cmd = config['signal_names']['HP_controller1_chA_cmd']
+    HP_controller2_chA_cmd = config['signal_names']['HP_controller2_chA_cmd']
+    HP_controller1_chB_cmd = config['signal_names']['HP_controller1_chB_cmd']
+    HP_controller2_chB_cmd = config['signal_names']['HP_controller2_chB_cmd']
+    APU_controller1_chA_cmd = config['signal_names']['APU_controller1_chA_cmd']
+    APU_controller1_chB_cmd = config['signal_names']['APU_controller1_chB_cmd']
+    APU_controller2_chA_cmd = config['signal_names']['APU_controller2_chA_cmd']
+    APU_controller2_chB_cmd = config['signal_names']['APU_controller2_chB_cmd']
+    PRSOV_controller1_chA_cmd = config['signal_names']['PRSOV_controller1_chA_cmd']
+    PRSOV_controller1_chB_cmd = config['signal_names']['PRSOV_controller1_chB_cmd']
+    PRSOV_controller2_chA_cmd = config['signal_names']['PRSOV_controller2_chA_cmd']
+    PRSOV_controller2_chB_cmd = config['signal_names']['PRSOV_controller2_chB_cmd']
 
- 
+
     # Extraction of relevant signals
     HP_controller1_chA_cmd_signal = data[HP_controller1_chA_cmd]
     HP_controller2_chA_cmd_signal = data[HP_controller2_chA_cmd]

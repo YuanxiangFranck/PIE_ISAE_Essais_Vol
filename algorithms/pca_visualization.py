@@ -71,9 +71,6 @@ def pca_visualization(flight_data=None, features=None, signal_categories=None,
         """No configuration specified ! The conf argument must be set to the
         current configuration object.""")
 
-    # Compute flight phases and ports
-    flight_data.compute_flight_segmentation()
-
     # Set sliding window parameters
     if n_segments != 'auto':
         # Assert that the number of segments is positive
