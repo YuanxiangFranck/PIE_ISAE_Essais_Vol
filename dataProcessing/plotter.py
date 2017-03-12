@@ -124,7 +124,7 @@ def plot_data(data, signal1, signal2='Time', fig=plt):
                ncol=2, mode="expand", borderaxespad=0.)
 
 
-def plot(data, phases_idx, signals):
+def plot(data, phases_idx, phases_colors, signals):
     """
     Plot a list of signals
 
@@ -132,6 +132,8 @@ def plot(data, phases_idx, signals):
         dataFrame with data to plot
     :param phases_idx: dict
         dict with phases as key and Series of bool (True if in phase)
+    :param phases_colors : dict
+        phases colors form config
     :param signals: list
         List of signal name
     """
@@ -139,7 +141,7 @@ def plot(data, phases_idx, signals):
     par = host.twinx()
     for name in signals:
         plot_data(data, name, fig=host)
-    plot_phases(data.Time, phases_idx, par)
+    plot_phases(data.Time, phases_idx, phases_colors, par)
     plt.show()
 
 

@@ -73,7 +73,8 @@ class Iliad:
     ######################
     def plot(self, *signals):
         "Use plotter to plot signals, see plotter.plot"
-        plotter.plot(self.data, self._phases_idx, signals)
+        plotter.plot(self.data, self._phases_idx, self.config["phases_colors"],
+                     signals)
 
     def plot_phases(self):
         "Use plotter to plot phases, see plotter.plot"
@@ -83,7 +84,7 @@ class Iliad:
     def plot_segments_pie(self):
         "plot phases within a pie"
         plotter.plot_segments_pie(self.phases, self.data,
-                            self.config["phases_colors"])
+                                  self.config["phases_colors"])
 
     def plot_ports_seg(self):
         "plot port usage on each segment on a pie chart, see plotter.plot_ports_seg"
