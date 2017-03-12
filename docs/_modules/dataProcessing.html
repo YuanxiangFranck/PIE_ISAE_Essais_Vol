@@ -118,7 +118,7 @@ colors for each phases</td>
 
 <dl class="function">
 <dt id="dataProcessing.plotter.plot">
-<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>data</em>, <em>phases_idx</em>, <em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>data</em>, <em>phases_idx</em>, <em>phases_colors</em>, <em>signals</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a list of signals</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -129,10 +129,21 @@ colors for each phases</td>
 dataFrame with data to plot</li>
 <li><strong>phases_idx</strong> &#8211; dict
 dict with phases as key and Series of bool (True if in phase)</li>
-<li><strong>signals</strong> &#8211; list
-List of signal name</li>
 </ul>
 </td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>:param phases_colors</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">dict</span><dd>phases colors form config</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>signals</strong> &#8211; list
+List of signal name</td>
 </tr>
 </tbody>
 </table>
@@ -140,7 +151,7 @@ List of signal name</li>
 
 <dl class="function">
 <dt id="dataProcessing.plotter.plot_data">
-<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_data</code><span class="sig-paren">(</span><em>data</em>, <em>signal1</em>, <em>signal2='Time'</em>, <em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie2016/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_data</code><span class="sig-paren">(</span><em>data</em>, <em>signal1</em>, <em>signal2='Time'</em>, <em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie_isae/local/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot one data over a second data in a scatter cloud
 :param data: pd.DataFrame</p>
 <blockquote>
@@ -168,7 +179,7 @@ This attribute is used for muliple y axis plot</dd>
 
 <dl class="function">
 <dt id="dataProcessing.plotter.plot_phases">
-<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_phases</code><span class="sig-paren">(</span><em>time</em>, <em>flight_phases_idx</em>, <em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie2016/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_phases</code><span class="sig-paren">(</span><em>time</em>, <em>flight_phases_idx</em>, <em>phases_colors</em>, <em>fig=&lt;module 'matplotlib.pyplot' from '/home/franck/.virtualenvs/pie_isae/local/lib/python3.5/site-packages/matplotlib/pyplot.py'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_phases"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_phases" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot on a figure the flight phases
 see the attribut segments_color for color selection</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -191,7 +202,7 @@ axes subplot (using twinx) to plot phases on another y axis</li>
 
 <dl class="function">
 <dt id="dataProcessing.plotter.plot_ports">
-<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_ports</code><span class="sig-paren">(</span><em>ports_full_flight</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_ports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_ports" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_ports</code><span class="sig-paren">(</span><em>ports_full_flight</em>, <em>data</em>, <em>ports_colors</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_ports"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_ports" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a pie chart of the percentage of time spent on each pressure port</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -211,7 +222,7 @@ data of the flight</li>
 
 <dl class="function">
 <dt id="dataProcessing.plotter.plot_ports_seg">
-<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_ports_seg</code><span class="sig-paren">(</span><em>ports</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_ports_seg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_ports_seg" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_ports_seg</code><span class="sig-paren">(</span><em>raw_ports</em>, <em>ports_colors</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_ports_seg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_ports_seg" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each phase, plot one pie chart for each side of the time spent on each port</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -226,7 +237,7 @@ ports usage for each segments</td>
 
 <dl class="function">
 <dt id="dataProcessing.plotter.plot_ports_sides">
-<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_ports_sides</code><span class="sig-paren">(</span><em>ports_full_flight</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_ports_sides"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_ports_sides" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_ports_sides</code><span class="sig-paren">(</span><em>ports_full_flight</em>, <em>ports_colors</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_ports_sides"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_ports_sides" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot one pie chart for each side of the time spent on each port</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -241,7 +252,7 @@ port usage on full filght</td>
 
 <dl class="function">
 <dt id="dataProcessing.plotter.plot_segments_pie">
-<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_segments_pie</code><span class="sig-paren">(</span><em>seg</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_segments_pie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_segments_pie" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.plotter.</code><code class="descname">plot_segments_pie</code><span class="sig-paren">(</span><em>seg</em>, <em>data</em>, <em>phases_colors</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#plot_segments_pie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.plot_segments_pie" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a pie chart of the percentage of time spent on each segment
 :param seg: dict</p>
 <blockquote>
@@ -263,11 +274,9 @@ the data</td>
 <p>Created on Sat Nov  12 13:25:24 2016</p>
 <p>&#64;author: Quentin</p>
 <p>Tool to create flight segmentation</p>
-<p>TODO : Fichier de configuration, améliorer les filtres
-TODO: ajouter des &#8220;constantes&#8221; en début de fichier au lieu de coder les valeurs en dur</p>
 <dl class="function">
 <dt id="dataProcessing.segmenter.segment">
-<code class="descclassname">dataProcessing.segmenter.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>data</em>, <em>otg=True</em>, <em>take_off=True</em>, <em>landing=True</em>, <em>climb=True</em>, <em>hold=True</em>, <em>cruise=True</em>, <em>descent=True</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/segmenter.html#segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.segmenter.segment" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.segmenter.</code><code class="descname">segment</code><span class="sig-paren">(</span><em>data</em>, <em>config</em>, <em>otg=True</em>, <em>take_off=True</em>, <em>landing=True</em>, <em>climb=True</em>, <em>hold=True</em>, <em>cruise=True</em>, <em>descent=True</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/segmenter.html#segment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.segmenter.segment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract flight segments and corresponding pressure ports from a dataframe</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -276,6 +285,8 @@ TODO: ajouter des &#8220;constantes&#8221; en début de fichier au lieu de coder
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>data</strong> &#8211; pd.DataFrame
 flight data</li>
+<li><strong>config</strong> &#8211; dict
+flight data config</li>
 <li><strong>otg</strong> &#8211; boolean
 True to get otg segments</li>
 <li><strong>take_off</strong> &#8211; boolean
@@ -428,6 +439,24 @@ Dictionnary with lists of tuples (t_start, t_end) as values</td>
 <dt>:out</dt>
  <span class="classifier-delimiter">:</span> <span class="classifier">dict</span><dd>dict with the index of the different phases</dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="dataProcessing.summary.compute_ports_idx">
+<code class="descclassname">dataProcessing.summary.</code><code class="descname">compute_ports_idx</code><span class="sig-paren">(</span><em>ports_full_flight</em>, <em>time</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/summary.html#compute_ports_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.summary.compute_ports_idx" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processe ports to compute idx for js plot
+:param ports_full_flight : dict</p>
+<blockquote>
+<div>dict with list of tuple of start end of each port</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>time</strong> &#8211; Series
+pd.series with time of the data</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">

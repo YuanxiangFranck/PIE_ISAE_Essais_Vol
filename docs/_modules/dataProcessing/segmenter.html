@@ -50,27 +50,26 @@
 <span class="sd">@author: Quentin</span>
 
 <span class="sd">Tool to create flight segmentation</span>
-
-<span class="sd">TODO : Fichier de configuration, améliorer les filtres</span>
-<span class="sd">TODO: ajouter des &quot;constantes&quot; en début de fichier au lieu de coder les valeurs en dur</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span><span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="s1">&#39;..&#39;</span><span class="p">))</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">dataProcessing.parser</span> <span class="k">import</span> <span class="n">txt_parser</span>
 <span class="kn">from</span> <span class="nn">dataProcessing.segmenter_utils</span> <span class="k">import</span> <span class="n">hysteresis</span><span class="p">,</span> <span class="n">cut</span>
 
 <span class="n">plot_colors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;gold&#39;</span><span class="p">,</span> <span class="s1">&#39;yellowgreen&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;lightskyblue&#39;</span><span class="p">,</span> <span class="s1">&#39;dodgerblue&#39;</span><span class="p">,</span>
               <span class="s1">&#39;indianred&#39;</span><span class="p">,</span> <span class="s1">&#39;orchid&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="segment"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.segmenter.segment">[docs]</a><span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">otg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">take_off</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">landing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">climb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cruise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">descent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="segment"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.segmenter.segment">[docs]</a><span class="k">def</span> <span class="nf">segment</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="n">otg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">take_off</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">landing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">climb</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hold</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cruise</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">descent</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Extract flight segments and corresponding pressure ports from a dataframe</span>
 
 <span class="sd">    :param data: pd.DataFrame</span>
 <span class="sd">        flight data</span>
+
+<span class="sd">    :param config: dict</span>
+<span class="sd">        flight data config</span>
 
 <span class="sd">    :param otg: boolean</span>
 <span class="sd">        True to get otg segments</span>
@@ -100,23 +99,25 @@
 <span class="sd">        keys represent names of segments and values are dictionnaries with pressure ports as keys and lists of tuples (time start,time end) as values</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="c1"># Relevant signal names</span>
-    <span class="n">wow</span> <span class="o">=</span> <span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span>
-    <span class="n">Za</span> <span class="o">=</span> <span class="s1">&#39;ADSP1 Pressure Altitude (feet)&#39;</span>
-    <span class="n">VZa</span> <span class="o">=</span> <span class="s1">&#39;ADSP1 Altitude Rate (ft/min)&#39;</span>
-    <span class="n">CAS</span> <span class="o">=</span> <span class="s1">&#39;ADSP1 Calibrated Airspeed (knots)&#39;</span>
-    <span class="n">HP_controller1_chA_cmd</span> <span class="o">=</span> <span class="s1">&#39;HPRSOV_CMD_STATUS_AMSC1_CHA&#39;</span>
-    <span class="n">HP_controller2_chA_cmd</span> <span class="o">=</span> <span class="s1">&#39;HPRSOV_CMD_STATUS_AMSC2_CHA&#39;</span>
-    <span class="n">HP_controller1_chB_cmd</span> <span class="o">=</span> <span class="s1">&#39;HPRSOV_CMD_STATUS_AMSC1_CHB&#39;</span>
-    <span class="n">HP_controller2_chB_cmd</span> <span class="o">=</span> <span class="s1">&#39;HPRSOV_CMD_STATUS_AMSC2_CHB&#39;</span>
-    <span class="n">APU_controller1_chA_cmd</span> <span class="o">=</span> <span class="s1">&#39;APU_BLEED_REQUEST_AMSC1_CHA&#39;</span>
-    <span class="n">APU_controller1_chB_cmd</span> <span class="o">=</span> <span class="s1">&#39;APU_BLEED_REQUEST_AMSC1_CHB&#39;</span>
-    <span class="n">APU_controller2_chA_cmd</span> <span class="o">=</span> <span class="s1">&#39;APU_BLEED_REQUEST_AMSC2_CHA&#39;</span>
-    <span class="n">APU_controller_2_chB_cmd</span> <span class="o">=</span> <span class="s1">&#39;APU_BLEED_REQUEST_AMSC2_CHB&#39;</span>
-    <span class="n">PRSOV_controller1_chA_cmd</span> <span class="o">=</span> <span class="s1">&#39;PRSOV ACTIVATED_AMSC1_CHA&#39;</span>
-    <span class="n">PRSOV_controller1_chB_cmd</span> <span class="o">=</span> <span class="s1">&#39;PRSOV ACTIVATED_AMSC1_CHB&#39;</span>
-    <span class="n">PRSOV_controller2_chA_cmd</span> <span class="o">=</span> <span class="s1">&#39;PRSOV ACTIVATED_AMSC2_CHA&#39;</span>
-    <span class="n">PRSOV_controller2_chB_cmd</span> <span class="o">=</span> <span class="s1">&#39;PRSOV ACTIVATED_AMSC2_CHB&#39;</span>
+    <span class="c1"># Config file parsing</span>
+    <span class="n">time_step</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;time_step&#39;</span><span class="p">]</span>
+    <span class="n">wow</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;wow&#39;</span><span class="p">]</span>
+    <span class="n">Za</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;Za&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">VZa</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;VZa&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">CAS</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;CAS&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">HP_controller1_chA_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;HP_controller1_chA_cmd&#39;</span><span class="p">]</span>
+    <span class="n">HP_controller2_chA_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;HP_controller2_chA_cmd&#39;</span><span class="p">]</span>
+    <span class="n">HP_controller1_chB_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;HP_controller1_chB_cmd&#39;</span><span class="p">]</span>
+    <span class="n">HP_controller2_chB_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;HP_controller2_chB_cmd&#39;</span><span class="p">]</span>
+    <span class="n">APU_controller1_chA_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;APU_controller1_chA_cmd&#39;</span><span class="p">]</span>
+    <span class="n">APU_controller1_chB_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;APU_controller1_chB_cmd&#39;</span><span class="p">]</span>
+    <span class="n">APU_controller2_chA_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;APU_controller2_chA_cmd&#39;</span><span class="p">]</span>
+    <span class="n">APU_controller2_chB_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;APU_controller2_chB_cmd&#39;</span><span class="p">]</span>
+    <span class="n">PRSOV_controller1_chA_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;PRSOV_controller1_chA_cmd&#39;</span><span class="p">]</span>
+    <span class="n">PRSOV_controller1_chB_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;PRSOV_controller1_chB_cmd&#39;</span><span class="p">]</span>
+    <span class="n">PRSOV_controller2_chA_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;PRSOV_controller2_chA_cmd&#39;</span><span class="p">]</span>
+    <span class="n">PRSOV_controller2_chB_cmd</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s1">&#39;signal_names&#39;</span><span class="p">][</span><span class="s1">&#39;PRSOV_controller2_chB_cmd&#39;</span><span class="p">]</span>
+
 
     <span class="c1"># Extraction of relevant signals</span>
     <span class="n">HP_controller1_chA_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">HP_controller1_chA_cmd</span><span class="p">]</span>
@@ -126,7 +127,7 @@
     <span class="n">APU_controller1_chA_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">APU_controller1_chA_cmd</span><span class="p">]</span>
     <span class="n">APU_controller1_chB_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">APU_controller1_chB_cmd</span><span class="p">]</span>
     <span class="n">APU_controller2_chA_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">APU_controller2_chA_cmd</span><span class="p">]</span>
-    <span class="n">APU_controller_2_chB_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">APU_controller_2_chB_cmd</span><span class="p">]</span>
+    <span class="n">APU_controller2_chB_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">APU_controller2_chB_cmd</span><span class="p">]</span>
     <span class="n">PRSOV_controller1_chA_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">PRSOV_controller1_chA_cmd</span><span class="p">]</span>
     <span class="n">PRSOV_controller1_chB_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">PRSOV_controller1_chB_cmd</span><span class="p">]</span>
     <span class="n">PRSOV_controller2_chA_cmd_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">PRSOV_controller2_chA_cmd</span><span class="p">]</span>
@@ -134,11 +135,11 @@
 
     <span class="n">hp1</span> <span class="o">=</span> <span class="p">(</span><span class="n">HP_controller1_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">HP_controller1_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">hp2</span> <span class="o">=</span> <span class="p">(</span><span class="n">HP_controller2_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">HP_controller2_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">apu</span> <span class="o">=</span> <span class="p">(</span><span class="n">APU_controller1_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">APU_controller1_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">APU_controller2_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">APU_controller_2_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">apu</span> <span class="o">=</span> <span class="p">(</span><span class="n">APU_controller1_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">APU_controller1_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">APU_controller2_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">APU_controller2_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">ip1</span> <span class="o">=</span> <span class="p">(</span><span class="n">hp1</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">apu</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="n">PRSOV_controller1_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">PRSOV_controller1_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">ip2</span> <span class="o">=</span> <span class="p">(</span><span class="n">hp2</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">apu</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">((</span><span class="n">PRSOV_controller2_chA_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">PRSOV_controller2_chB_cmd_signal</span><span class="o">==</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">no_bleed</span> <span class="o">=</span> <span class="o">~</span><span class="p">(</span><span class="n">hp1</span><span class="o">|</span><span class="n">hp2</span><span class="o">|</span><span class="n">ip1</span><span class="o">|</span><span class="n">ip2</span><span class="o">|</span><span class="n">apu</span><span class="p">)</span>
-    <span class="n">time_step</span> <span class="o">=</span> <span class="mi">1</span> 
+
 
 
     <span class="n">wow_signal</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">wow</span><span class="p">]</span>
@@ -202,37 +203,30 @@
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     
-    <span class="kn">import</span> <span class="nn">glob</span>
+    <span class="c1"># import glob</span>
     
-    <span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">iglob</span><span class="p">(</span><span class="s1">&#39;../../Desktop/Articles Liebherr/pie_data/*.txt&#39;</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">filename</span><span class="p">)</span>
-        <span class="n">flight_data</span> <span class="o">=</span> <span class="n">txt_parser</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-        <span class="n">intervals</span><span class="p">,</span> <span class="n">ports</span><span class="p">,</span> <span class="n">ports_full_flight</span> <span class="o">=</span> <span class="n">segment</span><span class="p">(</span><span class="n">flight_data</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;landing : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;landing&#39;</span><span class="p">]))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;take_off : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;take_off&#39;</span><span class="p">]))</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;otg : </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">intervals</span><span class="p">[</span><span class="s1">&#39;otg&#39;</span><span class="p">]))</span>
+    <span class="c1"># results = {}</span>
+    <span class="c1"># for filename in glob.iglob(&#39;../../Desktop/Articles Liebherr/pie_data/*.txt&#39;):</span>
+    <span class="c1">#     print(&#39;\n&#39; + filename)</span>
+    <span class="c1">#     flight_data = txt_parser(filename)</span>
+    <span class="c1">#     intervals, ports, ports_full_flight = segment(flight_data)</span>
+    <span class="c1">#     print(&#39;landing : {}&#39;.format(intervals[&#39;landing&#39;]))</span>
+    <span class="c1">#     print(&#39;take_off : {}&#39;.format(intervals[&#39;take_off&#39;]))</span>
+    <span class="c1">#     print(&#39;otg : {}&#39;.format(intervals[&#39;otg&#39;]))</span>
         
-
+    <span class="kn">import</span> <span class="nn">plotter</span>
     <span class="c1"># Chemin relatif vers le fichier txt de données</span>
-    <span class="c1">#data_path = &#39;../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt&#39;</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;../../Desktop/Articles Liebherr/pie_data/E190-E2_20001_0088_29574_53580_request.txt&#39;</span>
 
 
     <span class="c1"># data contient un DataFrame pandas</span>
-    <span class="c1">#flight_data = txt_parser(data_path)</span>
+    <span class="n">flight_data</span> <span class="o">=</span> <span class="n">txt_parser</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="n">intervals</span><span class="p">,</span> <span class="n">ports</span><span class="p">,</span> <span class="n">ports_full_flight</span> <span class="o">=</span> <span class="n">segment</span><span class="p">(</span><span class="n">flight_data</span><span class="p">)</span>
 
-    <span class="c1">#for key in seg.keys():</span>
-    <span class="c1">#    print(&#39;Poids du segment {} : {}&#39;.format(key,weights[key]))</span>
-    <span class="c1">#    print(seg[key])</span>
-    <span class="c1">#    print(&#39;#########&#39;)</span>
-    <span class="c1">#print(ports[&#39;otg&#39;])</span>
-    <span class="c1">#weights_ports = get_weights_ports(ports,data)</span>
-    <span class="c1">#print(weights_ports)</span>
-
-    <span class="c1">#plot_seg(flight_data)</span>
-    <span class="c1">#plot_ports_seg(flight_data)</span>
-    <span class="c1">#plot_ports_sides(flight_data)</span>
-    <span class="c1">#plot_ports(flight_data)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_segments_pie</span><span class="p">(</span><span class="n">intervals</span><span class="p">,</span> <span class="n">flight_data</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_ports_seg</span><span class="p">(</span><span class="n">ports</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_ports_sides</span><span class="p">(</span><span class="n">ports_full_flight</span><span class="p">)</span>
+    <span class="n">plotter</span><span class="o">.</span><span class="n">plot_ports</span><span class="p">(</span><span class="n">ports_full_flight</span><span class="p">,</span> <span class="n">flight_data</span><span class="p">)</span>
 </pre></div>
 
           </div>
