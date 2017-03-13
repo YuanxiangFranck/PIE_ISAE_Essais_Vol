@@ -7,9 +7,6 @@ Created on Fri Feb 24 14:01:52 2017
 ILIAD
 
 Heatmap visualization of features on time segments
-
-TO DO:
-    * docstring
 """
 
 # Standard imports
@@ -414,29 +411,10 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
             plt.clf()
 
     # Generate heatmaps
-    for k in range(n_heatmaps):
-        create_heatmap(k, k*n_sig, (k+1)*n_sig)
-
-    # Make last heatmap if needed
-    create_heatmap(k+1, (k+1)*n_sig, len(selected_signals))
-
-
-if __name__ == '__main__':
-
-    from flight_analysis_fun import load_flight
-    from flight_names import flight_names
-    from signal_names import *
-    flight_name = flight_names[0]
-    path = '../../data/'
-    data = load_flight(path+flight_name)
-
-    conf = {'target_precisions_path': 'target_precisions.csv',
-            'regulation': signal_names_regul, 'target': target_names_regul,
-            'binary': signal_names_bin, 'endogene': signal_names_endogene}
-
-    signal_data = SignalData(data)
-    signal_data.compute_flight_segmentation()
-    heatmap(flight_data=signal_data, feature='off_regulation_crossings',
-            signal_category='regulation', n_segments=50,
-            flight_name=flight_name, hclust=True,
-            out_dir='../../Resultats/test/', show_plot=False, conf=conf)
+    if n_heatmaps == 0:
+        create_heatmap(0, 0, feature_matrix.shape[0])
+    else:
+        for k in range(n_heatmaps):
+            create_heatmap(k, k*n_sig, (k+1)*n_sig)
+        # Make last heatmap if needed
+        create_heatmap(k+1, (k+1)*n_sig, feature_matrix.shape[0])
