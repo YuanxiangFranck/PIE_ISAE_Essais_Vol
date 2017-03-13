@@ -10,9 +10,9 @@ Visualization of n flights
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from parser import txt_parser
-from segmenter import segment
-from segmenter_utils import get_weights
+from dataProcessing.parser import txt_parser
+from dataProcessing.segmenter import segment
+from dataProcessing.segmenter_utils import get_weights
 from sklearn.decomposition import PCA
 
 
