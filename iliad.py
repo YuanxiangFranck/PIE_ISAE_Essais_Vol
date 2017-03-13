@@ -282,7 +282,38 @@ class Iliad:
                                    save_txt=True,
                                    out_dir='.',
                                    out_filename='auto'):
-        "TODO!!!!"
+        """
+        Runs the symmetry test for both lateral and channel symmetries : finds the
+        signals which are expected to be equal but actually are different, gives the
+        duration of anomaly of each pair and calculates the linear regression coefficients for 
+        regulation signals.
+    
+        Inputs :
+    
+        - flight_data : must be an instance of SignalData. Contains all the data
+        for the flight to analyse.
+    
+        - error : relative error used to compare a pair of continuous signals and
+        detect anomalies. Is set to 0.01 (1%) by default.
+    
+        - save_csv : boolean for saving the results in two .csv files (1 for channel
+        and 1 for lateral dissymmetry)
+    
+        - save_txt : boolean for saving the results into one .txt file (to open with
+        bloc note for better visualisation)
+    
+        - flight_name : a string, contains the name of the flight.
+    
+        - out_dir : a string that indicates the relative output directory, in case
+        of saving results
+    
+        - out_filename : name of the .txt saving file name, and part of the
+        two .csv saving file names. If not defined or 'auto', then the format will be
+        [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
+    
+        - conf : used for configuration (it needs to contain the list of boolean signals)
+
+        """
         asymmetry_detection(flight_data=self.signal_data, error=error, save_csv=save_csv,
                             out_filename=out_filename, flight_name=self.name,
                             out_dir=out_dir, save_txt=save_txt, conf=self.config)
