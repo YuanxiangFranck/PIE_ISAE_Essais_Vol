@@ -325,7 +325,8 @@ class Iliad:
                                    save_csv=True,
                                    save_txt=True,
                                    out_dir='.',
-                                   out_filename='auto'):
+                                   out_filename='auto',
+                                   phase='undefined'):
         """
         Runs the symmetry test for both lateral and channel symmetries : finds the
         signals which are expected to be equal but actually are different, gives the
@@ -356,11 +357,17 @@ class Iliad:
         [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
     
         - conf : used for configuration (it needs to contain the list of boolean signals)
+        
+        - phase : a string, allows to focus on one phase of the flight, among :
+        "otg","take_off","landing","climb","hold","cruise","descent"
+        set to "undefined" to run for the whole flight without phase consideration
+        set to "all" to run for every phase, including the whole flight
 
         """
         asymmetry_detection(flight_data=self.signal_data, error=error, save_csv=save_csv,
                             out_filename=out_filename, flight_name=self.name,
-                            out_dir=out_dir, save_txt=save_txt, conf=self.config)
+                            out_dir=out_dir, save_txt=save_txt, conf=self.config,
+                            phase = phase)
 
 
 class Iliad_n_flight:

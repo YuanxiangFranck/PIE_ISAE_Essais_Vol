@@ -369,7 +369,7 @@ def Analyze_results(result_sym, binary_names, str_type=""):
     return anomalies_couples_names_sorted, long_sorted, anomalies_lin_reg_coef_sorted
 
 #%%
-def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef, error, is_channel) :
+def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef, error, is_channel, flight_phase) :
 
     """
     Writes the anomaly results into a txt file
@@ -389,9 +389,14 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
     - error : relative error used for the anomaly detection
 
     - is_channel : bool to know whether the anomalies are from channel or lateral
+    
+    -flight_phase : sting, phase of the flight ("otg","cruise", ...).
+    Total flight if "undefined".
 
     """
-
+    if flight_phase == "undefined" :
+        flight_phase == "Vol complet"
+        
     longs = [len(list_anomaly[i][0]) for i in range(len(list_anomaly))]
     taille_max = max(longs)+2
 
@@ -399,7 +404,8 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
 
     if is_channel == 1 :
 
-       fichier.write("\n Résultats de symmétrie du vol : " + name_flight+ "\n\n")
+       fichier.write("\n Résultats de symmétrie du vol : " + name_flight+"\n\n")
+       fichier.write("\n Phase d'intéret : " + flight_phase+"\n")
        fichier.write("\n Erreur relative utilisée : " + str(error)+"\n")
        fichier.write("\n Résultats asymetrie CHANNEL : "+str(len(list_anomaly))+" paires de signaux anormaux. ")
        fichier.write("\n (le lateral est plus bas) \n\n\n ")
