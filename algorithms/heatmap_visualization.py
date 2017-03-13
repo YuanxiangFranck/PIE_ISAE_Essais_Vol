@@ -35,7 +35,56 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
             show_plot=True, out_format='pdf', annot=False, robust=True,
             conf=None):
     """
-    TODO: docstring
+    Computes a feature on each time segment of a flight, and exports it as a heatmap visualization to a file. The result can be split across several files.
+
+    :param flight_data: SignalData object
+        Flight data
+
+    :param feature: string
+        The feature to represent on the heatmap
+
+    :param signal_category: string
+        The signal category represented on the heatmap. Should be one of the categories listed in the configuration file, or 'custom' to select signals manually
+
+    :param signal list: list
+        If signal_category is set to 'custom', list of strings containing selected signals
+
+    :param time_window: int
+        Length of the time window used to cut the flight into time segments, or 'auto' if n_segments is used instead
+
+    :param n_segments: int
+        Number of time segments used to cut the flight, or 'auto' if time_window is used instead
+
+    :param hclust: boolean
+        Apply hierarchical clustering to group similar signals
+
+    :param save: boolean
+        Save heatmap to a file
+
+    :param flight_name: string
+        Name of the flight
+
+    :param out_dir: string
+        Directory where the exported files will be saved
+
+    :param out_filename: string
+        Filename of the exported files, or 'auto' to generate an automatic filename
+
+    :param show_plot: boolean
+        Display figure in the python shell
+
+    :param out_format: string
+        'pdf' by default, or image format (i.e. 'png')
+
+    :param annot: boolean
+        Display values on the heatmap
+
+    :param robust: boolean
+        Use a robust color map. A robust color map gives a visually better result if the range of the values is large, by not taking into account extreme values in the color map.
+        Be careful that the color axis does not represent the real value range with a robust color map ; you might want to use 'annot' = True to check the actual values.
+
+    :param conf: dict
+        Configuration
     """
 
     # Handle arguments

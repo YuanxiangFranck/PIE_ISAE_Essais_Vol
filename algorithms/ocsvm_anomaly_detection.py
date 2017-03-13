@@ -38,43 +38,89 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
                     flight_name='undefined', out_dir='.', out_filename='auto',
                     show_plot=True, out_format='pdf', conf=None):
     """
-    TODO: docstring
-    TODO CAS n_segments=auto et time_window=auto!
+    Computes features on each time segment of a flight, performs OCSVM anomaly detection, and exports results to an anomaly heatmap and a csv report. The result can be split across several files.
+
+    :param flight_data: SignalData object
+        Flight data
+
+    :param features: list
+        List of strings containing features
+
+    :param signal_categories: list
+        List of strings containing the signal categories to process, or 'custom' to select signals manually. Signal categories are listed in the configuration file.
+
+    :param signal list: list
+        If signal_categories is set to 'custom', list of strings containing selected signals
+
+    :param gamma: float
+        gamma parameter of the OCSVM
+    
+    :param nu: float
+        nu parameter of the OCSVM
+
+    :param time_window: int
+        Length of the time window used to cut the flight into time segments, or 'auto' if n_segments is used instead
+
+    :param n_segments: int
+        Number of time segments used to cut the flight, or 'auto' if time_window is used instead
+
+    :param hclust: boolean
+        Apply hierarchical clustering to group similar signals
+
+    :param save: boolean
+        Save heatmap and report to a file
+
+    :param flight_name: string
+        Name of the flight
+
+    :param out_dir: string
+        Directory where the exported files will be saved
+
+    :param out_filename: string
+        Filename of the exported files, or 'auto' to generate an automatic filename
+
+    :param show_plot: boolean
+        Display figure in the python shell
+
+    :param out_format: string
+        Output format of the anomaly heatmap. 'pdf' by default, or image format (i.e. 'png')
+
+    :param conf: dict
+        Configuration
     """
+
     # Handle arguments
-    if not isinstance(flight_data, SignalData.SignalData):
-        logging.warning(
-        """The data argument must be a SignalData object containing the flight
-        data.""")
-        return
     if not features:
-        logging.warning(
+        logging.error(
         """No features selected. The features argument must be a list of
         strings. Refer to documentation for a list of available features.""")
         return
     if not signal_categories:
-        logging.warning(
+        logging.error(
         """No signal categories selected. The signal_categories argument must
         be either a list of strings corresponding to a signal categories, or
         'custom'. Signal categories are defined in the configuration file.""")
     if signal_categories == 'custom' and not signal_list:
-        logging.warning(
+        logging.error(
         """The signal_categories argument is set to 'custom', but no signal list
         is selected. The signal_list argument must be set to a list of signal
         names. Signal names are defined in the configuration file.""")
         return
     if time_window == 'auto' and n_segments == 'auto':
-        logging.warning(
+        logging.error(
         """The arguments time_window and n_segments cannot both be set to
         'auto'. One of them must be specified.""")
+        return
     if time_window != 'auto' and n_segments != 'auto':
-        logging.warning(
+        logging.error(
         """The arguments time_window and n_segments cannot both be set to a
         value. One of them must be left to 'auto'.""")
+        return
     if not conf:
-        logging.warning(
+        logging.error(
         """No configuration specified ! The conf argument must be set to the
         current configuration object.""")
+        return
 
     # Initialize variables
     anomalies = {}
