@@ -98,7 +98,7 @@ def is_bool(signal_name, signal_names_bin):
 
 #%%
 
-def Symmetry_Channels_One_Flight(flight, error):
+def Symmetry_Channels_One_Flight(flight, error, binary_names):
 
     """
     Find the symmetry problems in a flight by comparing both channels A
@@ -112,6 +112,7 @@ def Symmetry_Channels_One_Flight(flight, error):
     - error : relative error accepted for the detection of anomalies between
     two signals which should have been equal
 
+    - binary_names : list of binary files names
 
     Output :
 
@@ -146,7 +147,7 @@ def Symmetry_Channels_One_Flight(flight, error):
             signal2 = flight[next_name].iloc[:]
 
             #Test if anomaly between these two supposed equal signals
-            res = SymmetryTest(signal1, signal2, error, name_i, "none")
+            res = SymmetryTest(signal1, signal2, error, binary_names, name_i, "none")
 
             if not res[0]:
                 result_anomaly.append([name_i, next_name]) # signals names
@@ -160,7 +161,7 @@ def Symmetry_Channels_One_Flight(flight, error):
 
 #%%
 
-def Symmetry_Lateral_One_Flight(flight, error):
+def Symmetry_Lateral_One_Flight(flight, error, binary_names):
     """
     Find the symmetry problems in a flight by comparing the right and left side for each measure of a flight.
 
@@ -171,6 +172,8 @@ def Symmetry_Lateral_One_Flight(flight, error):
 
     - error : relative error accepted for the detection of anomalies between
     two signals which should have been equal
+    
+    - binary_names : list of binary files names
 
 
     Output :
@@ -199,7 +202,7 @@ def Symmetry_Lateral_One_Flight(flight, error):
         signal2 = flight[name_AMSC2].iloc[:]
 
         #Test if there is an anomaly between these two supposed equal signals
-        res = SymmetryTest(signal1, signal2, error, name_AMSC1, "none")
+        res = SymmetryTest(signal1, signal2, error, binary_names, name_AMSC1, "none")
 
         #save the main result
         result.append([name_AMSC1, name_AMSC2])

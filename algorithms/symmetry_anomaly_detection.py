@@ -71,7 +71,7 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     ###Run symetry algorithm
     ## With Channels
     binary_names = conf["binary"]
-    result_channel = Symmetry_Channels_One_Flight(flight_data.data, error)
+    result_channel = Symmetry_Channels_One_Flight(flight_data.data, error, binary_names)
 
     # Analyzes the results
     res_ch_analyzed = Analyze_results(result_channel, binary_names, str_type='channel')
@@ -83,7 +83,7 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
 
     #..............................................
     ## With lateral Symmetry
-    result_lat = Symmetry_Lateral_One_Flight(flight_data.data, error)
+    result_lat = Symmetry_Lateral_One_Flight(flight_data.data, error, binary_names)
 
     # Analyzes the results (disp number, and if booleans)
     res_lat_analyzed = Analyze_results(result_lat, binary_names, 'lat')
