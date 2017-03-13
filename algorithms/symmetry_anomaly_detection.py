@@ -8,8 +8,6 @@ ILIAD
 
 Symmetry
 
-TO DO:    
-    * adds-on
 """
 
 # Standard imports
@@ -29,9 +27,9 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
                         flight_name='undefined', out_dir='.', out_filename='auto',
                         conf=None):
     """
-    Runs the symmetry test for both lateral and channels symmetries : finds the
-    signals which are expected equal but actually are different, gives the duration
-    of anomaly of each pair and calculates the linear regression coefficients for 
+    Runs the symmetry test for both lateral and channel symmetries : finds the
+    signals which are expected to be equal but actually are different, gives the
+    duration of anomaly of each pair and calculates the linear regression coefficients for 
     regulation signals.
 
     Inputs :
@@ -57,9 +55,8 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     two .csv saving file names. If not defined or 'auto', then the format will be
     [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
 
-    - conf : used for configuration
+    - conf : used for configuration (it needs to contain the list of boolean signals)
 
-    -
     """
     # Handle arguments
     if not isinstance(flight_data, SignalData.SignalData):
