@@ -268,7 +268,51 @@ class Iliad:
                    out_filename='auto',
                    show_plot=True,
                    out_format='png'):
-        "TODO"
+        """
+        Computes features on each time segment of a flight, and exports a 2-dimensional PCA visualization to a file.
+    
+        :param flight_data: SignalData object
+            Flight data
+    
+        :param features: list
+            List of strings containing features
+    
+        :param signal_categories: list
+            List of strings containing the signal categories to process, or 'custom' to select signals manually. Signal categories are listed in the configuration file.
+    
+        :param signal list: list
+            If signal_categories is set to 'custom', list of strings containing selected signals
+    
+        :param time_window: int
+            Length of the time window used to cut the flight into time segments, or 'auto' if n_segments is used instead
+    
+        :param n_segments: int
+            Number of time segments used to cut the flight, or 'auto' if time_window is used instead
+    
+        :param hclust: boolean
+            Apply hierarchical clustering to group similar signals
+    
+        :param save: boolean
+            Save heatmap and report to a file
+    
+        :param flight_name: string
+            Name of the flight
+    
+        :param out_dir: string
+            Directory where the exported files will be saved
+    
+        :param out_filename: string
+            Filename of the exported files, or 'auto' to generate an automatic filename
+    
+        :param show_plot: boolean
+            Display figure in the python shell
+    
+        :param out_format: string
+            image format ('png' by default)
+    
+        :param conf: dict
+            Configuration
+        """
         pca_visualization(flight_data=self.signal_data, features=features,
                           signal_categories=signal_categories,
                           signal_list=signal_list, time_window=time_window,

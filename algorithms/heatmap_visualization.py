@@ -88,10 +88,6 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
     """
 
     # Handle arguments
-    if not isinstance(flight_data, SignalData):
-        logger.error(
-        "The signal_data argument must be a instance of the SignalData class containing the flight data.")
-        return
     if not feature:
         logger.error(
         "No feature selected. The feature argument must be a string. Refer to documentation for a list of available features.")
