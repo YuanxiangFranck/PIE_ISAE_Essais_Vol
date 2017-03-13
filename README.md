@@ -47,6 +47,9 @@ anomaly_detector.export_heatmap(out_dir='Resultats/',
                                 feature='off_regulation_crossings',
                                 signal_category='regulation')
 ```
+## Fichier de  configuration
+
+CF: https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/tree/master/dataProcessing#configjson
 
 ## Documentation code
 
