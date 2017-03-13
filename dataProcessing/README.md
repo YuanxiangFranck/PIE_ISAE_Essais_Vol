@@ -26,6 +26,12 @@ signal\_names | noms de signaux important
 
 Contient la fonction pour parser les fichiers de données
 
+## Cas spéciaux pour les signaux de régulation
+
+Pour les signaux de régulation il y a des des signaux du type: 41psig
+Ces colonnes ne sont pas dans les données donc elles sont ajouté manuellement par le parser
+
+
 # plotter.py
 
 Contient les fonctions pour plotter les données

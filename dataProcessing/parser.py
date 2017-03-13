@@ -19,7 +19,8 @@ def arguments_parser():
 
 
 
-def txt_parser(file_name, name_line=8, nb_lines_to_skip=11, target_names=[]):
+def txt_parser(file_name, sep="\t", name_line=8, nb_lines_to_skip=11,
+               target_names=[]):
     """
     Read file_name and parse the data
 
@@ -30,7 +31,6 @@ def txt_parser(file_name, name_line=8, nb_lines_to_skip=11, target_names=[]):
         data in the text file
     """
 
-    sep = "	"
     # Compute a dictionary with the units
     with open(file_name) as ff:
         for _ in range(name_line):
