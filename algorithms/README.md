@@ -39,3 +39,5 @@ anomaly_detector.export_asymmetry_detection(error = error, save_csv = save_csv, 
 
 # En effet, la fonction export_asymmetry_detection appelle directement asymmetry_detection.
 ```
+
+--> Rajouter Nan, interpretation des résultats, présentation des documents de sortie (avec screen shot)
