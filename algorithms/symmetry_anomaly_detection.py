@@ -86,7 +86,7 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     result_lat = Symmetry_Lateral_One_Flight(flight_data.data, error)
 
     # Analyzes the results (disp number, and if booleans)
-    res_lat_analyzed = Analyze_results(result_lat, 'lat', binary_names)
+    res_lat_analyzed = Analyze_results(result_lat, binary_names, 'lat')
     anomalies_lat_couples_names = res_lat_analyzed[0]
     anomalies_length_lat_couples = res_lat_analyzed[1]
     anomalies_lat_reg_coef = res_lat_analyzed[2]
