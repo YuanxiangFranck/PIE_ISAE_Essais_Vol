@@ -29,7 +29,7 @@ config_path="./dataProcessing/config.json" # Chemin vers un fichier de configura
 
 anomaly_detector = Iliad(path, verbose=True) # ou verbose=False
 
-relativ_error = 0.01 # Pour un seuil d'erreur relative de 1%
+error = 0.01 # Pour un seuil d'erreur relative de 1%
 save_csv = True # Pour sauver les résultats en un fichier de sortie csv
 save_txt = True # Pour sauver les résultats en un fichier de sortie txt
 out_filename = "auto"  # Génaration automatique du nom de sauvegarde
