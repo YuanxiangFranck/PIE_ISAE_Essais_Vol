@@ -1,30 +1,6 @@
 """
 Functions to plot data
 
-
-See
-* plot_data
-* plot
-
-Basic usage:
-
-.. code-block:: python
-
-    pp = Plotter("<path_to_file>")
-    # Plot one signal
-    pp.plot_data('WOW_FBK_AMSC1_CHA')
-    # Plot multiple signals with phases
-    pp.plot(['WOW_FBK_AMSC1_CHA', 'ADSP1 Pressure Altitude (feet)'])
-
-Attributes:
-
-phases:
-    :type dict
-    dictionnary with np.array with the indexes of the dataframe of each phases
-:attr data: DataFrame
-    pandas DataFrame containing the data
-:attr segments_color: dict
-    colors for each phases
 """
 
 import logging
@@ -160,11 +136,12 @@ def plot_segments_pie(seg, data, phases_colors):
     sum_weight = sum(weight for weight in fracs)
     if sum_weight < 1:
         fracs.append(1 - sum_weight)
-        labels.append('no segment')
+        labels.append('missing')
     plot_colors = [phases_colors[name] for name in labels]
     plt.pie(fracs, labels=labels, colors=plot_colors, autopct='%1.1f%%')
     plt.title('Temps passé dans chaque phase, en pourcentage de la durée du vol', bbox={'facecolor':'0.8', 'pad':5})
     plt.draw()
+    plt.show()
 
 
 def plot_ports_seg(raw_ports, ports_colors):
