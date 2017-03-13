@@ -13,7 +13,9 @@ from scipy import stats
 
 def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comment="ok"):
     """
-
+    From two signals, this function calculates the relative error at each time
+    indexe, and therefore returns the time indexes where anomalies are found. 
+    Computes as well the linear regression coefficients.
 
     Inputs :
 
@@ -83,6 +85,8 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
 
 def is_bool(signal_name, signal_names_bin):
     """
+    Tests if the input signal (represented by signal_name) is boolean
+    
     Input :
 
     - signal_name : a string, the name of the signal to test.
@@ -101,7 +105,7 @@ def is_bool(signal_name, signal_names_bin):
 def Symmetry_Channels_One_Flight(flight, error, binary_names):
 
     """
-    Find the symmetry problems in a flight by comparing both channels A
+    Finds the symmetry problems in a flight by comparing both channels A
     and B for each measure of a flight.
 
     Inputs :
@@ -163,7 +167,8 @@ def Symmetry_Channels_One_Flight(flight, error, binary_names):
 
 def Symmetry_Lateral_One_Flight(flight, error, binary_names):
     """
-    Find the symmetry problems in a flight by comparing the right and left side for each measure of a flight.
+    Find the symmetry problems in a flight by comparing the right and left side
+    for each measure of a flight.
 
     Inputs :
 
@@ -278,9 +283,6 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
                         break
         result[1] = nm_anomaly
 
-    #***********************************
-    #Optional : implement calulation for the flight phases
-
     return result
 
 
@@ -289,8 +291,8 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
 
 def Analyze_results(result_sym, binary_names, str_type=""):
     """
-    Analyzes the results given by the symmetry test (disps number of anomalies,
-    if they are bool)
+    Analyzes the results given by the symmetry test : disps number of anomalies
+    found and sorts the anomalies according to their duration.
 
     Inputs :
 

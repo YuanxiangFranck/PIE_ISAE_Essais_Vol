@@ -2,7 +2,7 @@
 
 ## Utilisation
 
-Les algorithmes de détection et les fonctions pour exporté les visualisations sont groupé au sein de la classe `Iliad`.
+Les algorithmes de détection et les fonctions pour exporter les visualisations sont groupés au sein de la classe `Iliad`.
 
 Exemple d'utilisation
 
@@ -53,7 +53,7 @@ CF: https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/tree/master/dataProce
 
 ## Documentation code
 
-La documentation est directement généré à partir du code (docstring) et disponible à l'adresse : https://yuanxiangfranck.github.io/PIE_ISAE_Essais_Vol/
+La documentation est directement générée à partir du code (docstring) et disponible à l'adresse : https://yuanxiangfranck.github.io/PIE_ISAE_Essais_Vol/
 
 Pour plus d'infomations pour générer la documentation: [docs/README.md](https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/blob/master/docs/README.md)
 
@@ -75,7 +75,7 @@ Il existe plusieurs méthodes pour développer sous ce projet.
 
 ### Anaconda (tous OS)
 
-Un bundle avec toute les librairies nécessaire pour faire tourner et développer le projet.
+Un bundle avec toutes les librairies nécessaires pour faire tourner et développer le projet.
 Anaconda comprend notamment :
 * Python (interpréteur Python/IPython + IDA Spyder + Notebooks Jupyter)
 * numpy, scipy, scikit-learn, et autres librairies scientifiques

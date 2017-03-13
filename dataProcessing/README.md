@@ -7,7 +7,6 @@ Fichier html, css et JavaScript pour générer la page html qui résume un vol.
 Fichier de configuration par défaut de la classe Iliad
 
 
-Fichier de conifguration par défaut de la classe Iliad
 
 name  | Description | valeur
 ------|-------------|--------
