@@ -123,53 +123,53 @@ class Iliad:
                        robust=True):
         """
         Computes a feature on each time segment of a flight, and exports it as a heatmap visualization to a file. The result can be split across several files.
-    
+
         :param flight_data: SignalData object
             Flight data
-    
+
         :param feature: string
             The feature to represent on the heatmap
-    
+
         :param signal_category: string
             The signal category represented on the heatmap. Should be one of the categories listed in the configuration file, or 'custom' to select signals manually
-    
+
         :param signal list: list
             If signal_category is set to 'custom', list of strings containing selected signals
-    
+
         :param time_window: int
             Length of the time window used to cut the flight into time segments, or 'auto' if n_segments is used instead
-    
+
         :param n_segments: int
             Number of time segments used to cut the flight, or 'auto' if time_window is used instead
-    
+
         :param hclust: boolean
             Apply hierarchical clustering to group similar signals
-    
+
         :param save: boolean
             Save heatmap to a file
-    
+
         :param flight_name: string
             Name of the flight
-    
+
         :param out_dir: string
             Directory where the exported files will be saved
-    
+
         :param out_filename: string
             Filename of the exported files, or 'auto' to generate an automatic filename
-    
+
         :param show_plot: boolean
             Display figure in the python shell
-    
+
         :param out_format: string
             'pdf' by default, or image format (i.e. 'png')
-    
+
         :param annot: boolean
             Display values on the heatmap
-    
+
         :param robust: boolean
             Use a robust color map. A robust color map gives a visually better result if the range of the values is large, by not taking into account extreme values in the color map.
             Be careful that the color axis does not represent the real value range with a robust color map ; you might want to use 'annot' = True to check the actual values.
-    
+
         :param conf: dict
             Configuration
         """
@@ -200,52 +200,52 @@ class Iliad:
                      out_format='pdf'):
         """
         Computes features on each time segment of a flight, performs OCSVM anomaly detection, and exports results to an anomaly heatmap and a csv report. The result can be split across several files.
-    
+
         :param flight_data: SignalData object
             Flight data
-    
+
         :param features: list
             List of strings containing features
-    
+
         :param signal_categories: list
             List of strings containing the signal categories to process, or 'custom' to select signals manually. Signal categories are listed in the configuration file.
-    
+
         :param signal list: list
             If signal_categories is set to 'custom', list of strings containing selected signals
-    
+
         :param gamma: float
             gamma parameter of the OCSVM
-        
+
         :param nu: float
             nu parameter of the OCSVM
-    
+
         :param time_window: int
             Length of the time window used to cut the flight into time segments, or 'auto' if n_segments is used instead
-    
+
         :param n_segments: int
             Number of time segments used to cut the flight, or 'auto' if time_window is used instead
-    
+
         :param hclust: boolean
             Apply hierarchical clustering to group similar signals
-    
+
         :param save: boolean
             Save heatmap and report to a file
-    
+
         :param flight_name: string
             Name of the flight
-    
+
         :param out_dir: string
             Directory where the exported files will be saved
-    
+
         :param out_filename: string
             Filename of the exported files, or 'auto' to generate an automatic filename
-    
+
         :param show_plot: boolean
             Display figure in the python shell
-    
+
         :param out_format: string
             Output format of the anomaly heatmap. 'pdf' by default, or image format (i.e. 'png')
-    
+
         :param conf: dict
             Configuration
         """
@@ -270,46 +270,46 @@ class Iliad:
                    out_format='png'):
         """
         Computes features on each time segment of a flight, and exports a 2-dimensional PCA visualization to a file.
-    
+
         :param flight_data: SignalData object
             Flight data
-    
+
         :param features: list
             List of strings containing features
-    
+
         :param signal_categories: list
             List of strings containing the signal categories to process, or 'custom' to select signals manually. Signal categories are listed in the configuration file.
-    
+
         :param signal list: list
             If signal_categories is set to 'custom', list of strings containing selected signals
-    
+
         :param time_window: int
             Length of the time window used to cut the flight into time segments, or 'auto' if n_segments is used instead
-    
+
         :param n_segments: int
             Number of time segments used to cut the flight, or 'auto' if time_window is used instead
-    
+
         :param hclust: boolean
             Apply hierarchical clustering to group similar signals
-    
+
         :param save: boolean
             Save heatmap and report to a file
-    
+
         :param flight_name: string
             Name of the flight
-    
+
         :param out_dir: string
             Directory where the exported files will be saved
-    
+
         :param out_filename: string
             Filename of the exported files, or 'auto' to generate an automatic filename
-    
+
         :param show_plot: boolean
             Display figure in the python shell
-    
+
         :param out_format: string
             image format ('png' by default)
-    
+
         :param conf: dict
             Configuration
         """
@@ -330,34 +330,34 @@ class Iliad:
         """
         Runs the symmetry test for both lateral and channel symmetries : finds the
         signals which are expected to be equal but actually are different, gives the
-        duration of anomaly of each pair and calculates the linear regression coefficients for 
+        duration of anomaly of each pair and calculates the linear regression coefficients for
         regulation signals.
-    
+
         Inputs :
-    
+
         - flight_data : must be an instance of SignalData. Contains all the data
         for the flight to analyse.
-    
+
         - error : relative error used to compare a pair of continuous signals and
         detect anomalies. Is set to 0.01 (1%) by default.
-    
+
         - save_csv : boolean for saving the results in two .csv files (1 for channel
         and 1 for lateral dissymmetry)
-    
+
         - save_txt : boolean for saving the results into one .txt file (to open with
         bloc note for better visualisation)
-    
+
         - flight_name : a string, contains the name of the flight.
-    
+
         - out_dir : a string that indicates the relative output directory, in case
         of saving results
-    
+
         - out_filename : name of the .txt saving file name, and part of the
         two .csv saving file names. If not defined or 'auto', then the format will be
         [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
-    
+
         - conf : used for configuration (it needs to contain the list of boolean signals)
-        
+
         - phase : a string, allows to focus on one phase of the flight, among :
         "otg","take_off","landing","climb","hold","cruise","descent"
         set to "undefined" to run for the whole flight without phase consideration
