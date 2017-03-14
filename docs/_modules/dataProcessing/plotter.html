@@ -46,30 +46,6 @@
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Functions to plot data</span>
 
-
-<span class="sd">See</span>
-<span class="sd">* plot_data</span>
-<span class="sd">* plot</span>
-
-<span class="sd">Basic usage:</span>
-
-<span class="sd">.. code-block:: python</span>
-
-<span class="sd">    pp = Plotter(&quot;&lt;path_to_file&gt;&quot;)</span>
-<span class="sd">    # Plot one signal</span>
-<span class="sd">    pp.plot_data(&#39;WOW_FBK_AMSC1_CHA&#39;)</span>
-<span class="sd">    # Plot multiple signals with phases</span>
-<span class="sd">    pp.plot([&#39;WOW_FBK_AMSC1_CHA&#39;, &#39;ADSP1 Pressure Altitude (feet)&#39;])</span>
-
-<span class="sd">Attributes:</span>
-
-<span class="sd">phases:</span>
-<span class="sd">    :type dict</span>
-<span class="sd">    dictionnary with np.array with the indexes of the dataframe of each phases</span>
-<span class="sd">:attr data: DataFrame</span>
-<span class="sd">    pandas DataFrame containing the data</span>
-<span class="sd">:attr segments_color: dict</span>
-<span class="sd">    colors for each phases</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -205,11 +181,12 @@
     <span class="n">sum_weight</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weight</span> <span class="k">for</span> <span class="n">weight</span> <span class="ow">in</span> <span class="n">fracs</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sum_weight</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">fracs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sum_weight</span><span class="p">)</span>
-        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;no segment&#39;</span><span class="p">)</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;missing&#39;</span><span class="p">)</span>
     <span class="n">plot_colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">phases_colors</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">fracs</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">plot_colors</span><span class="p">,</span> <span class="n">autopct</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%1.1f%%</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Temps passé dans chaque phase, en pourcentage de la durée du vol&#39;</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;facecolor&#39;</span><span class="p">:</span><span class="s1">&#39;0.8&#39;</span><span class="p">,</span> <span class="s1">&#39;pad&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">})</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+    <span class="n">plt</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="plot_ports_seg"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.plotter.plot_ports_seg">[docs]</a><span class="k">def</span> <span class="nf">plot_ports_seg</span><span class="p">(</span><span class="n">raw_ports</span><span class="p">,</span> <span class="n">ports_colors</span><span class="p">):</span>

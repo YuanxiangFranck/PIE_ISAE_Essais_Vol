@@ -64,7 +64,8 @@
 
 
 
-<div class="viewcode-block" id="txt_parser"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.parser.txt_parser">[docs]</a><span class="k">def</span> <span class="nf">txt_parser</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">name_line</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">nb_lines_to_skip</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">target_names</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="txt_parser"><a class="viewcode-back" href="../dataProcessing.html#dataProcessing.parser.txt_parser">[docs]</a><span class="k">def</span> <span class="nf">txt_parser</span><span class="p">(</span><span class="n">file_name</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name_line</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">nb_lines_to_skip</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+               <span class="n">target_names</span><span class="o">=</span><span class="p">[]):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Read file_name and parse the data</span>
 
@@ -75,7 +76,6 @@
 <span class="sd">        data in the text file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;	&quot;</span>
     <span class="c1"># Compute a dictionary with the units</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">name_line</span><span class="p">):</span>

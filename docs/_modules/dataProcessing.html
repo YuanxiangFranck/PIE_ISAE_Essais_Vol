@@ -60,7 +60,7 @@
 
 <dl class="function">
 <dt id="dataProcessing.parser.txt_parser">
-<code class="descclassname">dataProcessing.parser.</code><code class="descname">txt_parser</code><span class="sig-paren">(</span><em>file_name</em>, <em>name_line=8</em>, <em>nb_lines_to_skip=11</em>, <em>target_names=[]</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#txt_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.txt_parser" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.parser.</code><code class="descname">txt_parser</code><span class="sig-paren">(</span><em>file_name</em>, <em>sep='\t'</em>, <em>name_line=8</em>, <em>nb_lines_to_skip=11</em>, <em>target_names=[]</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/parser.html#txt_parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.parser.txt_parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read file_name and parse the data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -80,36 +80,6 @@ data in the text file</td>
 <div class="section" id="module-dataProcessing.plotter">
 <span id="dataprocessing-plotter-module"></span><h2>dataProcessing.plotter module<a class="headerlink" href="#module-dataProcessing.plotter" title="Permalink to this headline">¶</a></h2>
 <p>Functions to plot data</p>
-<p>See
-* plot_data
-* plot</p>
-<p>Basic usage:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">pp</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span><span class="s2">&quot;&lt;path_to_file&gt;&quot;</span><span class="p">)</span>
-<span class="c1"># Plot one signal</span>
-<span class="n">pp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span><span class="p">)</span>
-<span class="c1"># Plot multiple signals with phases</span>
-<span class="n">pp</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="s1">&#39;WOW_FBK_AMSC1_CHA&#39;</span><span class="p">,</span> <span class="s1">&#39;ADSP1 Pressure Altitude (feet)&#39;</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>Attributes:</p>
-<dl class="docutils">
-<dt>phases:</dt>
-<dd>:type dict
-dictionnary with np.array with the indexes of the dataframe of each phases</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">attr data:</th><td class="field-body">DataFrame
-pandas DataFrame containing the data</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">attr segments_color:</th></tr>
-<tr class="field-even field"><td>&nbsp;</td><td class="field-body">dict
-colors for each phases</td>
-</tr>
-</tbody>
-</table>
 <dl class="function">
 <dt id="dataProcessing.plotter.compute_phases_idx">
 <code class="descclassname">dataProcessing.plotter.</code><code class="descname">compute_phases_idx</code><span class="sig-paren">(</span><em>phases</em>, <em>time</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/plotter.html#compute_phases_idx"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.plotter.compute_phases_idx" title="Permalink to this definition">¶</a></dt>
