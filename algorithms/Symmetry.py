@@ -4,17 +4,18 @@ Created on Tue Dec 20 15:51:39 2016
 
 @author: Matthieu
 """
-import logging
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import stats
 
+from dataProcessing.utils import logger
+
 def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comment="ok"):
     """
     From two signals, this function calculates the relative error at each time
-    indexe, and therefore returns the time indexes where anomalies are found. 
+    indexe, and therefore returns the time indexes where anomalies are found.
     Computes as well the linear regression coefficients.
 
     Inputs :
@@ -26,7 +27,7 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
     out of the relative error box
 
     - binary_names : list of binary files names
-    
+
     - [name_signal1] : optional, a string, the name of the first input. Allows
     the algorithm to check if the inputs are boolean or not (from specifications)
     By defaut, consider the signal as non boolean.
@@ -35,17 +36,17 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
     prints the result if nothing is specified. The print is done through logger.info
 
     Outputs :
-    
-    - result : a bool, indicates if the two imput signals are the same 
+
+    - result : a bool, indicates if the two imput signals are the same
     (according to the accepted error)
-    
+
     - index : time indexes of the signal.data where the differences where found
 
 
-    - lin_reg : an array which contains first the type of the signals ('b' for 
+    - lin_reg : an array which contains first the type of the signals ('b' for
     boolean and 'c' for continuous), then the slope, the intercept and finally the R2 value
     of linear regression between the two signals.
-    
+
     """
     n = 6 # truncation of digits in res
     result =True
@@ -54,7 +55,6 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
     lin_reg = []
     sig1 = signal1.data
     sig2 = signal2.data
-    logger = logging.getLogger("iliad")
     if is_bool(name_signal1, binary_names):
         #The signals are categorized as boolean : we test if they are different
         for i, s in enumerate(sig1):
@@ -70,7 +70,7 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
                 if abs(2*(s-sig2[i])/(abs(s)+abs(sig2[i]))) > error:
                     result = False
                     index.append(i)
-                    
+
         a, b, r_value, p_value, std_err = stats.linregress(sig1, sig2)
         lin_reg = ["c", str(a)[0:n], str(b)[0:n], str(r_value**2)] #continuous signals : linear regression parameters
     logger.info(result)
@@ -86,11 +86,11 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
 def is_bool(signal_name, signal_names_bin):
     """
     Tests if the input signal (represented by signal_name) is boolean
-    
+
     Input :
 
     - signal_name : a string, the name of the signal to test.
-    
+
     -signal_names_bin : list of the binary files names
 
     Output :
@@ -177,7 +177,7 @@ def Symmetry_Lateral_One_Flight(flight, error, binary_names):
 
     - error : relative error accepted for the detection of anomalies between
     two signals which should have been equal
-    
+
     - binary_names : list of binary files names
 
 
@@ -299,11 +299,11 @@ def Analyze_results(result_sym, binary_names, str_type=""):
     - result_sym : results of a symmetry test which is : an array containing the
     names of the signals with anomalies (by pair), and the associated time indexes
     of anomaly occurences
-    
+
     - str_type : type of the results given ("Channel", "Lateral" or other). By defaut
-    is set to "". 
-    
-    
+    is set to "".
+
+
     - binary_names : list of binary files names
 
     Outputs :
@@ -369,7 +369,7 @@ def Analyze_results(result_sym, binary_names, str_type=""):
     return anomalies_couples_names_sorted, long_sorted, anomalies_lin_reg_coef_sorted
 
 #%%
-def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef, error, is_channel) :
+def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coef, error, is_channel, flight_phase) :
 
     """
     Writes the anomaly results into a txt file
@@ -390,7 +390,12 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
 
     - is_channel : bool to know whether the anomalies are from channel or lateral
 
+    -flight_phase : sting, phase of the flight ("otg","cruise", ...).
+    Total flight if "undefined".
+
     """
+    if flight_phase == "undefined" :
+        flight_phase == "Vol complet"
 
     longs = [len(list_anomaly[i][0]) for i in range(len(list_anomaly))]
     taille_max = max(longs)+2
@@ -399,7 +404,8 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
 
     if is_channel == 1 :
 
-       fichier.write("\n Résultats de symmétrie du vol : " + name_flight+ "\n\n")
+       fichier.write("\n Résultats de symmétrie du vol : " + name_flight+"\n\n")
+       fichier.write("\n Phase d'intéret : " + flight_phase+"\n")
        fichier.write("\n Erreur relative utilisée : " + str(error)+"\n")
        fichier.write("\n Résultats asymetrie CHANNEL : "+str(len(list_anomaly))+" paires de signaux anormaux. ")
        fichier.write("\n (le lateral est plus bas) \n\n\n ")
