@@ -124,9 +124,6 @@ class Iliad:
         """
         Computes a feature on each time segment of a flight, and exports it as a heatmap visualization to a file. The result can be split across several files.
 
-        :param flight_data: SignalData object
-            Flight data
-
         :param feature: string
             The feature to represent on the heatmap
 
@@ -201,9 +198,6 @@ class Iliad:
         """
         Computes features on each time segment of a flight, performs OCSVM anomaly detection, and exports results to an anomaly heatmap and a csv report. The result can be split across several files.
 
-        :param flight_data: SignalData object
-            Flight data
-
         :param features: list
             List of strings containing features
 
@@ -271,9 +265,6 @@ class Iliad:
         """
         Computes features on each time segment of a flight, and exports a 2-dimensional PCA visualization to a file.
 
-        :param flight_data: SignalData object
-            Flight data
-
         :param features: list
             List of strings containing features
 
@@ -334,9 +325,6 @@ class Iliad:
         regulation signals.
 
         Inputs :
-
-        - flight_data : must be an instance of SignalData. Contains all the data
-        for the flight to analyse.
 
         - error : relative error used to compare a pair of continuous signals and
         detect anomalies. Is set to 0.01 (1%) by default.
