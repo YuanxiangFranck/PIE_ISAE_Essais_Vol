@@ -93,6 +93,25 @@ On y trouve notamment :
 * une fonction qui traite le cas de redondance
 * les fonctions d'écriture des fichiers de résultats
 
+## Remarque importante
+
+Lors de l'exécution de SymetryTest et le calcul de la régression linéaire, il arrive que numpy retourne plusieurs warning.
+* RuntimeWarning: invalid value encountered in double\_scalars
+* RuntimeWarning: divide by zero encountered in double\_scalars
+
+Cela est due à certains signaux qui sont invalide pour la régression linéaire (1 point).
+
+Pour résoudre cela on déactive les warnings lors de la regressions linéaire.
+
+```python
+def SymmetryTest(.....):
+    # .....
+    np.seterr(divide="ignore")
+    np.seterr(invalid="ignore")
+    a, b, r_value, p_value, std_err = stats.linregress(sig1, sig2)
+    np.seterr(divide="warn")
+    np.seterr(divide="ignore")
+```
 ## symmetry_anomaly_detection.py
 
 Ce script comporte une unique fonction, `asymmetry_detection`, qui permet d'effectuer un test général de symétries. Il fait appel aux fonctions définies dans `Symmetry.py`.

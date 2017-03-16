@@ -71,7 +71,11 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
                     result = False
                     index.append(i)
 
+        np.seterr(divide="ignore")
+        np.seterr(invalid="ignore")
         a, b, r_value, p_value, std_err = stats.linregress(sig1, sig2)
+        np.seterr(divide="warn")
+        np.seterr(divide="ignore")
         lin_reg = ["c", str(a)[0:n], str(b)[0:n], str(r_value**2)] #continuous signals : linear regression parameters
     logger.info(result)
     if result:
