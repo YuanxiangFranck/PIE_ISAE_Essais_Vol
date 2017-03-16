@@ -124,6 +124,9 @@ class Iliad:
         """
         Computes a feature on each time segment of a flight, and exports it as a heatmap visualization to a file. The result can be split across several files.
 
+        :param flight_data: SignalData object
+            Flight data
+
         :param feature: string
             The feature to represent on the heatmap
 
@@ -198,6 +201,9 @@ class Iliad:
         """
         Computes features on each time segment of a flight, performs OCSVM anomaly detection, and exports results to an anomaly heatmap and a csv report. The result can be split across several files.
 
+        :param flight_data: SignalData object
+            Flight data
+
         :param features: list
             List of strings containing features
 
@@ -265,6 +271,9 @@ class Iliad:
         """
         Computes features on each time segment of a flight, and exports a 2-dimensional PCA visualization to a file.
 
+        :param flight_data: SignalData object
+            Flight data
+
         :param features: list
             List of strings containing features
 
@@ -317,45 +326,66 @@ class Iliad:
                                    save_txt=True,
                                    out_dir='.',
                                    out_filename='auto',
-                                   phase='undefined'):
+                                   phase='undefined',
+                                   heatmap=True,
+                                   time_window=100,
+                                   n_segments='auto',
+                                   hclust=False,
+                                   save_heatmap=True):
         """
         Runs the symmetry test for both lateral and channel symmetries : finds the
         signals which are expected to be equal but actually are different, gives the
         duration of anomaly of each pair and calculates the linear regression coefficients for
-        regulation signals.
-
+        regulation signals. It also can create an heatmap showing the relative anomaly
+        duration for some time segmentation.
+    
         Inputs :
-
+    
+        - flight_data : must be an instance of SignalData. Contains all the data
+        for the flight to analyse.
+    
         - error : relative error used to compare a pair of continuous signals and
         detect anomalies. Is set to 0.01 (1%) by default.
-
+    
         - save_csv : boolean for saving the results in two .csv files (1 for channel
         and 1 for lateral dissymmetry)
-
+    
         - save_txt : boolean for saving the results into one .txt file (to open with
         bloc note for better visualisation)
-
+    
         - flight_name : a string, contains the name of the flight.
-
+    
         - out_dir : a string that indicates the relative output directory, in case
         of saving results
-
+    
         - out_filename : name of the .txt saving file name, and part of the
         two .csv saving file names. If not defined or 'auto', then the format will be
         [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
-
+    
         - conf : used for configuration (it needs to contain the list of boolean signals)
-
+    
         - phase : a string, allows to focus on one phase of the flight, among :
         "otg","take_off","landing","climb","hold","cruise","descent"
         set to "undefined" to run for the whole flight without phase consideration
         set to "all" to run for every phase, including the whole flight
-
+        
+        - heatmap : a bool, choose to create or not the heatmap
+        
+        - time_window: int, length of the time window used to cut the flight into 
+        time segments, or 'auto' if n_segments is used instead
+        
+        - n_segments: int, number of time segments used to cut the flight, or 'auto' if time_window is used instead
+    
+        - hclust: boolean, apply hierarchical clustering to group similar signals
+    
+        - save_heatmap: boolean, save heatmap to a file
+    
         """
         asymmetry_detection(flight_data=self.signal_data, error=error, save_csv=save_csv,
                             out_filename=out_filename, flight_name=self.name,
                             out_dir=out_dir, save_txt=save_txt, conf=self.config,
-                            phase = phase)
+                            phase=phase, heatmap=heatmap, time_window=time_window,
+                            n_segments=n_segments, hclust=hclust, save_heatmap=save_heatmap)
 
 
 class Iliad_n_flight:

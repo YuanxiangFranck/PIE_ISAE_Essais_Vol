@@ -19,18 +19,22 @@ from dataProcessing.utils import logger
 #Signal Data class import
 from algorithms import SignalData
 
+from algorithms.heatmap_symmetry import heatmap_symmetry
+
 # Flight analysis functions import
 from algorithms.Symmetry import (Symmetry_Channels_One_Flight, Symmetry_Lateral_One_Flight,
                                  Analyze_results, write_in_file, write_in_csv)
 
 def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=True,
                         flight_name='undefined', out_dir='.', out_filename='auto',
-                        conf=None, phase = 'undefined'):
+                        conf=None, phase = 'undefined', heatmap = True, time_window='auto',
+                        n_segments='auto', hclust=False, save_heatmap=True):
     """
     Runs the symmetry test for both lateral and channel symmetries : finds the
     signals which are expected to be equal but actually are different, gives the
     duration of anomaly of each pair and calculates the linear regression coefficients for
-    regulation signals.
+    regulation signals. It also can create an heatmap showing the relative anomaly
+    duration for some time segmentation.
 
     Inputs :
 
@@ -61,22 +65,53 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     "otg","take_off","landing","climb","hold","cruise","descent"
     set to "undefined" to run for the whole flight without phase consideration
     set to "all" to run for every phase, including the whole flight
+    
+    - heatmap : a bool, choose to create or not the heatmap
+    
+    - time_window: int, length of the time window used to cut the flight into 
+    time segments, or 'auto' if n_segments is used instead
+    
+    - n_segments: int, number of time segments used to cut the flight, or 'auto' if time_window is used instead
+
+    - hclust: boolean, apply hierarchical clustering to group similar signals
+
+    - save_heatmap: boolean, save heatmap to a file
 
     """
-    # Handle arguments
-    if not isinstance(flight_data, SignalData.SignalData):
-        logger.warning(
-        """The data argument must be a SignalData object containing the flight
-        data.""")
+    
+    if not conf:
+        logger.error(
+        "No configuration specified ! The conf argument must be set to the current configuration object.")
+        return
+        
+    if time_window == 'auto' and n_segments == 'auto':
+        logger.error(
+        """The arguments time_window and n_segments cannot both be set to
+        'auto'. One of them must be specified.""")
+        return
+        
+    if time_window != 'auto' and n_segments != 'auto':
+        logger.error(
+        """The arguments time_window and n_segments cannot both be set to a
+        value. One of them must be left to 'auto'.""")
         return
 
     binary_names = conf["binary"]
 
+    flight_phases = ["undefined","otg","take_off","landing","climb","hold","cruise","descent"] 
+    
+    if phase != "all": 
+        if phase not in flight_phases:
+        
+            logger.warning(
+            "The input phase is unknown. The test is therefore apply on the whole flight.")
+            phase = "undefined"
+    
     if phase == "all" :
-        segments = ["undefined","otg","take_off","landing","climb","hold","cruise","descent"]
+        segments = flight_phases
     else :
         segments = [phase]
-
+    
     for seg in segments :
 
         if seg != "undefined":
@@ -161,6 +196,27 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
 
         if seg != "undefined":
             flight_data.reset_data()
+            
+        # Create heatmap
+            
+        if heatmap == True :
+            
+            
+            signals1_channel = [s[0] for s in anomalies_channel_couples_names]
+            signals2_channel = [s[1] for s in anomalies_channel_couples_names]
+            heatmap_symmetry(flight_data, error, time_window, n_segments, 
+                     hclust, save_heatmap, flight_name, 
+                     signals1_channel, signals2_channel, 'Channel', 
+                     out_dir, out_filename, False, 'pdf', conf)
+                     
+            signals1_lat = [s[0] for s in anomalies_lat_couples_names]
+            signals2_lat = [s[1] for s in anomalies_lat_couples_names]
+            heatmap_symmetry(flight_data, error, time_window, n_segments, 
+                     hclust, save_heatmap, flight_name, 
+                     signals1_lat, signals2_lat, 'Lateral', 
+                     out_dir, out_filename, False, 'pdf', conf)
+                     
+                     
 
 if __name__ == '__main__':
     from algorithms.flight_analysis_fun import load_flight
