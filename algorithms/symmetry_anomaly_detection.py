@@ -12,7 +12,7 @@ Symmetry
 
 # Standard imports
 import time
-import sys,os
+import sys, os
 sys.path.append(os.path.abspath('..'))
 from dataProcessing.utils import logger
 
@@ -27,7 +27,7 @@ from algorithms.Symmetry import (Symmetry_Channels_One_Flight, Symmetry_Lateral_
 
 def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=True,
                         flight_name='undefined', out_dir='.', out_filename='auto',
-                        conf=None, phase = 'undefined', heatmap = True, time_window='auto',
+                        conf=None, phase='undefined', heatmap=True, time_window='auto',
                         n_segments='auto', hclust=False, save_heatmap=True):
     """
     Runs the symmetry test for both lateral and channel symmetries : finds the
@@ -65,12 +65,12 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     "otg","take_off","landing","climb","hold","cruise","descent"
     set to "undefined" to run for the whole flight without phase consideration
     set to "all" to run for every phase, including the whole flight
-    
+
     - heatmap : a bool, choose to create or not the heatmap
-    
-    - time_window: int, length of the time window used to cut the flight into 
+
+    - time_window: int, length of the time window used to cut the flight into
     time segments, or 'auto' if n_segments is used instead
-    
+
     - n_segments: int, number of time segments used to cut the flight, or 'auto' if time_window is used instead
 
     - hclust: boolean, apply hierarchical clustering to group similar signals
@@ -78,50 +78,48 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
     - save_heatmap: boolean, save heatmap to a file
 
     """
-    
+
     if not conf:
-        logger.error(
-        "No configuration specified ! The conf argument must be set to the current configuration object.")
+        logger.error("No configuration specified ! The conf argument must be "
+                     "set to the current configuration object.")
         return
-        
+
     if time_window == 'auto' and n_segments == 'auto':
-        logger.error(
-        """The arguments time_window and n_segments cannot both be set to
-        'auto'. One of them must be specified.""")
+        logger.error("The arguments time_window and n_segments cannot both be set to"
+                     "'auto'. One of them must be specified.")
         return
-        
+
     if time_window != 'auto' and n_segments != 'auto':
-        logger.error(
-        """The arguments time_window and n_segments cannot both be set to a
-        value. One of them must be left to 'auto'.""")
+        logger.error("The arguments time_window and n_segments cannot both be "
+                     "set to a value. One of them must be left to 'auto'.")
         return
 
     binary_names = conf["binary"]
 
-    flight_phases = ["undefined","otg","take_off","landing","climb","hold","cruise","descent"] 
-    
-    if phase != "all": 
+    flight_phases = ["undefined", "otg", "take_off", "landing", "climb", "hold", "cruise", "descent"]
+
+    if phase != "all":
         if phase not in flight_phases:
-        
+
             logger.warning(
             "The input phase is unknown. The test is therefore apply on the whole flight.")
             phase = "undefined"
-    
-    if phase == "all" :
+
+    if phase == "all":
         segments = flight_phases
-    else :
+    else:
         segments = [phase]
-    
-    for seg in segments :
+
+    for seg in segments:
 
         if seg != "undefined":
             flight_data.apply_flight_segmentation(seg)
 
-        if len(flight_data.data) < 3 :
-             warning_message = "No file will be created for the phase "+seg+" because this phase is empty"
-             logger.warning(warning_message)
-        else :
-            if seg == "undefined" :
+        if len(flight_data.data) < 3:
+            warning_message = "No file will be created for the phase "+seg+" because this phase is empty"
+            logger.warning(warning_message)
+        else:
+            if seg == "undefined":
                 print("\n Phase : Whole flight\n")
             else:
                 print("\n Phase : "+seg+"\n")
@@ -189,34 +187,32 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
 
                 write_in_file(out_path_txt, flight_name, anomalies_channel_couples_names,
                               anomalies_relative_length_channel_couples,
-                              anomalies_channel_reg_coef,error, 1, seg)
+                              anomalies_channel_reg_coef, error, 1, seg)
                 write_in_file(out_path_txt, flight_name, anomalies_lat_couples_names,
                               anomalies_relative_length_lat_couples,
-                              anomalies_lat_reg_coef,error, 0, seg)
+                              anomalies_lat_reg_coef, error, 0, seg)
 
         if seg != "undefined":
             flight_data.reset_data()
-            
+
         # Create heatmap
-            
-        if heatmap == True :
-            
-            
+
+        if heatmap:
             signals1_channel = [s[0] for s in anomalies_channel_couples_names]
             signals2_channel = [s[1] for s in anomalies_channel_couples_names]
-            heatmap_symmetry(flight_data, error, time_window, n_segments, 
-                     hclust, save_heatmap, flight_name, 
-                     signals1_channel, signals2_channel, 'Channel', 
-                     out_dir, out_filename, False, 'pdf', conf)
-                     
+            heatmap_symmetry(flight_data, error, time_window, n_segments,
+                             hclust, save_heatmap, flight_name,
+                             signals1_channel, signals2_channel, 'Channel',
+                             out_dir, out_filename, False, 'pdf', conf)
+
             signals1_lat = [s[0] for s in anomalies_lat_couples_names]
             signals2_lat = [s[1] for s in anomalies_lat_couples_names]
-            heatmap_symmetry(flight_data, error, time_window, n_segments, 
-                     hclust, save_heatmap, flight_name, 
-                     signals1_lat, signals2_lat, 'Lateral', 
-                     out_dir, out_filename, False, 'pdf', conf)
-                     
-                     
+            heatmap_symmetry(flight_data, error, time_window, n_segments,
+                             hclust, save_heatmap, flight_name,
+                             signals1_lat, signals2_lat, 'Lateral',
+                             out_dir, out_filename, False, 'pdf', conf)
+
+
 
 if __name__ == '__main__':
     from algorithms.flight_analysis_fun import load_flight
@@ -232,4 +228,4 @@ if __name__ == '__main__':
 
     conf = {"binary": signal_names_bin}
     asymmetry_detection(flight_data=flight_data, error=0.01, flight_name=flight_name, save_csv=True, save_txt=True,
-            out_dir='../analyse/1_vol_matthieu/resultats_symetrie/integration/', conf=conf)
+                        out_dir='../analyse/1_vol_matthieu/resultats_symetrie/integration/', conf=conf)
