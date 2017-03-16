@@ -412,9 +412,9 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
 
     # Generate heatmaps
     if n_heatmaps == 0:
-        create_heatmap(0, 0, feature_matrix.shape[0])
+        create_heatmap(0, 0, feature_matrix.shape[1])
     else:
         for k in range(n_heatmaps):
             create_heatmap(k, k*n_sig, (k+1)*n_sig)
         # Make last heatmap if needed
-        create_heatmap(k+1, (k+1)*n_sig, feature_matrix.shape[0])
+        create_heatmap(k+1, (k+1)*n_sig, feature_matrix.shape[1])
