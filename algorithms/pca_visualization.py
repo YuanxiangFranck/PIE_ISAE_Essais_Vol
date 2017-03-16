@@ -267,26 +267,3 @@ def pca_visualization(flight_data=None, features=None, signal_categories=None,
 
     if show_plot:
         plt.show()
-
-if __name__ == '__main__':
-    """
-    from flight_analysis_fun import load_flight
-    from flight_names import flight_names
-    from signal_names import *
-    flight_name = flight_names[0]
-    path = '../../data/'
-    data = SignalData.SignalData(load_flight(path+flight_name))
-
-    conf = {'target_precisions_path': 'target_precisions.csv',
-            'regulation': signal_names_regul, 'target': target_names_regul,
-            'binary': signal_names_bin, 'endogene': signal_names_endogene,
-            'phases_colors': {'climb': 'r', 'cruise': 'b', 'landing': 'm',
-                    'descent': 'g', 'hold': 'c', 'otg': 'y',
-                    'take_off': 'k', 'missing': 'white'},
-            'ports_colors': {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange',
-             'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}}
-    """
-    pca_visualization(flight_data=data, features=['mean', 'std', 'amplitude'],
-            signal_categories=['regulation','endogene'], n_segments=100,
-            flight_name=flight_name, save=True, out_dir='../../Resultats/test/',
-            show_plot=True, conf=conf)

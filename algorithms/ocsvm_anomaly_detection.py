@@ -424,26 +424,3 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
         pd.DataFrame(report).to_csv(out_path,
         columns = ['Time frame', 'Phase', 'Port 1', 'Port 2', 'Anomaly',
         'Distance to hyperplane', 'Anomalous signals'], index_label = 'Time Id')
-
-if __name__ == '__main__':
-
-    from flight_analysis_fun import load_flight
-    from flight_names import flight_names
-    from signal_names import *
-    flight_name = flight_names[1]
-    path = '../../data/'
-    data = SignalData.SignalData(load_flight(path+flight_name))
-
-    conf = {'target_precisions_path': 'target_precisions.csv',
-            'regulation': signal_names_regul, 'target': target_names_regul,
-            'binary': signal_names_bin, 'endogene': signal_names_endogene,
-            'phases_colors': {'climb': 'r', 'cruise': 'b', 'landing': 'm',
-                    'descent': 'g', 'hold': 'c', 'otg': 'y',
-                    'take_off': 'k', 'missing': 'white'},
-            'ports_colors': {'apu': 'g', 'ip1': 'c', 'ip2': 'b', 'hp1': 'orange',
-             'hp2': 'r', 'no bleed': 'k', 'missing': 'white'}}
-
-    ocsvm_detection(flight_data=data, features=['mean', 'std', 'amplitude'],
-            signal_categories=['regulation','endogene'], n_segments=100,
-            flight_name=flight_name, hclust=True, save=True, report=True,
-            out_dir='./', show_plot=False, conf=conf)
