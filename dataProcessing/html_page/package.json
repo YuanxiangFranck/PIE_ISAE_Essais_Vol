@@ -1,5 +1,5 @@
 {
-  "name": "liebherr_html_data_viz",
+  "name": "iliad_html_data_viz",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,8 +7,6 @@
     "watch": "watchify  index.js -o template.js -v --debug",
     "build": "browserify index.js -v -t [ babelify --presets [ es2015 ] ] | uglifyjs -mcv > template.js"
   },
-  "author": "",
-  "license": "ISC",
   "dependencies": {
     "bootstrap": "^3.3.7",
     "jquery": "^3.1.1",

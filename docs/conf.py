@@ -54,8 +54,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'pie sxs 2'
-copyright = '2016, franck wang'
-author = 'franck wang'
+copyright = ''
+author = ''
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
