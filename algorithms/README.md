@@ -32,6 +32,11 @@ Il faut fournir à la fonction l'un des deux arguments suivants (l'autre devant 
 ## pca_visualization.py
 
 
+## heatmap_symmetry.py
+
+Ce script est très proche de celui 'heatmap_visualization.py', la seule différence provient du fait qu'on n'affiche non pas une matrice de features, mais une matrice qui indique pour chaque paire de sigaux et pour chaque segment temporel, la durée d'anomalie de la paire, soit le temps passé avec une erreur relative supérieure au seuil, rapporté à la durée du segment temporel. 
+Par exemple, la valeur 0.8 sur une case (i,j) indique donc que sur 80% du segment temporel j, l'erreur relative des signaux composants la paire i est supérieure au seuil donné par l'utilisateur.
+
 
 ## Symmetry.py
 
