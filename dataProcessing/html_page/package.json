@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "watch": "watchify  index.js -o template.js -v --debug",
+    "watch": "watchify  index.js -t [ babelify --presets [ es2015 ] ] -o template.js -v --debug",
     "build": "browserify index.js -v -t [ babelify --presets [ es2015 ] ] | uglifyjs -mcv > template.js"
   },
   "dependencies": {
+    "babel-polyfill": "^6.23.0",
     "bootstrap": "^3.3.7",
     "jquery": "^3.1.1",
     "plotly.js": "^1.22.0"

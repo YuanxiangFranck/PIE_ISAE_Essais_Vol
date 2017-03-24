@@ -1,4 +1,5 @@
-let Plotly = require('plotly.js/lib/core');
+import "babel-polyfill";
+import Plotly from 'plotly.js/lib/core';
 
 // Load in the trace types for pie, and choropleth
 Plotly.register([
@@ -6,6 +7,7 @@ Plotly.register([
     // require('plotly.js/lib/bar'),
     // require('plotly.js/lib/box')
 ]);
+
 // Global variable from html:
 
 // stats: data for phase % to plot pie chart
@@ -45,7 +47,6 @@ function plot_ports(){
     Plotly.newPlot("plot_ports_side_1", port_plot_data_1, layout);
     layout.title = "Flight ports usage side 2";
     Plotly.newPlot("plot_ports_side_2", port_plot_data_2, layout);
-    console.log("0", 0);
 }
 
 function plot_ratio_pie_chart(){
