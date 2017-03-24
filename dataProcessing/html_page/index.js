@@ -86,25 +86,32 @@ function plot_ratio_pie_chart(){
 
 }
 
-function plot_port_usage_per_phases(){
+function plot_port_usage_per_side(){
     let layout = {height: 400, width: 500};
     Plotly.newPlot('port_usage', ports_data, layout);
     layout = {height: 400};
     layout.annotations = [{font: {size: 20}, showarrow: false, text:"Side: 1", x: 0.2, y:1},
                           {font: {size: 20}, showarrow: false, text:"Side: 2", x: 0.8, y:1}];
-    Plotly.newPlot('port_usage_side', ports_side_data, layout, {displaylogo: false});
-    layout.height = 700;
-    layout.annotations = [];
+    Plotly.newPlot('port_usage_side', ports_side_data,
+                   layout, {displaylogo: false});
+}
+
+function plot_port_usage_per_phases(){
+    let annotations = [];
     for (let port_data of ports_seg_data){
-        let x = port_data.domain.x[0];
+        let x = port_data.domain.x[0]+.03;
         let y = port_data.domain.y[1]+.15;
-        layout.annotations.push({font: {size: 20}, showarrow: false,
-                                 text: port_data.name, x: x, y: y});
+        annotations.push({font: {size: 20}, showarrow: true,
+                          text: port_data.name, arrowhead: 0,
+                          x: x, y: y, ax:20, ay: 0});
     }
-    Plotly.newPlot('port_usage_phases', ports_seg_data, layout, {displaylogo: false});
+    let layout = {height: 700, annotations: annotations};
+    Plotly.newPlot('port_usage_phases', ports_seg_data,
+                   layout, {displaylogo: false});
 }
 
 plot_ratio_pie_chart();
 plot_phases();
 plot_ports();
+plot_port_usage_per_side();
 plot_port_usage_per_phases();
