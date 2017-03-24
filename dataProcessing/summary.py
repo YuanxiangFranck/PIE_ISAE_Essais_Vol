@@ -7,6 +7,7 @@ Function to return a quick summary of the data
 * nom
 
 """
+import json
 import numpy as np
 from dataProcessing.parser import txt_parser
 from dataProcessing.segmenter import segment
@@ -120,11 +121,13 @@ def process_ports(ports, ports_full_flight):
                 domain["y"] = [0, 0.28]
             ports_seg_data.append({"labels": labels_1, "values":fracs_1,
                                    "domain": domain, "type":"pie",
+                                   "title": each_segment+" "+str(side),
                                    "name": each_segment+" "+str(side)})
     return ports_data, ports_side_data, ports_seg_data
 
 
-def summary(path, out_path=None, out_dir="", data=None, phases_data=None):
+def summary(path, out_path=None, out_dir="", data=None, phases_data=None,
+            config_path="dataProcessing/config.json"):
     """
     Compute summary
 
@@ -145,7 +148,9 @@ def summary(path, out_path=None, out_dir="", data=None, phases_data=None):
     if data is None:
         data = txt_parser(path)
     if phases_data is None:
-        phases, ports, ports_full_flight = segment(data)
+        with open(config_path) as f_config:
+            config = json.load(f_config)
+        phases, ports, ports_full_flight = segment(data, config)
     else:
         phases, ports, ports_full_flight = phases_data
     # Compute and add data for ports plot
