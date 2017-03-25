@@ -127,7 +127,7 @@ def process_ports(ports, ports_full_flight):
 
 
 def summary(path, out_path=None, out_dir="", data=None, phases_data=None,
-            config_path="dataProcessing/config.json"):
+            config_path="data_info/config.json"):
     """
     Compute summary
 
@@ -142,6 +142,10 @@ def summary(path, out_path=None, out_dir="", data=None, phases_data=None,
         path to export the html
     :param [data=None]: dataFrame
         data of the flight
+    :param [phase_data=None]: tuple (of 3 dict)
+        data of the flight segmentation
+    :param [config_path=None]: str
+        needed if phases_data is not given
     """
     template_data = {}
     # Parse data and compute segmentation

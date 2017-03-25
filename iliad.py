@@ -10,7 +10,7 @@ from dataProcessing import plotter
 from dataProcessing import utils
 from dataProcessing.utils import logger
 from algorithms.SignalData import SignalData
-from algorithms.heatmap_visualization import heatmap
+from algorithms.heatmap_visualization import heatmap as heatmap_visualization
 from algorithms.ocsvm_anomaly_detection import ocsvm_detection
 from algorithms.pca_visualization import pca_visualization
 from algorithms.symmetry_anomaly_detection import asymmetry_detection
@@ -33,7 +33,7 @@ class Iliad:
 
     self._phases_idx (dict) index (as bool) of the dataFrame for each segement
     """
-    def __init__(self, path, config_path="dataProcessing/config.json", verbose=False):
+    def __init__(self, path, config_path="data_info/config.json", verbose=False):
         """
         Constuctor of the class
         """
@@ -176,12 +176,13 @@ class Iliad:
         # Create out dir if it don't exist
         utils.check_dir(out_dir)
         # Build heatmap
-        heatmap(flight_data=self.signal_data, conf=self.config,flight_name=self.name,
-                feature=feature, save=save, signal_category=signal_category,
-                n_segments=n_segments, hclust=hclust, out_dir=out_dir,
-                show_plot=show_plot, signal_list=signal_list,
-                time_window=time_window, out_filename=out_filename,
-                out_format=out_format, annot=annot, robust=robust)
+        heatmap_visualization(flight_data=self.signal_data, conf=self.config,
+                              flight_name=self.name, feature=feature, save=save,
+                              signal_category=signal_category, hclust=hclust,
+                              out_dir=out_dir, n_segments=n_segments,
+                              show_plot=show_plot, signal_list=signal_list,
+                              time_window=time_window, out_filename=out_filename,
+                              out_format=out_format, annot=annot, robust=robust)
 
     def export_ocsvm(self,
                      features=['mean', 'std', 'amplitude'],
