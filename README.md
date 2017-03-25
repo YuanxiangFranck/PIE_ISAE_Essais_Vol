@@ -11,7 +11,7 @@ from iliad import Iliad
 
 path = "../data/data.txt"
 
-anomaly_detector = Iliad(path, verbose=True) # ou verbose=False
+anomaly_detector = Iliad(path) # ,config_path="data_info/config.json")
 
 ########
 # Plot #
@@ -39,14 +39,24 @@ anomaly_detector.plot_ports_seg()
 # Export résultats #
 ####################
 
+# /!\ Ses fonction sont paramétrable avec beacoup d'arguments par défault
+
 # Export de la page HTML qui résume le vol
-anomaly_detector.export_reporting(out_dir="Resultas/")
+anomaly_detector.export_reporting()
 
 # Export des heatmaps
-anomaly_detector.export_heatmap(out_dir='Resultats/',
-                                feature='off_regulation_crossings',
-                                signal_category='regulation')
+anomaly_detector.export_heatmap()
+
+# Export des résultas de l'OCSVM
+anomaly_detector.export_ocsvm()
+
+# Export des résultas de la PCA
+anomaly_detector.export_pca()
+
+# Export des résultas de la détéction de symmetry
+anomaly_detector.export_symmetry_detection()
 ```
+
 ## Fichier de  configuration
 
 CF: https://github.com/YuanxiangFranck/PIE_ISAE_Essais_Vol/tree/master/dataProcessing#configjson
@@ -68,6 +78,11 @@ Pour plus d'infomations pour générer la documentation: [docs/README.md](https:
 | HPRSOV_CMD_STATUS_AMSC{1,2}_CH{A,B} | HP_controller{1,2}_ch{A,B}_cmd    | bool   |
 | APU_BLEED_REQUEST_AMSC{1,2}_CH{A,B} | APU_controller{1,2}_ch{A,B}_cmd   | bool   |
 | PRSOV ACTIVATED_AMSC{1,2}_CH{A,B}   | PRSOV_controller{1,2}_ch{A,B}_cmd | bool   |
+
+## Détéction n_vols
+
+Cf: algorithms.n_flights_whole_flight.py
+
 
 ## Python
 
@@ -95,6 +110,7 @@ ImportError: No module named '_tkinter', please install the python3-tk package
 ```
 
 Il suffit d'installer avec apt:  `sudo apt install python3-tk`
+
 #### Virtual env
 
 Installer virtualenv: `pip install --user virtualenv`
