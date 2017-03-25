@@ -36,6 +36,12 @@ class Iliad:
     def __init__(self, path, config_path="data_info/config.json", verbose=False):
         """
         Constuctor of the class
+        :param path: str
+            path to the data
+        :param [config_path="data_info/config.json"]: str
+            path to the flight configuration
+        :param [verbose=False]:
+            true to have more print info
         """
         self.path = path
         self.name = path.split("/")[-1][:-4]
@@ -72,7 +78,11 @@ class Iliad:
     # All plot functions #
     ######################
     def plot(self, *signals):
-        "Use plotter to plot signals, see plotter.plot"
+        """
+        Use plotter to plot signals, see plotter.plot
+        :param *signals: str
+            signals to plot
+        """
         plotter.plot(self.data, self._phases_idx, self.config["phases_colors"],
                      signals)
 
@@ -101,10 +111,16 @@ class Iliad:
     ##########################
     # Export Reporting  #
     ##########################
-    def export_reporting(self, out_dir="Resultats/"):
-        "export html summary of the flight see summary.summary"
+    def export_reporting(self, out_dir="./", out_filename=None):
+        """
+        export html summary of the flight see summary.summary
+        :param [out_dir='./']: str
+            directory to save the html
+        :param [out_filename=None]: str
+            file name to save the html, if None use flight name
+        """
         utils.check_dir(out_dir)
-        summary(self.path, data=self.data,
+        summary(self.path, data=self.data, out_path=out_filename,
                 phases_data=(self.phases, self.ports, self.ports_full_flight),
                 out_dir=out_dir)
 
@@ -339,56 +355,51 @@ class Iliad:
         duration of anomaly of each pair and calculates the linear regression coefficients for
         regulation signals. It also can create an heatmap showing the relative anomaly
         duration for some time segmentation.
-    
+
         Inputs :
-    
+
         - flight_data : must be an instance of SignalData. Contains all the data
         for the flight to analyse.
-    
+
         - error : relative error used to compare a pair of continuous signals and
         detect anomalies. Is set to 0.01 (1%) by default.
-    
+
         - save_csv : boolean for saving the results in two .csv files (1 for channel
         and 1 for lateral dissymmetry)
-    
+
         - save_txt : boolean for saving the results into one .txt file (to open with
         bloc note for better visualisation)
-    
+
         - flight_name : a string, contains the name of the flight.
-    
+
         - out_dir : a string that indicates the relative output directory, in case
         of saving results
-    
+
         - out_filename : name of the .txt saving file name, and part of the
         two .csv saving file names. If not defined or 'auto', then the format will be
         [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
-    
+
         - conf : used for configuration (it needs to contain the list of boolean signals)
-    
+
         - phase : a string, allows to focus on one phase of the flight, among :
         "otg","take_off","landing","climb","hold","cruise","descent"
         set to "undefined" to run for the whole flight without phase consideration
         set to "all" to run for every phase, including the whole flight
-        
+
         - heatmap : a bool, choose to create or not the heatmap
-        
-        - time_window: int, length of the time window used to cut the flight into 
+
+        - time_window: int, length of the time window used to cut the flight into
         time segments, or 'auto' if n_segments is used instead
-        
+
         - n_segments: int, number of time segments used to cut the flight, or 'auto' if time_window is used instead
-    
+
         - hclust: boolean, apply hierarchical clustering to group similar signals
-    
+
         - save_heatmap: boolean, save heatmap to a file
-    
+
         """
         asymmetry_detection(flight_data=self.signal_data, error=error, save_csv=save_csv,
                             out_filename=out_filename, flight_name=self.name,
                             out_dir=out_dir, save_txt=save_txt, conf=self.config,
                             phase=phase, heatmap=heatmap, time_window=time_window,
                             n_segments=n_segments, hclust=hclust, save_heatmap=save_heatmap)
-
-
-class Iliad_n_flight:
-    "class to compare multiple flights"
-    pass
