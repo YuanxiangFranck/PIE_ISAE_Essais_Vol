@@ -1,0 +1,493 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>iliad &#8212; pie sxs 2 1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for iliad</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">ILIAD: Isae LIebherr Anomaly Detection</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">dataProcessing.parser</span> <span class="k">import</span> <span class="n">txt_parser</span>
+<span class="kn">from</span> <span class="nn">dataProcessing.segmenter</span> <span class="k">import</span> <span class="n">segment</span>
+<span class="kn">from</span> <span class="nn">dataProcessing.summary</span> <span class="k">import</span> <span class="n">summary</span>
+<span class="kn">from</span> <span class="nn">dataProcessing</span> <span class="k">import</span> <span class="n">plotter</span>
+<span class="kn">from</span> <span class="nn">dataProcessing</span> <span class="k">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">dataProcessing.utils</span> <span class="k">import</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">algorithms.SignalData</span> <span class="k">import</span> <span class="n">SignalData</span>
+<span class="kn">from</span> <span class="nn">algorithms.heatmap_visualization</span> <span class="k">import</span> <span class="n">heatmap</span> <span class="k">as</span> <span class="n">heatmap_visualization</span>
+<span class="kn">from</span> <span class="nn">algorithms.ocsvm_anomaly_detection</span> <span class="k">import</span> <span class="n">ocsvm_detection</span>
+<span class="kn">from</span> <span class="nn">algorithms.pca_visualization</span> <span class="k">import</span> <span class="n">pca_visualization</span>
+<span class="kn">from</span> <span class="nn">algorithms.symmetry_anomaly_detection</span> <span class="k">import</span> <span class="n">asymmetry_detection</span>
+
+
+<div class="viewcode-block" id="Iliad"><a class="viewcode-back" href="#iliad.Iliad">[docs]</a><span class="k">class</span> <span class="nc">Iliad</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to group all the features</span>
+
+<span class="sd">    Attributes:</span>
+
+<span class="sd">    self.name (str): name of the flight</span>
+<span class="sd">    self.config (dict): config of the algorithms</span>
+<span class="sd">    self.data (DataFrame): flight_data</span>
+<span class="sd">    self.phases (dict): phases of the plight</span>
+<span class="sd">    self.ports (dict): port usage per segment</span>
+<span class="sd">    self.ports_full_flight (dict) port usage on the whole flight</span>
+
+<span class="sd">    Private attributes:</span>
+
+<span class="sd">    self._phases_idx (dict) index (as bool) of the dataFrame for each segement</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">config_path</span><span class="o">=</span><span class="s2">&quot;data_info/config.json&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constuctor of the class</span>
+<span class="sd">        :param path: str</span>
+<span class="sd">            path to the data</span>
+<span class="sd">        :param [config_path=&quot;data_info/config.json&quot;]: str</span>
+<span class="sd">            path to the flight configuration</span>
+<span class="sd">        :param [verbose=False]:</span>
+<span class="sd">            true to have more print info</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">f_config</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f_config</span><span class="p">)</span>
+        <span class="c1"># Set logger (iliad)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span>
+        <span class="c1"># Create logger</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+
+        <span class="c1"># Parse data and compute signal_data</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start parsing: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span> <span class="o">=</span> <span class="n">SignalData</span><span class="p">(</span><span class="n">txt_parser</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">target_names</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]))</span>
+
+        <span class="c1"># Compute flight segmentation</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start computing flight segmentation&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports_full_flight</span> <span class="o">=</span> <span class="n">segment</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span><span class="o">.</span><span class="n">_raw_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_phases_idx</span> <span class="o">=</span> <span class="n">plotter</span><span class="o">.</span><span class="n">compute_phases_idx</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span><span class="o">.</span><span class="n">set_flight_segments</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports_full_flight</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        return raw data from self.signal_data</span>
+<span class="sd">        this function is built as a property, in order to use it as an attribute</span>
+<span class="sd">        and avoid duplicate storage</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span><span class="o">.</span><span class="n">_raw_data</span>
+
+    <span class="c1">######################</span>
+    <span class="c1"># All plot functions #</span>
+    <span class="c1">######################</span>
+<div class="viewcode-block" id="Iliad.plot"><a class="viewcode-back" href="#iliad.Iliad.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">signals</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Use plotter to plot signals, see plotter.plot</span>
+<span class="sd">        :param *signals: str</span>
+<span class="sd">            signals to plot</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phases_idx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases_colors&quot;</span><span class="p">],</span>
+                     <span class="n">signals</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Iliad.plot_phases"><a class="viewcode-back" href="#iliad.Iliad.plot_phases">[docs]</a>    <span class="k">def</span> <span class="nf">plot_phases</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Use plotter to plot phases, see plotter.plot&quot;</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">plot_phases</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_phases_idx</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases_colors&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Iliad.plot_segments_pie"><a class="viewcode-back" href="#iliad.Iliad.plot_segments_pie">[docs]</a>    <span class="k">def</span> <span class="nf">plot_segments_pie</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;plot phases within a pie&quot;</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">plot_segments_pie</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;phases_colors&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Iliad.plot_ports_seg"><a class="viewcode-back" href="#iliad.Iliad.plot_ports_seg">[docs]</a>    <span class="k">def</span> <span class="nf">plot_ports_seg</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;plot port usage on each segment on a pie chart, see plotter.plot_ports_seg&quot;</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">plot_ports_seg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ports_colors&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Iliad.plot_ports_sides"><a class="viewcode-back" href="#iliad.Iliad.plot_ports_sides">[docs]</a>    <span class="k">def</span> <span class="nf">plot_ports_sides</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;plot port usage for each side of the plane, see plot_ports_sides&quot;</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">plot_ports_sides</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports_full_flight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ports_colors&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Iliad.plot_ports"><a class="viewcode-back" href="#iliad.Iliad.plot_ports">[docs]</a>    <span class="k">def</span> <span class="nf">plot_ports</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;plot port usage, see plot_ports&quot;</span>
+        <span class="n">plotter</span><span class="o">.</span><span class="n">plot_ports</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ports_full_flight</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;ports_colors&quot;</span><span class="p">])</span></div>
+
+    <span class="c1">##########################</span>
+    <span class="c1"># Export Reporting  #</span>
+    <span class="c1">##########################</span>
+<div class="viewcode-block" id="Iliad.export_reporting"><a class="viewcode-back" href="#iliad.Iliad.export_reporting">[docs]</a>    <span class="k">def</span> <span class="nf">export_reporting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_dir</span><span class="o">=</span><span class="s2">&quot;./&quot;</span><span class="p">,</span> <span class="n">out_filename</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        export html summary of the flight see summary.summary</span>
+<span class="sd">        :param [out_dir=&#39;./&#39;]: str</span>
+<span class="sd">            directory to save the html</span>
+<span class="sd">        :param [out_filename=None]: str</span>
+<span class="sd">            file name to save the html, if None use flight name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">check_dir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+        <span class="n">summary</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">out_path</span><span class="o">=</span><span class="n">out_filename</span><span class="p">,</span>
+                <span class="n">phases_data</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phases</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ports_full_flight</span><span class="p">),</span>
+                <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Iliad.export_heatmap"><a class="viewcode-back" href="#iliad.Iliad.export_heatmap">[docs]</a>    <span class="k">def</span> <span class="nf">export_heatmap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="s1">&#39;percent_time_off_regulation&#39;</span><span class="p">,</span>
+                       <span class="n">signal_category</span><span class="o">=</span><span class="s1">&#39;regulation&#39;</span><span class="p">,</span>
+                       <span class="n">signal_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">time_window</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                       <span class="n">n_segments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                       <span class="n">hclust</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">out_filename</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                       <span class="n">out_dir</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span>
+                       <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">out_format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">,</span>
+                       <span class="n">annot</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">robust</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes a feature on each time segment of a flight, and exports it as a heatmap visualization to a file. The result can be split across several files.</span>
+
+<span class="sd">        :param flight_data: SignalData object</span>
+<span class="sd">            Flight data</span>
+
+<span class="sd">        :param feature: string</span>
+<span class="sd">            The feature to represent on the heatmap</span>
+
+<span class="sd">        :param signal_category: string</span>
+<span class="sd">            The signal category represented on the heatmap. Should be one of the categories listed in the configuration file, or &#39;custom&#39; to select signals manually</span>
+
+<span class="sd">        :param signal list: list</span>
+<span class="sd">            If signal_category is set to &#39;custom&#39;, list of strings containing selected signals</span>
+
+<span class="sd">        :param time_window: int</span>
+<span class="sd">            Length of the time window used to cut the flight into time segments, or &#39;auto&#39; if n_segments is used instead</span>
+
+<span class="sd">        :param n_segments: int</span>
+<span class="sd">            Number of time segments used to cut the flight, or &#39;auto&#39; if time_window is used instead</span>
+
+<span class="sd">        :param hclust: boolean</span>
+<span class="sd">            Apply hierarchical clustering to group similar signals</span>
+
+<span class="sd">        :param save: boolean</span>
+<span class="sd">            Save heatmap to a file</span>
+
+<span class="sd">        :param flight_name: string</span>
+<span class="sd">            Name of the flight</span>
+
+<span class="sd">        :param out_dir: string</span>
+<span class="sd">            Directory where the exported files will be saved</span>
+
+<span class="sd">        :param out_filename: string</span>
+<span class="sd">            Filename of the exported files, or &#39;auto&#39; to generate an automatic filename</span>
+
+<span class="sd">        :param show_plot: boolean</span>
+<span class="sd">            Display figure in the python shell</span>
+
+<span class="sd">        :param out_format: string</span>
+<span class="sd">            &#39;pdf&#39; by default, or image format (i.e. &#39;png&#39;)</span>
+
+<span class="sd">        :param annot: boolean</span>
+<span class="sd">            Display values on the heatmap</span>
+
+<span class="sd">        :param robust: boolean</span>
+<span class="sd">            Use a robust color map. A robust color map gives a visually better result if the range of the values is large, by not taking into account extreme values in the color map.</span>
+<span class="sd">            Be careful that the color axis does not represent the real value range with a robust color map ; you might want to use &#39;annot&#39; = True to check the actual values.</span>
+
+<span class="sd">        :param conf: dict</span>
+<span class="sd">            Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create out dir if it don&#39;t exist</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">check_dir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+        <span class="c1"># Build heatmap</span>
+        <span class="n">heatmap_visualization</span><span class="p">(</span><span class="n">flight_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                              <span class="n">flight_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">feature</span><span class="o">=</span><span class="n">feature</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="n">save</span><span class="p">,</span>
+                              <span class="n">signal_category</span><span class="o">=</span><span class="n">signal_category</span><span class="p">,</span> <span class="n">hclust</span><span class="o">=</span><span class="n">hclust</span><span class="p">,</span>
+                              <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">n_segments</span><span class="o">=</span><span class="n">n_segments</span><span class="p">,</span>
+                              <span class="n">show_plot</span><span class="o">=</span><span class="n">show_plot</span><span class="p">,</span> <span class="n">signal_list</span><span class="o">=</span><span class="n">signal_list</span><span class="p">,</span>
+                              <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">out_filename</span><span class="o">=</span><span class="n">out_filename</span><span class="p">,</span>
+                              <span class="n">out_format</span><span class="o">=</span><span class="n">out_format</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="n">annot</span><span class="p">,</span> <span class="n">robust</span><span class="o">=</span><span class="n">robust</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Iliad.export_ocsvm"><a class="viewcode-back" href="#iliad.Iliad.export_ocsvm">[docs]</a>    <span class="k">def</span> <span class="nf">export_ocsvm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                     <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude&#39;</span><span class="p">],</span>
+                     <span class="n">signal_categories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;regulation&#39;</span><span class="p">,</span><span class="s1">&#39;endogene&#39;</span><span class="p">],</span>
+                     <span class="n">signal_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">gamma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+                     <span class="n">nu</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+                     <span class="n">time_window</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                     <span class="n">n_segments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                     <span class="n">hclust</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                     <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">report</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">out_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
+                     <span class="n">out_filename</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                     <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">out_format</span><span class="o">=</span><span class="s1">&#39;pdf&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes features on each time segment of a flight, performs OCSVM anomaly detection, and exports results to an anomaly heatmap and a csv report. The result can be split across several files.</span>
+
+<span class="sd">        :param flight_data: SignalData object</span>
+<span class="sd">            Flight data</span>
+
+<span class="sd">        :param features: list</span>
+<span class="sd">            List of strings containing features</span>
+
+<span class="sd">        :param signal_categories: list</span>
+<span class="sd">            List of strings containing the signal categories to process, or &#39;custom&#39; to select signals manually. Signal categories are listed in the configuration file.</span>
+
+<span class="sd">        :param signal list: list</span>
+<span class="sd">            If signal_categories is set to &#39;custom&#39;, list of strings containing selected signals</span>
+
+<span class="sd">        :param gamma: float</span>
+<span class="sd">            gamma parameter of the OCSVM</span>
+
+<span class="sd">        :param nu: float</span>
+<span class="sd">            nu parameter of the OCSVM</span>
+
+<span class="sd">        :param time_window: int</span>
+<span class="sd">            Length of the time window used to cut the flight into time segments, or &#39;auto&#39; if n_segments is used instead</span>
+
+<span class="sd">        :param n_segments: int</span>
+<span class="sd">            Number of time segments used to cut the flight, or &#39;auto&#39; if time_window is used instead</span>
+
+<span class="sd">        :param hclust: boolean</span>
+<span class="sd">            Apply hierarchical clustering to group similar signals</span>
+
+<span class="sd">        :param save: boolean</span>
+<span class="sd">            Save heatmap and report to a file</span>
+
+<span class="sd">        :param flight_name: string</span>
+<span class="sd">            Name of the flight</span>
+
+<span class="sd">        :param out_dir: string</span>
+<span class="sd">            Directory where the exported files will be saved</span>
+
+<span class="sd">        :param out_filename: string</span>
+<span class="sd">            Filename of the exported files, or &#39;auto&#39; to generate an automatic filename</span>
+
+<span class="sd">        :param show_plot: boolean</span>
+<span class="sd">            Display figure in the python shell</span>
+
+<span class="sd">        :param out_format: string</span>
+<span class="sd">            Output format of the anomaly heatmap. &#39;pdf&#39; by default, or image format (i.e. &#39;png&#39;)</span>
+
+<span class="sd">        :param conf: dict</span>
+<span class="sd">            Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ocsvm_detection</span><span class="p">(</span><span class="n">flight_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+                        <span class="n">signal_categories</span><span class="o">=</span><span class="n">signal_categories</span><span class="p">,</span>
+                        <span class="n">signal_list</span><span class="o">=</span><span class="n">signal_list</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span> <span class="n">nu</span><span class="o">=</span><span class="n">nu</span><span class="p">,</span>
+                        <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span> <span class="n">n_segments</span><span class="o">=</span><span class="n">n_segments</span><span class="p">,</span>
+                        <span class="n">hclust</span><span class="o">=</span><span class="n">hclust</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="n">save</span><span class="p">,</span> <span class="n">report</span><span class="o">=</span><span class="n">report</span><span class="p">,</span>
+                        <span class="n">flight_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span>
+                        <span class="n">out_filename</span><span class="o">=</span><span class="n">out_filename</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="n">show_plot</span><span class="p">,</span>
+                        <span class="n">out_format</span><span class="o">=</span><span class="n">out_format</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Iliad.export_pca"><a class="viewcode-back" href="#iliad.Iliad.export_pca">[docs]</a>    <span class="k">def</span> <span class="nf">export_pca</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">,</span> <span class="s1">&#39;amplitude&#39;</span><span class="p">],</span>
+                   <span class="n">signal_categories</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;regulation&#39;</span><span class="p">,</span><span class="s1">&#39;endogene&#39;</span><span class="p">],</span>
+                   <span class="n">signal_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">time_window</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                   <span class="n">n_segments</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                   <span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">out_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
+                   <span class="n">out_filename</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                   <span class="n">show_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">out_format</span><span class="o">=</span><span class="s1">&#39;png&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes features on each time segment of a flight, and exports a 2-dimensional PCA visualization to a file.</span>
+
+<span class="sd">        :param flight_data: SignalData object</span>
+<span class="sd">            Flight data</span>
+
+<span class="sd">        :param features: list</span>
+<span class="sd">            List of strings containing features</span>
+
+<span class="sd">        :param signal_categories: list</span>
+<span class="sd">            List of strings containing the signal categories to process, or &#39;custom&#39; to select signals manually. Signal categories are listed in the configuration file.</span>
+
+<span class="sd">        :param signal list: list</span>
+<span class="sd">            If signal_categories is set to &#39;custom&#39;, list of strings containing selected signals</span>
+
+<span class="sd">        :param time_window: int</span>
+<span class="sd">            Length of the time window used to cut the flight into time segments, or &#39;auto&#39; if n_segments is used instead</span>
+
+<span class="sd">        :param n_segments: int</span>
+<span class="sd">            Number of time segments used to cut the flight, or &#39;auto&#39; if time_window is used instead</span>
+
+<span class="sd">        :param hclust: boolean</span>
+<span class="sd">            Apply hierarchical clustering to group similar signals</span>
+
+<span class="sd">        :param save: boolean</span>
+<span class="sd">            Save heatmap and report to a file</span>
+
+<span class="sd">        :param flight_name: string</span>
+<span class="sd">            Name of the flight</span>
+
+<span class="sd">        :param out_dir: string</span>
+<span class="sd">            Directory where the exported files will be saved</span>
+
+<span class="sd">        :param out_filename: string</span>
+<span class="sd">            Filename of the exported files, or &#39;auto&#39; to generate an automatic filename</span>
+
+<span class="sd">        :param show_plot: boolean</span>
+<span class="sd">            Display figure in the python shell</span>
+
+<span class="sd">        :param out_format: string</span>
+<span class="sd">            image format (&#39;png&#39; by default)</span>
+
+<span class="sd">        :param conf: dict</span>
+<span class="sd">            Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pca_visualization</span><span class="p">(</span><span class="n">flight_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="n">features</span><span class="p">,</span>
+                          <span class="n">signal_categories</span><span class="o">=</span><span class="n">signal_categories</span><span class="p">,</span>
+                          <span class="n">signal_list</span><span class="o">=</span><span class="n">signal_list</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span>
+                          <span class="n">n_segments</span><span class="o">=</span><span class="n">n_segments</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="n">save</span><span class="p">,</span>
+                          <span class="n">flight_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span>
+                          <span class="n">out_filename</span><span class="o">=</span><span class="n">out_filename</span><span class="p">,</span> <span class="n">show_plot</span><span class="o">=</span><span class="n">show_plot</span><span class="p">,</span>
+                          <span class="n">out_format</span><span class="o">=</span><span class="n">out_format</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Iliad.export_asymmetry_detection"><a class="viewcode-back" href="#iliad.Iliad.export_asymmetry_detection">[docs]</a>    <span class="k">def</span> <span class="nf">export_asymmetry_detection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+                                   <span class="n">save_csv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                   <span class="n">save_txt</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                   <span class="n">out_dir</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>
+                                   <span class="n">out_filename</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                                   <span class="n">phase</span><span class="o">=</span><span class="s1">&#39;undefined&#39;</span><span class="p">,</span>
+                                   <span class="n">heatmap</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                   <span class="n">time_window</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                   <span class="n">n_segments</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+                                   <span class="n">hclust</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                   <span class="n">save_heatmap</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the symmetry test for both lateral and channel symmetries : finds the</span>
+<span class="sd">        signals which are expected to be equal but actually are different, gives the</span>
+<span class="sd">        duration of anomaly of each pair and calculates the linear regression coefficients for</span>
+<span class="sd">        regulation signals. It also can create an heatmap showing the relative anomaly</span>
+<span class="sd">        duration for some time segmentation.</span>
+
+<span class="sd">        Inputs :</span>
+
+<span class="sd">        - flight_data : must be an instance of SignalData. Contains all the data</span>
+<span class="sd">        for the flight to analyse.</span>
+
+<span class="sd">        - error : relative error used to compare a pair of continuous signals and</span>
+<span class="sd">        detect anomalies. Is set to 0.01 (1%) by default.</span>
+
+<span class="sd">        - save_csv : boolean for saving the results in two .csv files (1 for channel</span>
+<span class="sd">        and 1 for lateral dissymmetry)</span>
+
+<span class="sd">        - save_txt : boolean for saving the results into one .txt file (to open with</span>
+<span class="sd">        bloc note for better visualisation)</span>
+
+<span class="sd">        - flight_name : a string, contains the name of the flight.</span>
+
+<span class="sd">        - out_dir : a string that indicates the relative output directory, in case</span>
+<span class="sd">        of saving results</span>
+
+<span class="sd">        - out_filename : name of the .txt saving file name, and part of the</span>
+<span class="sd">        two .csv saving file names. If not defined or &#39;auto&#39;, then the format will be</span>
+<span class="sd">        [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]</span>
+
+<span class="sd">        - conf : used for configuration (it needs to contain the list of boolean signals)</span>
+
+<span class="sd">        - phase : a string, allows to focus on one phase of the flight, among :</span>
+<span class="sd">        &quot;otg&quot;,&quot;take_off&quot;,&quot;landing&quot;,&quot;climb&quot;,&quot;hold&quot;,&quot;cruise&quot;,&quot;descent&quot;</span>
+<span class="sd">        set to &quot;undefined&quot; to run for the whole flight without phase consideration</span>
+<span class="sd">        set to &quot;all&quot; to run for every phase, including the whole flight</span>
+
+<span class="sd">        - heatmap : a bool, choose to create or not the heatmap</span>
+
+<span class="sd">        - time_window: int, length of the time window used to cut the flight into</span>
+<span class="sd">        time segments, or &#39;auto&#39; if n_segments is used instead</span>
+
+<span class="sd">        - n_segments: int, number of time segments used to cut the flight, or &#39;auto&#39; if time_window is used instead</span>
+
+<span class="sd">        - hclust: boolean, apply hierarchical clustering to group similar signals</span>
+
+<span class="sd">        - save_heatmap: boolean, save heatmap to a file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">asymmetry_detection</span><span class="p">(</span><span class="n">flight_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signal_data</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span> <span class="n">save_csv</span><span class="o">=</span><span class="n">save_csv</span><span class="p">,</span>
+                            <span class="n">out_filename</span><span class="o">=</span><span class="n">out_filename</span><span class="p">,</span> <span class="n">flight_name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                            <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">save_txt</span><span class="o">=</span><span class="n">save_txt</span><span class="p">,</span> <span class="n">conf</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                            <span class="n">phase</span><span class="o">=</span><span class="n">phase</span><span class="p">,</span> <span class="n">heatmap</span><span class="o">=</span><span class="n">heatmap</span><span class="p">,</span> <span class="n">time_window</span><span class="o">=</span><span class="n">time_window</span><span class="p">,</span>
+                            <span class="n">n_segments</span><span class="o">=</span><span class="n">n_segments</span><span class="p">,</span> <span class="n">hclust</span><span class="o">=</span><span class="n">hclust</span><span class="p">,</span> <span class="n">save_heatmap</span><span class="o">=</span><span class="n">save_heatmap</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
