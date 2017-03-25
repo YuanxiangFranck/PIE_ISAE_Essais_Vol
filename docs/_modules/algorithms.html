@@ -49,37 +49,6 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="algorithms-1-flight-sub-delta-detection-module">
-<h2>algorithms.1_flight_sub_delta_detection module<a class="headerlink" href="#algorithms-1-flight-sub-delta-detection-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="algorithms-1-flight-sub-detection-module">
-<h2>algorithms.1_flight_sub_detection module<a class="headerlink" href="#algorithms-1-flight-sub-detection-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-algorithms.NNeighbor">
-<span id="algorithms-nneighbor-module"></span><h2>algorithms.NNeighbor module<a class="headerlink" href="#module-algorithms.NNeighbor" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="algorithms.NNeighbor.NearestNeighbor">
-<code class="descclassname">algorithms.NNeighbor.</code><code class="descname">NearestNeighbor</code><span class="sig-paren">(</span><em>x</em>, <em>k</em>, <em>l</em>, <em>binary=False</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/NNeighbor.html#NearestNeighbor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.NNeighbor.NearestNeighbor" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the l worst point of x considering the mean of the distances between the k nearest neighbors.
-l : int
-x : list of points
-k : int
-binary : boolean</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="algorithms.NNeighbor.lBigger">
-<code class="descclassname">algorithms.NNeighbor.</code><code class="descname">lBigger</code><span class="sig-paren">(</span><em>x</em>, <em>l</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/NNeighbor.html#lBigger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.NNeighbor.lBigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the indice of the l higher values in x</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="algorithms.NNeighbor.lower">
-<code class="descclassname">algorithms.NNeighbor.</code><code class="descname">lower</code><span class="sig-paren">(</span><em>x</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/NNeighbor.html#lower"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.NNeighbor.lower" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the indice of the lower value in x</p>
-</dd></dl>
-
-</div>
 <div class="section" id="module-algorithms.SignalData">
 <span id="algorithms-signaldata-module"></span><h2>algorithms.SignalData module<a class="headerlink" href="#module-algorithms.SignalData" title="Permalink to this headline">¶</a></h2>
 <p>Created on Sat Nov 12 18:59:48 2016</p>
@@ -206,30 +175,16 @@ pour certains algorithmes !</p>
 found and sorts the anomalies according to their duration.</p>
 <p>Inputs :</p>
 <ul class="simple">
-<li>result_sym : results of a symmetry test which is : an array containing the</li>
-</ul>
-<p>names of the signals with anomalies (by pair), and the associated time indexes
-of anomaly occurences</p>
-<ul class="simple">
-<li>str_type : type of the results given (&#8220;Channel&#8221;, &#8220;Lateral&#8221; or other). By defaut</li>
-</ul>
-<p>is set to &#8220;&#8221;.</p>
-<ul class="simple">
+<li>result_sym : results of a symmetry test which is : an array containing the names of the signals with anomalies (by pair), and the associated time indexes of anomaly occurences</li>
+<li>str_type : type of the results given (&#8220;Channel&#8221;, &#8220;Lateral&#8221; or other). By defaut is set to &#8220;&#8221;.</li>
 <li>binary_names : list of binary files names</li>
 </ul>
 <p>Outputs :</p>
 <ul class="simple">
-<li>anomalies_couples_names_sorted : list of the names of anomalies (by couple) sorted</li>
+<li>anomalies_couples_names_sorted : list of the names of anomalies (by couple) sorted by their weight (number of time indexes where there is an anomaly)</li>
+<li>long_sorted : number of time indexes where there is an anomaly, corresponding to the anomalies_couple_names_sorted</li>
+<li>anomalies_lin_reg_coef_sorted : linear regression coefficients, sorted by the duration of the detected anomalies</li>
 </ul>
-<p>by their weight (number of time indexes where there is an anomaly)</p>
-<ul class="simple">
-<li>long_sorted : number of time indexes where there is an anomaly, corresponding</li>
-</ul>
-<p>to the anomalies_couple_names_sorted</p>
-<ul class="simple">
-<li>anomalies_lin_reg_coef_sorted : linear regression coefficients, sorted by the duration</li>
-</ul>
-<p>of the detected anomalies</p>
 </dd></dl>
 
 <dl class="function">
@@ -239,23 +194,19 @@ of anomaly occurences</p>
 for some time windows.</p>
 <p>Inputs :</p>
 <ul class="simple">
-<li>result_sym : results of a symmetry test which is : an array containing the</li>
-</ul>
-<p>names of the signals with anomalies (by pair), and the associated time indexes
-of anomaly occurences</p>
-<ul class="simple">
+<li>result_sym : results of a symmetry test which is : an array containing the names of the signals with anomalies (by pair), and the associated time indexes of anomaly occurences</li>
 <li>max_time_index : an integer : the maximal time index of the flight</li>
-<li>window_size : size in percentage of the flight duration of the window on</li>
+<li><dl class="first docutils">
+<dt>window_size</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">size in percentage of the flight duration of the window on which number of anomalies is counted (ex</span> <span class="classifier-delimiter">:</span> <span class="classifier">0.1 for dividing the flight in 10)</span><dd>If window_size = 0, then divides the flight with respect to the flight phases.
+By default : window_size = 0.1</dd>
+</dl>
+</li>
 </ul>
-<p>which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)
-If window_size = 0, then divides the flight with respect to the flight phases.
-By default : window_size = 0.1</p>
 <p>Output :</p>
 <ul class="simple">
-<li>result : a two lignes array : the first ligne is the time indexes of the</li>
+<li>result : a two lignes array : the first ligne is the time indexes of the begining of the windows, the second ligne is the number of anomalies detected during the corresponding time window</li>
 </ul>
-<p>begining of the windows, the second ligne is the number of anomalies detected
-during the corresponding time window</p>
 </dd></dl>
 
 <dl class="function">
@@ -266,62 +217,44 @@ indexe, and therefore returns the time indexes where anomalies are found.
 Computes as well the linear regression coefficients.</p>
 <p>Inputs :</p>
 <ul class="simple">
-<li>signal1, signal2 : two signals of the class SignalData to compare</li>
-</ul>
-<p>(generally signal1 -&gt; &#8221;...CHA&#8221;, and signal2 -&gt; &#8221;...CHB&#8221; or &#8221;..AMSC1&#8221; and &#8221;..AMSC2&#8221;  )</p>
-<ul class="simple">
-<li>error : the result will be False if there is at least one value which is</li>
-</ul>
-<p>out of the relative error box</p>
-<ul class="simple">
+<li>signal1, signal2 : two signals of the class SignalData to compare (generally signal1 -&gt; &#8221;...CHA&#8221;, and signal2 -&gt; &#8221;...CHB&#8221; or &#8221;..AMSC1&#8221; and &#8221;..AMSC2&#8221;  )</li>
+<li>error : the result will be False if there is at least one value which is out of the relative error box</li>
 <li>binary_names : list of binary files names</li>
-<li>[name_signal1] : optional, a string, the name of the first input. Allows</li>
+<li><dl class="first docutils">
+<dt>[name_signal1]</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">optional, a string, the name of the first input.</span><dd>Allows the algorithm to check if the inputs are boolean or not (from specifications)
+By defaut, consider the signal as non boolean.</dd>
+</dl>
+</li>
+<li>[comment] : otpional, a string, if equals &#8216;none&#8217; then don&#8217;t print any result, prints the result if nothing is specified. The print is done through logger.info</li>
 </ul>
-<p>the algorithm to check if the inputs are boolean or not (from specifications)
-By defaut, consider the signal as non boolean.</p>
-<ul class="simple">
-<li>[comment] : otpional, a string, if equals &#8216;none&#8217; then don&#8217;t print any result,</li>
-</ul>
-<p>prints the result if nothing is specified. The print is done through logger.info</p>
 <p>Outputs :</p>
 <ul class="simple">
-<li>result : a bool, indicates if the two imput signals are the same</li>
-</ul>
-<p>(according to the accepted error)</p>
-<ul class="simple">
+<li>result : a bool, indicates if the two imput signals are the same (according to the accepted error)</li>
 <li>index : time indexes of the signal.data where the differences where found</li>
-<li>lin_reg : an array which contains first the type of the signals (&#8216;b&#8217; for</li>
+<li>lin_reg : an array which contains first the type of the signals (&#8216;b&#8217; for boolean and &#8216;c&#8217; for continuous), then the slope, the intercept and finally the R2 value of linear regression between the two signals.</li>
 </ul>
-<p>boolean and &#8216;c&#8217; for continuous), then the slope, the intercept and finally the R2 value
-of linear regression between the two signals.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="algorithms.Symmetry.Symmetry_Channels_One_Flight">
 <code class="descclassname">algorithms.Symmetry.</code><code class="descname">Symmetry_Channels_One_Flight</code><span class="sig-paren">(</span><em>flight</em>, <em>error</em>, <em>binary_names</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/Symmetry.html#Symmetry_Channels_One_Flight"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.Symmetry.Symmetry_Channels_One_Flight" title="Permalink to this definition">¶</a></dt>
-<dd><p>Finds the symmetry problems in a flight by comparing both channels A
-and B for each measure of a flight.</p>
+<dd><p>Finds the symmetry problems in a flight by comparing both channels A and B for each measure of a flight.</p>
 <p>Inputs :</p>
 <ul class="simple">
-<li>flight : must have been parsed by txt_parser. Contains all the signals</li>
-</ul>
-<p>of one flight</p>
-<ul class="simple">
-<li>error : relative error accepted for the detection of anomalies between</li>
-</ul>
-<p>two signals which should have been equal</p>
-<ul class="simple">
+<li>flight : must have been parsed by txt_parser. Contains all the signals of one flight</li>
+<li>error : relative error accepted for the detection of anomalies between two signals which should have been equal</li>
 <li>binary_names : list of binary files names</li>
 </ul>
 <p>Output :</p>
 <ul class="simple">
-<li>result_anomaly : Contains the names of the supposed equal signals wich are</li>
+<li><dl class="first docutils">
+<dt>result_anomaly</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">Contains the names of the supposed equal signals wich are actually different.</span><dd>Contains as well the indexes where the differences were found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
+The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and the linear regression coefficients in result_anomaly[3*i+2] with i &lt;= 0</dd>
+</dl>
+</li>
 </ul>
-<p>actually different. Contains as well the indexes where the differences were
-found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
-The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and
-the linear regression coefficients in result_anomaly[3*i+2]
-with i &lt;= 0</p>
 </dd></dl>
 
 <dl class="function">
@@ -331,25 +264,19 @@ with i &lt;= 0</p>
 for each measure of a flight.</p>
 <p>Inputs :</p>
 <ul class="simple">
-<li>flight : must have been parsed by txt_parser. Contains all the signals</li>
-</ul>
-<p>of one flight</p>
-<ul class="simple">
-<li>error : relative error accepted for the detection of anomalies between</li>
-</ul>
-<p>two signals which should have been equal</p>
-<ul class="simple">
+<li>flight : must have been parsed by txt_parser. Contains all the signals of one flight</li>
+<li>error : relative error accepted for the detection of anomalies between two signals which should have been equal</li>
 <li>binary_names : list of binary files names</li>
 </ul>
 <p>Output :</p>
 <ul class="simple">
-<li>result_anomaly : Contains the names of the supposed equal signals wich are</li>
+<li><dl class="first docutils">
+<dt>result_anomaly</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">Contains the names of the supposed equal signals wich are actually different.</span><dd>Contains as well the indexes where the differences were found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
+The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and the linear regression coefficients in result_anomaly[3*i+2] with i &lt;= 0</dd>
+</dl>
+</li>
 </ul>
-<p>actually different. Contains as well the indexes where the differences were
-found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
-The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and
-the linear regression coefficients in result_anomaly[3*i+2]
-with i &lt;= 0</p>
 </dd></dl>
 
 <dl class="function">
@@ -359,13 +286,12 @@ with i &lt;= 0</p>
 <p>Input :</p>
 <ul class="simple">
 <li>signal_name : a string, the name of the signal to test.</li>
+<li>signal_names_bin : list of the binary files names</li>
 </ul>
-<p>-signal_names_bin : list of the binary files names</p>
 <p>Output :</p>
 <ul class="simple">
-<li>Result : a boolean, is True if the input signal is known as a boolean,</li>
+<li>Result : a boolean, is True if the input signal is known as a boolean, and returns False if the name is contained in the list of regulated signals (non boolean)</li>
 </ul>
-<p>and returns False if the name is contained in the list of regulated signals (non boolean)</p>
 </dd></dl>
 
 <dl class="function">
@@ -394,9 +320,8 @@ with i &lt;= 0</p>
 <li>lin_reg_coef : list of the linear regression coefficients</li>
 <li>error : relative error used for the anomaly detection</li>
 <li>is_channel : bool to know whether the anomalies are from channel or lateral</li>
+<li>flight_phase : sting, phase of the flight (&#8220;otg&#8221;,&#8221;cruise&#8221;, ...). Total flight if &#8220;undefined&#8221;.</li>
 </ul>
-<p>-flight_phase : sting, phase of the flight (&#8220;otg&#8221;,&#8221;cruise&#8221;, ...).
-Total flight if &#8220;undefined&#8221;.</p>
 </dd></dl>
 
 </div>
@@ -460,11 +385,58 @@ window sl_w itself !</p>
 <div class="section" id="algorithms-flight-analysis-template-module">
 <h2>algorithms.flight_analysis_template module<a class="headerlink" href="#algorithms-flight-analysis-template-module" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-algorithms.flight_names">
-<span id="algorithms-flight-names-module"></span><h2>algorithms.flight_names module<a class="headerlink" href="#module-algorithms.flight_names" title="Permalink to this headline">¶</a></h2>
-<p>Created on Thu Jan  5 19:11:55 2017</p>
-<p>&#64;author: Florent</p>
-<p>Flight Names</p>
+<div class="section" id="module-algorithms.heatmap_symmetry">
+<span id="algorithms-heatmap-symmetry-module"></span><h2>algorithms.heatmap_symmetry module<a class="headerlink" href="#module-algorithms.heatmap_symmetry" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wed Mar 15 13:55:31 2017</p>
+<p>&#64;author: Matthieu</p>
+<dl class="function">
+<dt id="algorithms.heatmap_symmetry.heatmap_symmetry">
+<code class="descclassname">algorithms.heatmap_symmetry.</code><code class="descname">heatmap_symmetry</code><span class="sig-paren">(</span><em>flight_data=None</em>, <em>error=0.01</em>, <em>time_window='auto'</em>, <em>n_segments='auto'</em>, <em>hclust=False</em>, <em>save=True</em>, <em>flight_name='undefined'</em>, <em>signals1=None</em>, <em>signals2=None</em>, <em>type_signals=''</em>, <em>out_dir='.'</em>, <em>out_filename='auto'</em>, <em>show_plot=True</em>, <em>out_format='pdf'</em>, <em>conf=None</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/heatmap_symmetry.html#heatmap_symmetry"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.heatmap_symmetry.heatmap_symmetry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the relative time of anomaly on each time segment of a flight, 
+and exports it as a heatmap visualization to a file. 
+The result can be split across several files. A clustering option can be activated.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>flight_data</strong> &#8211; SignalData object
+Flight data</li>
+<li><strong>error</strong> &#8211; int
+The relative error threshold</li>
+<li><strong>time_window</strong> &#8211; int
+Length of the time window used to cut the flight into time segments, or &#8216;auto&#8217; if n_segments is used instead</li>
+<li><strong>n_segments</strong> &#8211; int
+Number of time segments used to cut the flight, or &#8216;auto&#8217; if time_window is used instead</li>
+<li><strong>hclust</strong> &#8211; boolean
+Apply hierarchical clustering to group similar signals</li>
+<li><strong>save</strong> &#8211; boolean
+Save heatmap to a file</li>
+<li><strong>flight_name</strong> &#8211; string
+Name of the flight</li>
+<li><strong>signals1</strong> &#8211; list of string
+List of the names of the first column of signals to compare (the first name of each pair)</li>
+<li><strong>signals2</strong> &#8211; list of string
+List of the names of the second column of signals to compare (the second name of each pair)</li>
+<li><strong>type_signal</strong> &#8211; string
+&#8220;Channel&#8221; or &#8220;Lateral&#8221;, depends on the considerated pair</li>
+<li><strong>out_dir</strong> &#8211; string
+Directory where the exported files will be saved</li>
+<li><strong>out_filename</strong> &#8211; string
+Filename of the exported files, or &#8216;auto&#8217; to generate an automatic filename</li>
+<li><strong>show_plot</strong> &#8211; boolean
+Display figure in the python shell</li>
+<li><strong>out_format</strong> &#8211; string
+&#8216;pdf&#8217; by default, or image format (i.e. &#8216;png&#8217;)</li>
+<li><strong>conf</strong> &#8211; dict
+Configuration</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="module-algorithms.heatmap_visualization">
 <span id="algorithms-heatmap-visualization-module"></span><h2>algorithms.heatmap_visualization module<a class="headerlink" href="#module-algorithms.heatmap_visualization" title="Permalink to this headline">¶</a></h2>
@@ -522,40 +494,31 @@ Configuration</li>
 </dd></dl>
 
 </div>
-<div class="section" id="algorithms-n-flights-cluster-module">
-<h2>algorithms.n_flights_cluster module<a class="headerlink" href="#algorithms-n-flights-cluster-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="algorithms-n-flights-pca-module">
-<h2>algorithms.n_flights_pca module<a class="headerlink" href="#algorithms-n-flights-pca-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="algorithms-n-flights-pca-fft-module">
-<h2>algorithms.n_flights_pca_fft module<a class="headerlink" href="#algorithms-n-flights-pca-fft-module" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-algorithms.n_flights_segements">
-<span id="algorithms-n-flights-segements-module"></span><h2>algorithms.n_flights_segements module<a class="headerlink" href="#module-algorithms.n_flights_segements" title="Permalink to this headline">¶</a></h2>
-<p>Détection de vols anormaux</p>
+<div class="section" id="module-algorithms.n_flights_whole_flight">
+<span id="algorithms-n-flights-whole-flight-module"></span><h2>algorithms.n_flights_whole_flight module<a class="headerlink" href="#module-algorithms.n_flights_whole_flight" title="Permalink to this headline">¶</a></h2>
+<p>Created on Wen March 01</p>
+<p>&#64;author: Quentin</p>
+<p>Visualization of n flights</p>
 <dl class="function">
-<dt id="algorithms.n_flights_segements.compute_data">
-<code class="descclassname">algorithms.n_flights_segements.</code><code class="descname">compute_data</code><span class="sig-paren">(</span><em>flight_names</em>, <em>flights_data</em>, <em>segment_to_study</em>, <em>needed_columns=None</em>, <em>needed_features=None</em>, <em>use_features=False</em>, <em>ravel_features=True</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_segements.html#compute_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_segements.compute_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>loop over file and compute data
-:path: string</p>
+<dt id="algorithms.n_flights_whole_flight.plot_pca">
+<code class="descclassname">algorithms.n_flights_whole_flight.</code><code class="descname">plot_pca</code><span class="sig-paren">(</span><em>files_names, features=['climb', 'cruise', 'descent', 'hold', 'landing', 'otg', 'take_off', 'apu', 'hp1', 'hp2', 'ip1', 'ip2', 'no bleed'], config_path='data_info/config.json'</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_whole_flight.html#plot_pca"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_whole_flight.plot_pca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot several flights in the plane directed by the two first principal components.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>files_names</strong> &#8211; list
+list of the files paths to be parsed</li>
+<li><strong>features</strong> &#8211; list
+features considered to represent the flights</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
-<dl class="function">
-<dt id="algorithms.n_flights_segements.init">
-<code class="descclassname">algorithms.n_flights_segements.</code><code class="descname">init</code><span class="sig-paren">(</span><em>cas</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_segements.html#init"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_segements.init" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize different senario</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="algorithms.n_flights_segements.plot">
-<code class="descclassname">algorithms.n_flights_segements.</code><code class="descname">plot</code><span class="sig-paren">(</span><em>flights</em>, <em>flight_names</em>, <em>segment_to_study</em>, <em>use_features</em>, <em>figure=1</em>, <em>plot_fig=True</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/n_flights_segements.html#plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.n_flights_segements.plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>plot computed data</p>
-</dd></dl>
-
-</div>
-<div class="section" id="algorithms-n-flights-whole-flight-module">
-<h2>algorithms.n_flights_whole_flight module<a class="headerlink" href="#algorithms-n-flights-whole-flight-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-algorithms.ocsvm_anomaly_detection">
 <span id="algorithms-ocsvm-anomaly-detection-module"></span><h2>algorithms.ocsvm_anomaly_detection module<a class="headerlink" href="#module-algorithms.ocsvm_anomaly_detection" title="Permalink to this headline">¶</a></h2>
@@ -767,12 +730,6 @@ abs(x) est supérieur à un certain seuil val</p>
 <dd></dd></dl>
 
 </div>
-<div class="section" id="module-algorithms.signal_names">
-<span id="algorithms-signal-names-module"></span><h2>algorithms.signal_names module<a class="headerlink" href="#module-algorithms.signal_names" title="Permalink to this headline">¶</a></h2>
-<p>Created on Thu Jan  5 18:25:15 2017</p>
-<p>&#64;author: Florent</p>
-<p>Signal Names</p>
-</div>
 <div class="section" id="module-algorithms.symmetry_anomaly_detection">
 <span id="algorithms-symmetry-anomaly-detection-module"></span><h2>algorithms.symmetry_anomaly_detection module<a class="headerlink" href="#module-algorithms.symmetry_anomaly_detection" title="Permalink to this headline">¶</a></h2>
 <p>Created on Wed Mar  1 11:28:25 2017</p>
@@ -781,45 +738,35 @@ abs(x) est supérieur à un certain seuil val</p>
 <p>Symmetry</p>
 <dl class="function">
 <dt id="algorithms.symmetry_anomaly_detection.asymmetry_detection">
-<code class="descclassname">algorithms.symmetry_anomaly_detection.</code><code class="descname">asymmetry_detection</code><span class="sig-paren">(</span><em>flight_data=None</em>, <em>error=0.01</em>, <em>save_csv=True</em>, <em>save_txt=True</em>, <em>flight_name='undefined'</em>, <em>out_dir='.'</em>, <em>out_filename='auto'</em>, <em>conf=None</em>, <em>phase='undefined'</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/symmetry_anomaly_detection.html#asymmetry_detection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.symmetry_anomaly_detection.asymmetry_detection" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">algorithms.symmetry_anomaly_detection.</code><code class="descname">asymmetry_detection</code><span class="sig-paren">(</span><em>flight_data=None</em>, <em>error=0.01</em>, <em>save_csv=True</em>, <em>save_txt=True</em>, <em>flight_name='undefined'</em>, <em>out_dir='.'</em>, <em>out_filename='auto'</em>, <em>conf=None</em>, <em>phase='undefined'</em>, <em>heatmap=True</em>, <em>time_window='auto'</em>, <em>n_segments='auto'</em>, <em>hclust=False</em>, <em>save_heatmap=True</em><span class="sig-paren">)</span><a class="reference internal" href="algorithms/symmetry_anomaly_detection.html#asymmetry_detection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#algorithms.symmetry_anomaly_detection.asymmetry_detection" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs the symmetry test for both lateral and channel symmetries : finds the
 signals which are expected to be equal but actually are different, gives the
 duration of anomaly of each pair and calculates the linear regression coefficients for
-regulation signals.</p>
+regulation signals. It also can create an heatmap showing the relative anomaly
+duration for some time segmentation.</p>
 <p>Inputs :</p>
 <ul class="simple">
-<li>flight_data : must be an instance of SignalData. Contains all the data</li>
-</ul>
-<p>for the flight to analyse.</p>
-<ul class="simple">
-<li>error : relative error used to compare a pair of continuous signals and</li>
-</ul>
-<p>detect anomalies. Is set to 0.01 (1%) by default.</p>
-<ul class="simple">
-<li>save_csv : boolean for saving the results in two .csv files (1 for channel</li>
-</ul>
-<p>and 1 for lateral dissymmetry)</p>
-<ul class="simple">
-<li>save_txt : boolean for saving the results into one .txt file (to open with</li>
-</ul>
-<p>bloc note for better visualisation)</p>
-<ul class="simple">
+<li>flight_data : must be an instance of SignalData. Contains all the data for the flight to analyse.</li>
+<li>error : relative error used to compare a pair of continuous signals and detect anomalies. Is set to 0.01 (1%) by default.</li>
+<li>save_csv : boolean for saving the results in two .csv files (1 for channel and 1 for lateral dissymmetry)</li>
+<li>save_txt : boolean for saving the results into one .txt file (to open with bloc note for better visualisation)</li>
 <li>flight_name : a string, contains the name of the flight.</li>
-<li>out_dir : a string that indicates the relative output directory, in case</li>
-</ul>
-<p>of saving results</p>
-<ul class="simple">
-<li>out_filename : name of the .txt saving file name, and part of the</li>
-</ul>
-<p>two .csv saving file names. If not defined or &#8216;auto&#8217;, then the format will be
-[symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]</p>
-<ul class="simple">
+<li>out_dir : a string that indicates the relative output directory, in case of saving results</li>
+<li>out_filename : name of the .txt saving file name, and part of the two .csv saving file names. If not defined or &#8216;auto&#8217;, then the format will be [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]</li>
 <li>conf : used for configuration (it needs to contain the list of boolean signals)</li>
-<li>phase : a string, allows to focus on one phase of the flight, among :</li>
-</ul>
-<p>&#8220;otg&#8221;,&#8221;take_off&#8221;,&#8221;landing&#8221;,&#8221;climb&#8221;,&#8221;hold&#8221;,&#8221;cruise&#8221;,&#8221;descent&#8221;
+<li><dl class="first docutils">
+<dt>phase</dt>
+ <span class="classifier-delimiter">:</span> <span class="classifier">a string, allows to focus on one phase of the flight,</span><dd>among : &#8220;otg&#8221;,&#8221;take_off&#8221;,&#8221;landing&#8221;,&#8221;climb&#8221;,&#8221;hold&#8221;,&#8221;cruise&#8221;,&#8221;descent&#8221;
 set to &#8220;undefined&#8221; to run for the whole flight without phase consideration
-set to &#8220;all&#8221; to run for every phase, including the whole flight</p>
+set to &#8220;all&#8221; to run for every phase, including the whole flight</dd>
+</dl>
+</li>
+<li>heatmap : a bool, choose to create or not the heatmap</li>
+<li>time_window: int, length of the time window used to cut the flight into  time segments, or &#8216;auto&#8217; if n_segments is used instead</li>
+<li>n_segments: int, number of time segments used to cut the flight, or &#8216;auto&#8217; if time_window is used instead</li>
+<li>hclust: boolean, apply hierarchical clustering to group similar signals</li>
+<li>save_heatmap: boolean, save heatmap to a file</li>
+</ul>
 </dd></dl>
 
 </div>
@@ -838,9 +785,6 @@ set to &#8220;all&#8221; to run for every phase, including the whole flight</p>
   <ul>
 <li><a class="reference internal" href="#">algorithms package</a><ul>
 <li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#algorithms-1-flight-sub-delta-detection-module">algorithms.1_flight_sub_delta_detection module</a></li>
-<li><a class="reference internal" href="#algorithms-1-flight-sub-detection-module">algorithms.1_flight_sub_detection module</a></li>
-<li><a class="reference internal" href="#module-algorithms.NNeighbor">algorithms.NNeighbor module</a></li>
 <li><a class="reference internal" href="#module-algorithms.SignalData">algorithms.SignalData module</a></li>
 <li><a class="reference internal" href="#module-algorithms.Symmetry">algorithms.Symmetry module</a></li>
 <li><a class="reference internal" href="#algorithms-flight-analysis-bin-heatmap-module">algorithms.flight_analysis_bin_heatmap module</a></li>
@@ -848,17 +792,12 @@ set to &#8220;all&#8221; to run for every phase, including the whole flight</p>
 <li><a class="reference internal" href="#algorithms-flight-analysis-regul-heatmap-module">algorithms.flight_analysis_regul_heatmap module</a></li>
 <li><a class="reference internal" href="#algorithms-flight-analysis-regul-ocsvm-module">algorithms.flight_analysis_regul_ocsvm module</a></li>
 <li><a class="reference internal" href="#algorithms-flight-analysis-template-module">algorithms.flight_analysis_template module</a></li>
-<li><a class="reference internal" href="#module-algorithms.flight_names">algorithms.flight_names module</a></li>
+<li><a class="reference internal" href="#module-algorithms.heatmap_symmetry">algorithms.heatmap_symmetry module</a></li>
 <li><a class="reference internal" href="#module-algorithms.heatmap_visualization">algorithms.heatmap_visualization module</a></li>
-<li><a class="reference internal" href="#algorithms-n-flights-cluster-module">algorithms.n_flights_cluster module</a></li>
-<li><a class="reference internal" href="#algorithms-n-flights-pca-module">algorithms.n_flights_pca module</a></li>
-<li><a class="reference internal" href="#algorithms-n-flights-pca-fft-module">algorithms.n_flights_pca_fft module</a></li>
-<li><a class="reference internal" href="#module-algorithms.n_flights_segements">algorithms.n_flights_segements module</a></li>
-<li><a class="reference internal" href="#algorithms-n-flights-whole-flight-module">algorithms.n_flights_whole_flight module</a></li>
+<li><a class="reference internal" href="#module-algorithms.n_flights_whole_flight">algorithms.n_flights_whole_flight module</a></li>
 <li><a class="reference internal" href="#module-algorithms.ocsvm_anomaly_detection">algorithms.ocsvm_anomaly_detection module</a></li>
 <li><a class="reference internal" href="#module-algorithms.pca_visualization">algorithms.pca_visualization module</a></li>
 <li><a class="reference internal" href="#module-algorithms.signal_data_features">algorithms.signal_data_features module</a></li>
-<li><a class="reference internal" href="#module-algorithms.signal_names">algorithms.signal_names module</a></li>
 <li><a class="reference internal" href="#module-algorithms.symmetry_anomaly_detection">algorithms.symmetry_anomaly_detection module</a></li>
 <li><a class="reference internal" href="#module-algorithms">Module contents</a></li>
 </ul>
@@ -897,7 +836,7 @@ set to &#8220;all&#8221; to run for every phase, including the whole flight</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, franck wang.
+      &copy;.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>

@@ -38,38 +38,22 @@ def asymmetry_detection(flight_data=None, error=0.01, save_csv=True, save_txt=Tr
 
     Inputs :
 
-    - flight_data : must be an instance of SignalData. Contains all the data
-    for the flight to analyse.
-
-    - error : relative error used to compare a pair of continuous signals and
-    detect anomalies. Is set to 0.01 (1%) by default.
-
-    - save_csv : boolean for saving the results in two .csv files (1 for channel
-    and 1 for lateral dissymmetry)
-
-    - save_txt : boolean for saving the results into one .txt file (to open with
-    bloc note for better visualisation)
-
+    - flight_data : must be an instance of SignalData. Contains all the data for the flight to analyse.
+    - error : relative error used to compare a pair of continuous signals and detect anomalies. Is set to 0.01 (1%) by default.
+    - save_csv : boolean for saving the results in two .csv files (1 for channel and 1 for lateral dissymmetry)
+    - save_txt : boolean for saving the results into one .txt file (to open with bloc note for better visualisation)
     - flight_name : a string, contains the name of the flight.
-
-    - out_dir : a string that indicates the relative output directory, in case
-    of saving results
-
-    - out_filename : name of the .txt saving file name, and part of the
-    two .csv saving file names. If not defined or 'auto', then the format will be
-    [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
-
+    - out_dir : a string that indicates the relative output directory, in case of saving results
+    - out_filename : name of the .txt saving file name, and part of the two .csv saving file names. If not defined or 'auto', then the format will be [symmetry_anomaly_{flight_name}_error_{error}_{time indications}.txt]
     - conf : used for configuration (it needs to contain the list of boolean signals)
-
-    - phase : a string, allows to focus on one phase of the flight, among :
-    "otg","take_off","landing","climb","hold","cruise","descent"
-    set to "undefined" to run for the whole flight without phase consideration
-    set to "all" to run for every phase, including the whole flight
+    - phase : a string, allows to focus on one phase of the flight,
+        among : "otg","take_off","landing","climb","hold","cruise","descent"
+        set to "undefined" to run for the whole flight without phase consideration
+        set to "all" to run for every phase, including the whole flight
 
     - heatmap : a bool, choose to create or not the heatmap
 
-    - time_window: int, length of the time window used to cut the flight into
-    time segments, or 'auto' if n_segments is used instead
+    - time_window: int, length of the time window used to cut the flight into  time segments, or 'auto' if n_segments is used instead
 
     - n_segments: int, number of time segments used to cut the flight, or 'auto' if time_window is used instead
 

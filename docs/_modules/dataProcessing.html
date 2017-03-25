@@ -438,7 +438,7 @@ see plot_ports, plot_ports_sides, plot_ports_seg in segmenter</p>
 
 <dl class="function">
 <dt id="dataProcessing.summary.summary">
-<code class="descclassname">dataProcessing.summary.</code><code class="descname">summary</code><span class="sig-paren">(</span><em>path</em>, <em>out_path=None</em>, <em>out_dir=''</em>, <em>data=None</em>, <em>phases_data=None</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/summary.html#summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.summary.summary" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">dataProcessing.summary.</code><code class="descname">summary</code><span class="sig-paren">(</span><em>path</em>, <em>out_path=None</em>, <em>out_dir=''</em>, <em>data=None</em>, <em>phases_data=None</em>, <em>config_path='data_info/config.json'</em><span class="sig-paren">)</span><a class="reference internal" href="dataProcessing/summary.html#summary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#dataProcessing.summary.summary" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute summary</p>
 <ul class="simple">
 <li>get html template</li>
@@ -457,6 +457,10 @@ path of the data file</li>
 path to export the html</li>
 <li><strong></strong><strong>[</strong><strong>data=None</strong><strong>]</strong><strong></strong> &#8211; dataFrame
 data of the flight</li>
+<li><strong></strong><strong>[</strong><strong>phase_data=None</strong><strong>]</strong><strong></strong> &#8211; tuple (of 3 dict)
+data of the flight segmentation</li>
+<li><strong></strong><strong>[</strong><strong>config_path=None</strong><strong>]</strong><strong></strong> &#8211; str
+needed if phases_data is not given</li>
 </ul>
 </td>
 </tr>
@@ -532,7 +536,7 @@ data of the flight</li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, franck wang.
+      &copy;.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>

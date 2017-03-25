@@ -65,33 +65,19 @@
 
 <span class="sd">    Inputs :</span>
 
-<span class="sd">    - signal1, signal2 : two signals of the class SignalData to compare</span>
-<span class="sd">    (generally signal1 -&gt; &quot;...CHA&quot;, and signal2 -&gt; &quot;...CHB&quot; or &quot;..AMSC1&quot; and &quot;..AMSC2&quot;  )</span>
-
-<span class="sd">    - error : the result will be False if there is at least one value which is</span>
-<span class="sd">    out of the relative error box</span>
-
+<span class="sd">    - signal1, signal2 : two signals of the class SignalData to compare (generally signal1 -&gt; &quot;...CHA&quot;, and signal2 -&gt; &quot;...CHB&quot; or &quot;..AMSC1&quot; and &quot;..AMSC2&quot;  )</span>
+<span class="sd">    - error : the result will be False if there is at least one value which is out of the relative error box</span>
 <span class="sd">    - binary_names : list of binary files names</span>
-
-<span class="sd">    - [name_signal1] : optional, a string, the name of the first input. Allows</span>
-<span class="sd">    the algorithm to check if the inputs are boolean or not (from specifications)</span>
-<span class="sd">    By defaut, consider the signal as non boolean.</span>
-
-<span class="sd">    - [comment] : otpional, a string, if equals &#39;none&#39; then don&#39;t print any result,</span>
-<span class="sd">    prints the result if nothing is specified. The print is done through logger.info</span>
+<span class="sd">    - [name_signal1] : optional, a string, the name of the first input.</span>
+<span class="sd">        Allows the algorithm to check if the inputs are boolean or not (from specifications)</span>
+<span class="sd">        By defaut, consider the signal as non boolean.</span>
+<span class="sd">    - [comment] : otpional, a string, if equals &#39;none&#39; then don&#39;t print any result, prints the result if nothing is specified. The print is done through logger.info</span>
 
 <span class="sd">    Outputs :</span>
 
-<span class="sd">    - result : a bool, indicates if the two imput signals are the same</span>
-<span class="sd">    (according to the accepted error)</span>
-
+<span class="sd">    - result : a bool, indicates if the two imput signals are the same (according to the accepted error)</span>
 <span class="sd">    - index : time indexes of the signal.data where the differences where found</span>
-
-
-<span class="sd">    - lin_reg : an array which contains first the type of the signals (&#39;b&#39; for</span>
-<span class="sd">    boolean and &#39;c&#39; for continuous), then the slope, the intercept and finally the R2 value</span>
-<span class="sd">    of linear regression between the two signals.</span>
-
+<span class="sd">    - lin_reg : an array which contains first the type of the signals (&#39;b&#39; for boolean and &#39;c&#39; for continuous), then the slope, the intercept and finally the R2 value of linear regression between the two signals.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n</span> <span class="o">=</span> <span class="mi">6</span> <span class="c1"># truncation of digits in res</span>
     <span class="n">result</span> <span class="o">=</span><span class="kc">True</span>
@@ -116,7 +102,11 @@
                     <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="n">index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
 
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">std_err</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">sig1</span><span class="p">,</span> <span class="n">sig2</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;warn&quot;</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
         <span class="n">lin_reg</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">b</span><span class="p">)[</span><span class="mi">0</span><span class="p">:</span><span class="n">n</span><span class="p">],</span> <span class="nb">str</span><span class="p">(</span><span class="n">r_value</span><span class="o">**</span><span class="mi">2</span><span class="p">)]</span> <span class="c1">#continuous signals : linear regression parameters</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">result</span><span class="p">:</span>
@@ -135,13 +125,11 @@
 <span class="sd">    Input :</span>
 
 <span class="sd">    - signal_name : a string, the name of the signal to test.</span>
-
-<span class="sd">    -signal_names_bin : list of the binary files names</span>
+<span class="sd">    - signal_names_bin : list of the binary files names</span>
 
 <span class="sd">    Output :</span>
 
-<span class="sd">    - Result : a boolean, is True if the input signal is known as a boolean,</span>
-<span class="sd">    and returns False if the name is contained in the list of regulated signals (non boolean)</span>
+<span class="sd">    - Result : a boolean, is True if the input signal is known as a boolean, and returns False if the name is contained in the list of regulated signals (non boolean)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">signal_name</span> <span class="ow">in</span> <span class="n">signal_names_bin</span></div>
 
@@ -150,27 +138,19 @@
 <div class="viewcode-block" id="Symmetry_Channels_One_Flight"><a class="viewcode-back" href="../algorithms.html#algorithms.Symmetry.Symmetry_Channels_One_Flight">[docs]</a><span class="k">def</span> <span class="nf">Symmetry_Channels_One_Flight</span><span class="p">(</span><span class="n">flight</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="n">binary_names</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Finds the symmetry problems in a flight by comparing both channels A</span>
-<span class="sd">    and B for each measure of a flight.</span>
+<span class="sd">    Finds the symmetry problems in a flight by comparing both channels A and B for each measure of a flight.</span>
 
 <span class="sd">    Inputs :</span>
 
-<span class="sd">    - flight : must have been parsed by txt_parser. Contains all the signals</span>
-<span class="sd">    of one flight</span>
-
-<span class="sd">    - error : relative error accepted for the detection of anomalies between</span>
-<span class="sd">    two signals which should have been equal</span>
-
+<span class="sd">    - flight : must have been parsed by txt_parser. Contains all the signals of one flight</span>
+<span class="sd">    - error : relative error accepted for the detection of anomalies between two signals which should have been equal</span>
 <span class="sd">    - binary_names : list of binary files names</span>
 
 <span class="sd">    Output :</span>
 
-<span class="sd">    - result_anomaly : Contains the names of the supposed equal signals wich are</span>
-<span class="sd">    actually different. Contains as well the indexes where the differences were</span>
-<span class="sd">    found, and the list of the linear regression coefficients ([type, slope, intercept, R2])</span>
-<span class="sd">    The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and</span>
-<span class="sd">    the linear regression coefficients in result_anomaly[3*i+2]</span>
-<span class="sd">    with i &lt;= 0</span>
+<span class="sd">    - result_anomaly : Contains the names of the supposed equal signals wich are actually different.</span>
+<span class="sd">        Contains as well the indexes where the differences were found, and the list of the linear regression coefficients ([type, slope, intercept, R2])</span>
+<span class="sd">        The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and the linear regression coefficients in result_anomaly[3*i+2] with i &lt;= 0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="c1">#flight = txt_parser(path+str_flight)</span>
@@ -217,23 +197,16 @@
 
 <span class="sd">    Inputs :</span>
 
-<span class="sd">    - flight : must have been parsed by txt_parser. Contains all the signals</span>
-<span class="sd">    of one flight</span>
-
-<span class="sd">    - error : relative error accepted for the detection of anomalies between</span>
-<span class="sd">    two signals which should have been equal</span>
-
+<span class="sd">    - flight : must have been parsed by txt_parser. Contains all the signals of one flight</span>
+<span class="sd">    - error : relative error accepted for the detection of anomalies between two signals which should have been equal</span>
 <span class="sd">    - binary_names : list of binary files names</span>
 
 
 <span class="sd">    Output :</span>
 
-<span class="sd">    - result_anomaly : Contains the names of the supposed equal signals wich are</span>
-<span class="sd">    actually different. Contains as well the indexes where the differences were</span>
-<span class="sd">    found, and the list of the linear regression coefficients ([type, slope, intercept, R2])</span>
-<span class="sd">    The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and</span>
-<span class="sd">    the linear regression coefficients in result_anomaly[3*i+2]</span>
-<span class="sd">    with i &lt;= 0</span>
+<span class="sd">    - result_anomaly : Contains the names of the supposed equal signals wich are actually different.</span>
+<span class="sd">        Contains as well the indexes where the differences were found, and the list of the linear regression coefficients ([type, slope, intercept, R2])</span>
+<span class="sd">        The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and the linear regression coefficients in result_anomaly[3*i+2] with i &lt;= 0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># Extract names of signals and sort them</span>
@@ -274,24 +247,15 @@
 
 <span class="sd">    Inputs :</span>
 
-<span class="sd">    - result_sym : results of a symmetry test which is : an array containing the</span>
-<span class="sd">    names of the signals with anomalies (by pair), and the associated time indexes</span>
-<span class="sd">    of anomaly occurences</span>
-
+<span class="sd">    - result_sym : results of a symmetry test which is : an array containing the names of the signals with anomalies (by pair), and the associated time indexes of anomaly occurences</span>
 <span class="sd">    - max_time_index : an integer : the maximal time index of the flight</span>
-
-<span class="sd">    - window_size : size in percentage of the flight duration of the window on</span>
-<span class="sd">    which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)</span>
-<span class="sd">    If window_size = 0, then divides the flight with respect to the flight phases.</span>
-<span class="sd">    By default : window_size = 0.1</span>
+<span class="sd">    - window_size : size in percentage of the flight duration of the window on which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)</span>
+<span class="sd">        If window_size = 0, then divides the flight with respect to the flight phases.</span>
+<span class="sd">        By default : window_size = 0.1</span>
 
 <span class="sd">    Output :</span>
 
-<span class="sd">    - result : a two lignes array : the first ligne is the time indexes of the</span>
-<span class="sd">    begining of the windows, the second ligne is the number of anomalies detected</span>
-<span class="sd">    during the corresponding time window</span>
-
-
+<span class="sd">    - result : a two lignes array : the first ligne is the time indexes of the begining of the windows, the second ligne is the number of anomalies detected during the corresponding time window</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[]]</span>
     <span class="n">nm_anomaly</span> <span class="o">=</span> <span class="p">[]</span>
@@ -341,28 +305,17 @@
 
 <span class="sd">    Inputs :</span>
 
-<span class="sd">    - result_sym : results of a symmetry test which is : an array containing the</span>
-<span class="sd">    names of the signals with anomalies (by pair), and the associated time indexes</span>
-<span class="sd">    of anomaly occurences</span>
-
-<span class="sd">    - str_type : type of the results given (&quot;Channel&quot;, &quot;Lateral&quot; or other). By defaut</span>
-<span class="sd">    is set to &quot;&quot;.</span>
+<span class="sd">    - result_sym : results of a symmetry test which is : an array containing the names of the signals with anomalies (by pair), and the associated time indexes of anomaly occurences</span>
+<span class="sd">    - str_type : type of the results given (&quot;Channel&quot;, &quot;Lateral&quot; or other). By defaut is set to &quot;&quot;.</span>
 
 
 <span class="sd">    - binary_names : list of binary files names</span>
 
 <span class="sd">    Outputs :</span>
 
-<span class="sd">    - anomalies_couples_names_sorted : list of the names of anomalies (by couple) sorted</span>
-<span class="sd">    by their weight (number of time indexes where there is an anomaly)</span>
-
-<span class="sd">    - long_sorted : number of time indexes where there is an anomaly, corresponding</span>
-<span class="sd">    to the anomalies_couple_names_sorted</span>
-
-<span class="sd">    - anomalies_lin_reg_coef_sorted : linear regression coefficients, sorted by the duration</span>
-<span class="sd">    of the detected anomalies</span>
-
-
+<span class="sd">    - anomalies_couples_names_sorted : list of the names of anomalies (by couple) sorted by their weight (number of time indexes where there is an anomaly)</span>
+<span class="sd">    - long_sorted : number of time indexes where there is an anomaly, corresponding to the anomalies_couple_names_sorted</span>
+<span class="sd">    - anomalies_lin_reg_coef_sorted : linear regression coefficients, sorted by the duration of the detected anomalies</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">anomalies_couples_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">result_sym</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_sym</span><span class="p">),</span> <span class="mi">3</span><span class="p">)]</span>
     <span class="n">anomalies_lin_reg_coef</span> <span class="o">=</span> <span class="p">[</span><span class="n">result_sym</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_sym</span><span class="p">),</span> <span class="mi">3</span><span class="p">)]</span>
@@ -422,21 +375,13 @@
 <span class="sd">    Inputs :</span>
 
 <span class="sd">    - path : string, the path of the file</span>
-
 <span class="sd">    - name_flight : string, name of the flight</span>
-
 <span class="sd">    - list_anomaly : list of the names of anomalies</span>
-
 <span class="sd">    - duration_anomaly : list of the duration of detected anomaly</span>
-
 <span class="sd">    - lin_reg_coef : list of the linear regression coefficients</span>
-
 <span class="sd">    - error : relative error used for the anomaly detection</span>
-
 <span class="sd">    - is_channel : bool to know whether the anomalies are from channel or lateral</span>
-
-<span class="sd">    -flight_phase : sting, phase of the flight (&quot;otg&quot;,&quot;cruise&quot;, ...).</span>
-<span class="sd">    Total flight if &quot;undefined&quot;.</span>
+<span class="sd">    - flight_phase : sting, phase of the flight (&quot;otg&quot;,&quot;cruise&quot;, ...). Total flight if &quot;undefined&quot;.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">flight_phase</span> <span class="o">==</span> <span class="s2">&quot;undefined&quot;</span> <span class="p">:</span>
@@ -481,14 +426,9 @@
 <span class="sd">    Inputs :</span>
 
 <span class="sd">    - path : string, the path of the file</span>
-
 <span class="sd">    - list_anomaly : list of the names of anomalies</span>
-
 <span class="sd">    - duration_anomaly : list of the duration of detected anomaly</span>
-
 <span class="sd">    - lin_reg_coef : list of the linear regression coefficients</span>
-
-
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rapport_anomalie</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">rapport_anomalie</span><span class="p">[</span><span class="s2">&quot;Signal A&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">list_anomaly</span><span class="p">]</span>
@@ -534,7 +474,7 @@
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2016, franck wang.
+      &copy;.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5</a>

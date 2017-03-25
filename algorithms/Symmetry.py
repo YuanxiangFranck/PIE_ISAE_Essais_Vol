@@ -20,33 +20,19 @@ def SymmetryTest(signal1, signal2, error, binary_names, name_signal1 = "", comme
 
     Inputs :
 
-    - signal1, signal2 : two signals of the class SignalData to compare
-    (generally signal1 -> "...CHA", and signal2 -> "...CHB" or "..AMSC1" and "..AMSC2"  )
-
-    - error : the result will be False if there is at least one value which is
-    out of the relative error box
-
+    - signal1, signal2 : two signals of the class SignalData to compare (generally signal1 -> "...CHA", and signal2 -> "...CHB" or "..AMSC1" and "..AMSC2"  )
+    - error : the result will be False if there is at least one value which is out of the relative error box
     - binary_names : list of binary files names
-
-    - [name_signal1] : optional, a string, the name of the first input. Allows
-    the algorithm to check if the inputs are boolean or not (from specifications)
-    By defaut, consider the signal as non boolean.
-
-    - [comment] : otpional, a string, if equals 'none' then don't print any result,
-    prints the result if nothing is specified. The print is done through logger.info
+    - [name_signal1] : optional, a string, the name of the first input.
+        Allows the algorithm to check if the inputs are boolean or not (from specifications)
+        By defaut, consider the signal as non boolean.
+    - [comment] : otpional, a string, if equals 'none' then don't print any result, prints the result if nothing is specified. The print is done through logger.info
 
     Outputs :
 
-    - result : a bool, indicates if the two imput signals are the same
-    (according to the accepted error)
-
+    - result : a bool, indicates if the two imput signals are the same (according to the accepted error)
     - index : time indexes of the signal.data where the differences where found
-
-
-    - lin_reg : an array which contains first the type of the signals ('b' for
-    boolean and 'c' for continuous), then the slope, the intercept and finally the R2 value
-    of linear regression between the two signals.
-
+    - lin_reg : an array which contains first the type of the signals ('b' for boolean and 'c' for continuous), then the slope, the intercept and finally the R2 value of linear regression between the two signals.
     """
     n = 6 # truncation of digits in res
     result =True
@@ -94,13 +80,11 @@ def is_bool(signal_name, signal_names_bin):
     Input :
 
     - signal_name : a string, the name of the signal to test.
-
-    -signal_names_bin : list of the binary files names
+    - signal_names_bin : list of the binary files names
 
     Output :
 
-    - Result : a boolean, is True if the input signal is known as a boolean,
-    and returns False if the name is contained in the list of regulated signals (non boolean)
+    - Result : a boolean, is True if the input signal is known as a boolean, and returns False if the name is contained in the list of regulated signals (non boolean)
     """
     return signal_name in signal_names_bin
 
@@ -109,27 +93,19 @@ def is_bool(signal_name, signal_names_bin):
 def Symmetry_Channels_One_Flight(flight, error, binary_names):
 
     """
-    Finds the symmetry problems in a flight by comparing both channels A
-    and B for each measure of a flight.
+    Finds the symmetry problems in a flight by comparing both channels A and B for each measure of a flight.
 
     Inputs :
 
-    - flight : must have been parsed by txt_parser. Contains all the signals
-    of one flight
-
-    - error : relative error accepted for the detection of anomalies between
-    two signals which should have been equal
-
+    - flight : must have been parsed by txt_parser. Contains all the signals of one flight
+    - error : relative error accepted for the detection of anomalies between two signals which should have been equal
     - binary_names : list of binary files names
 
     Output :
 
-    - result_anomaly : Contains the names of the supposed equal signals wich are
-    actually different. Contains as well the indexes where the differences were
-    found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
-    The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and
-    the linear regression coefficients in result_anomaly[3*i+2]
-    with i <= 0
+    - result_anomaly : Contains the names of the supposed equal signals wich are actually different.
+        Contains as well the indexes where the differences were found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
+        The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and the linear regression coefficients in result_anomaly[3*i+2] with i <= 0
         """
 
     #flight = txt_parser(path+str_flight)
@@ -176,23 +152,16 @@ def Symmetry_Lateral_One_Flight(flight, error, binary_names):
 
     Inputs :
 
-    - flight : must have been parsed by txt_parser. Contains all the signals
-    of one flight
-
-    - error : relative error accepted for the detection of anomalies between
-    two signals which should have been equal
-
+    - flight : must have been parsed by txt_parser. Contains all the signals of one flight
+    - error : relative error accepted for the detection of anomalies between two signals which should have been equal
     - binary_names : list of binary files names
 
 
     Output :
 
-    - result_anomaly : Contains the names of the supposed equal signals wich are
-    actually different. Contains as well the indexes where the differences were
-    found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
-    The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and
-    the linear regression coefficients in result_anomaly[3*i+2]
-    with i <= 0
+    - result_anomaly : Contains the names of the supposed equal signals wich are actually different.
+        Contains as well the indexes where the differences were found, and the list of the linear regression coefficients ([type, slope, intercept, R2])
+        The names are in result_anomaly[3*i], the indexes in result_anomaly[3*i+1] and the linear regression coefficients in result_anomaly[3*i+2] with i <= 0
     """
 
     # Extract names of signals and sort them
@@ -233,24 +202,15 @@ def Anomalies_in_Time(result_sym, max_time_index, window_size=0.1):
 
     Inputs :
 
-    - result_sym : results of a symmetry test which is : an array containing the
-    names of the signals with anomalies (by pair), and the associated time indexes
-    of anomaly occurences
-
+    - result_sym : results of a symmetry test which is : an array containing the names of the signals with anomalies (by pair), and the associated time indexes of anomaly occurences
     - max_time_index : an integer : the maximal time index of the flight
-
-    - window_size : size in percentage of the flight duration of the window on
-    which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)
-    If window_size = 0, then divides the flight with respect to the flight phases.
-    By default : window_size = 0.1
+    - window_size : size in percentage of the flight duration of the window on which number of anomalies is counted (ex : 0.1 for dividing the flight in 10)
+        If window_size = 0, then divides the flight with respect to the flight phases.
+        By default : window_size = 0.1
 
     Output :
 
-    - result : a two lignes array : the first ligne is the time indexes of the
-    begining of the windows, the second ligne is the number of anomalies detected
-    during the corresponding time window
-
-
+    - result : a two lignes array : the first ligne is the time indexes of the begining of the windows, the second ligne is the number of anomalies detected during the corresponding time window
     """
     result = [[], []]
     nm_anomaly = []
@@ -300,28 +260,17 @@ def Analyze_results(result_sym, binary_names, str_type=""):
 
     Inputs :
 
-    - result_sym : results of a symmetry test which is : an array containing the
-    names of the signals with anomalies (by pair), and the associated time indexes
-    of anomaly occurences
-
-    - str_type : type of the results given ("Channel", "Lateral" or other). By defaut
-    is set to "".
+    - result_sym : results of a symmetry test which is : an array containing the names of the signals with anomalies (by pair), and the associated time indexes of anomaly occurences
+    - str_type : type of the results given ("Channel", "Lateral" or other). By defaut is set to "".
 
 
     - binary_names : list of binary files names
 
     Outputs :
 
-    - anomalies_couples_names_sorted : list of the names of anomalies (by couple) sorted
-    by their weight (number of time indexes where there is an anomaly)
-
-    - long_sorted : number of time indexes where there is an anomaly, corresponding
-    to the anomalies_couple_names_sorted
-
-    - anomalies_lin_reg_coef_sorted : linear regression coefficients, sorted by the duration
-    of the detected anomalies
-
-
+    - anomalies_couples_names_sorted : list of the names of anomalies (by couple) sorted by their weight (number of time indexes where there is an anomaly)
+    - long_sorted : number of time indexes where there is an anomaly, corresponding to the anomalies_couple_names_sorted
+    - anomalies_lin_reg_coef_sorted : linear regression coefficients, sorted by the duration of the detected anomalies
     """
     anomalies_couples_names = [result_sym[j] for j in range(0, len(result_sym), 3)]
     anomalies_lin_reg_coef = [result_sym[j] for j in range(2, len(result_sym), 3)]
@@ -381,21 +330,13 @@ def write_in_file(path, name_flight, list_anomaly, duration_anomaly, lin_reg_coe
     Inputs :
 
     - path : string, the path of the file
-
     - name_flight : string, name of the flight
-
     - list_anomaly : list of the names of anomalies
-
     - duration_anomaly : list of the duration of detected anomaly
-
     - lin_reg_coef : list of the linear regression coefficients
-
     - error : relative error used for the anomaly detection
-
     - is_channel : bool to know whether the anomalies are from channel or lateral
-
-    -flight_phase : sting, phase of the flight ("otg","cruise", ...).
-    Total flight if "undefined".
+    - flight_phase : sting, phase of the flight ("otg","cruise", ...). Total flight if "undefined".
 
     """
     if flight_phase == "undefined" :
@@ -440,14 +381,9 @@ def write_in_csv(path, list_anomaly, duration_anomaly, lin_reg_coef) :
     Inputs :
 
     - path : string, the path of the file
-
     - list_anomaly : list of the names of anomalies
-
     - duration_anomaly : list of the duration of detected anomaly
-
     - lin_reg_coef : list of the linear regression coefficients
-
-
     """
     rapport_anomalie = {}
     rapport_anomalie["Signal A"] = [a[0] for a in list_anomaly]
