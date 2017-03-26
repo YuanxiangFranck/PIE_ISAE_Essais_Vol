@@ -408,7 +408,7 @@ def heatmap(flight_data=None, feature=None, signal_category=None, signal_list=No
 
         if show_plot:
             plt.show()
-            plt.clf()
+        plt.close(fig)
 
     # Generate heatmaps
     if n_heatmaps == 0:

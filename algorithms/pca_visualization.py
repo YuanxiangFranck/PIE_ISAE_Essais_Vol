@@ -267,3 +267,4 @@ def pca_visualization(flight_data=None, features=None, signal_categories=None,
 
     if show_plot:
         plt.show()
+    plt.close(fig)

@@ -293,7 +293,7 @@ def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segment
 
         if show_plot:
             plt.show()
-            plt.clf()
+        plt.close(fig)
 
     # Generate heatmaps
     if n_heatmaps == 0:

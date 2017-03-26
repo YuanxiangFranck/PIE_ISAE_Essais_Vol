@@ -384,7 +384,7 @@ def ocsvm_detection(flight_data=None, features=None, signal_categories=None,
 
         if show_plot:
             plt.show()
-            plt.clf()
+        plt.close(fig)
 
     # Generate heatmaps
     if n_heatmaps == 0:
