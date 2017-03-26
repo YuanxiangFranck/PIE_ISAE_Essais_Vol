@@ -22,15 +22,15 @@ from algorithms.SignalData import SignalData
 from algorithms.Symmetry import SymmetryTest
 from dataProcessing.utils import logger
 
-def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segments='auto', 
-                     hclust=False, save=True, flight_name='undefined', 
-                     signals1 = None, signals2 = None, type_signals = '', 
-                     out_dir='.', out_filename='auto', show_plot=True, 
+def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segments='auto',
+                     hclust=False, save=True, flight_name='undefined',
+                     signals1 = None, signals2 = None, type_signals = '',
+                     out_dir='.', out_filename='auto', show_plot=True,
                      out_format='pdf', conf=None):
-                         
+
     """
-    Computes the relative time of anomaly on each time segment of a flight, 
-    and exports it as a heatmap visualization to a file. 
+    Computes the relative time of anomaly on each time segment of a flight,
+    and exports it as a heatmap visualization to a file.
     The result can be split across several files. A clustering option can be activated.
 
     :param flight_data: SignalData object
@@ -53,16 +53,16 @@ def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segment
 
     :param flight_name: string
         Name of the flight
-    
+
     :param signals1: list of string
         List of the names of the first column of signals to compare (the first name of each pair)
-    
+
     :param signals2: list of string
         List of the names of the second column of signals to compare (the second name of each pair)
-        
+
     :param type_signal: string
-        "Channel" or "Lateral", depends on the considerated pair 
-        
+        "Channel" or "Lateral", depends on the considerated pair
+
     :param out_dir: string
         Directory where the exported files will be saved
 
@@ -77,9 +77,9 @@ def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segment
 
     :param conf: dict
         Configuration
-    
+
     """
-    
+
     if time_window == 'auto' and n_segments == 'auto':
         logger.error(
         "The arguments time_window and n_segments cannot both be set to 'auto'. One of them must be specified.")
@@ -88,10 +88,10 @@ def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segment
         logger.error(
         "The arguments time_window and n_segments cannot both be set to a value. One of them must be left to 'auto'.")
         return
-        
+
     assert(len(signals1)==len(signals2))
-    
-    
+
+
     # Set sliding window parameters
     if n_segments != 'auto':
         # Assert that the number of segments is positive
@@ -112,24 +112,24 @@ def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segment
 
 
     ylabels = signals1
-    
+
     # Cut signal into samples with a sliding window
     samples_signals1 = extract_sl_window(flight_data.data, signals1,
                                          sl_w, sl_s, n_samples)
     samples_signals2 = extract_sl_window(flight_data.data, signals2,
                                          sl_w, sl_s, n_samples)
-                                    
-    
-    asymmetry_matrix = np.zeros((len(signals1),n_samples)) 
+
+
+    asymmetry_matrix = np.zeros((len(signals1),n_samples))
     binary_names = conf["binary"]
-     
+
     for i in range(n_samples):
-        for j in range(len(signals1)): 
+        for j in range(len(signals1)):
             signal1 = samples_signals1[i].data.iloc[:,j]
             signal2 = samples_signals2[i].data.iloc[:,j]
             res = SymmetryTest(signal1, signal2, error, binary_names, signals1[j], "none")
             asymmetry_matrix[j,i] = len(res[1][:])/sl_w # time indexes of anomalies/length of the time window
-            
+
     # Perform hierarchical clustering on signals
     if hclust:
 
@@ -303,4 +303,3 @@ def heatmap_symmetry(flight_data=None, error=0.01, time_window='auto', n_segment
             create_heatmap(k, k*n_sig, (k+1)*n_sig)
         # Make last heatmap if needed
         create_heatmap(k+1, (k+1)*n_sig, asymmetry_matrix.shape[0])
-                                
